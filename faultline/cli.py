@@ -266,7 +266,7 @@ def _print_finding(con, f: dict, expert: bool) -> None:
             dots = "●" * max(1, min(3, round(ind["weight"])))
             lines.append(f"  [{st.split()[-1]}]{dots:<3}[/] {_safe(ind['text'])}")
         for alt in f.get("alternatives", [])[:2]:
-            lines.append(f"  [dim]Not {_safe(alt['title'].lower() if alt['title'] else alt['category'])}: {_safe(alt['why_not'])}[/]")
+            lines.append(f"  [bold dim]Why not “{_safe(alt['title'] or alt['category'])}”?[/] [dim]{_safe(alt['why_not'])}[/]")
     if f.get("mitre"):
         lines.append(f"[bold]MITRE ATT&CK[/]  {_safe(f['mitre'])}")
 
