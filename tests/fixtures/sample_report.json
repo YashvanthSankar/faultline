@@ -1,0 +1,1889 @@
+{
+ "tool": {
+  "name": "Faultline",
+  "version": "1.0.0"
+ },
+ "generated_at": "2026-11-01T14:02:11+05:30",
+ "capture": {
+  "name": "office-wifi-friday.pcapng",
+  "format": "pcapng",
+  "compressed": false,
+  "file_bytes": 48210332,
+  "packets": 76304,
+  "bytes_captured": 48521921,
+  "linktypes": [
+   1
+  ],
+  "first_ts": 1793522320.0,
+  "last_ts": 1793522920.0,
+  "duration": 600.0,
+  "truncated": true,
+  "limited": false,
+  "warnings": [
+   "The file ends in the middle of a packet (offset 48,210,301); analysed the 76,304 complete packets before it."
+  ],
+  "sha256": "9f2c4e1ab07d55c3e8a1b6f0d2c47e9a13b5c6d7e8f90a1b2c3d4e5f60718293",
+  "malformed_packets": 3
+ },
+ "verdict": {
+  "status": "under_attack",
+  "headline": "Someone on your network is redirecting traffic through their own device.",
+  "summary": "A rogue DHCP server at 192.168.1.66 made itself the router and DNS server for 4 devices and is answering banking and email lookups with its own address. Separately, the Wi-Fi is losing 6% of packets, which explains the frozen video calls.",
+  "score": 18,
+  "counts": {
+   "attack": 2,
+   "fault": 2,
+   "misconfig": 2,
+   "info": 1
+  }
+ },
+ "findings": [
+  {
+   "id": "F1",
+   "kind": "dhcp.rogue_server",
+   "category": "attack",
+   "severity": 4,
+   "severity_name": "critical",
+   "confidence": 0.94,
+   "title": "A second, unauthorised DHCP server is handing out addresses",
+   "summary": "192.168.1.66 answered DHCP requests and told 4 devices to use it as their router and DNS server.",
+   "explanation": "When a device joins the network it asks \"who can give me an address?\" (DHCP). Your real router, 192.168.1.1, answers. But a second device, 192.168.1.66, raced it and won for 4 devices, telling them to send all their traffic and all their name lookups through it.",
+   "analogy": "It is like someone standing at the office front door handing out fake maps, so new visitors walk through the stranger's room before reaching any meeting.",
+   "cause": "A device on the network is running its own DHCP server. Usually this is an attacker doing a man-in-the-middle, sometimes a misplugged home router.",
+   "fix": [
+    "Find the device with MAC `02:66:de:ad:be:ef` (switch port or Wi-Fi client list) and disconnect it.",
+    "Enable DHCP snooping on the switch so only the router's port may answer DHCP.",
+    "On affected devices, renew the lease: `ipconfig /renew` (Windows) or `sudo dhclient -r && sudo dhclient` (Linux).",
+    "Change any passwords typed on affected devices while this was happening."
+   ],
+   "technical": "DHCPOFFER/ACK from server-id 192.168.1.66 (02:66:de:ad:be:ef) with option 3 router=192.168.1.66 and option 6 dns=192.168.1.66, while the established server 192.168.1.1 offered router=192.168.1.1 dns=192.168.1.1. The rogue answered 4 of 5 DISCOVERs first (median 1.8 ms vs 14.2 ms).",
+   "mitre": "T1557.003 Adversary-in-the-Middle: DHCP Spoofing",
+   "hosts": [
+    "192.168.1.66",
+    "192.168.1.1",
+    "192.168.1.15",
+    "192.168.1.22",
+    "192.168.1.31",
+    "192.168.1.50"
+   ],
+   "packets": [
+    118,
+    119,
+    121,
+    122,
+    307,
+    308,
+    512,
+    514,
+    890,
+    891
+   ],
+   "packet_total": 10,
+   "first_ts": 1793522448.4,
+   "last_ts": 1793522621.9,
+   "metrics": {
+    "rogue_server": "192.168.1.66",
+    "legit_server": "192.168.1.1",
+    "clients_affected": 4,
+    "offers": 5,
+    "offered_router": "192.168.1.66",
+    "offered_dns": [
+     "192.168.1.66"
+    ]
+   },
+   "indicators": [
+    {
+     "text": "Two different DHCP servers answered on the same network",
+     "supports": "attack",
+     "weight": 2.5
+    },
+    {
+     "text": "The second server names itself as router and DNS server",
+     "supports": "attack",
+     "weight": 3
+    },
+    {
+     "text": "It answers faster than the real router, winning the race",
+     "supports": "attack",
+     "weight": 1.5
+    },
+    {
+     "text": "Leases offered are inside the normal office range",
+     "supports": "misconfig",
+     "weight": 1
+    },
+    {
+     "text": "Server MAC is a locally administered address (not a router vendor)",
+     "supports": "attack",
+     "weight": 1
+    }
+   ],
+   "scores": {
+    "fault": 0.0,
+    "misconfig": 1.5,
+    "attack": 9.0
+   },
+   "alternatives": [
+    {
+     "category": "misconfig",
+     "title": "Someone plugged a home router in by mistake",
+     "score": 1.5,
+     "why_not": "A misplugged router normally hands out its own subnet (e.g. 192.168.0.x) and points DNS at a real resolver. This server copied your range exactly and pointed everything at itself."
+    }
+   ],
+   "symptom_of": null,
+   "incident": "I1",
+   "evidence_lines": [
+    {
+     "no": 118,
+     "ts": 1793522448.401,
+     "summary": "DHCP DISCOVER xid=0x5a1c9e01 client 02:11:22:33:44:15 0.0.0.0 → 255.255.255.255"
+    },
+    {
+     "no": 119,
+     "ts": 1793522448.403,
+     "summary": "DHCP OFFER xid=0x5a1c9e01 client 02:11:22:33:44:15 offer 192.168.1.15 192.168.1.66 → 255.255.255.255"
+    },
+    {
+     "no": 121,
+     "ts": 1793522448.416,
+     "summary": "DHCP OFFER xid=0x5a1c9e01 client 02:11:22:33:44:15 offer 192.168.1.15 192.168.1.1 → 255.255.255.255"
+    },
+    {
+     "no": 122,
+     "ts": 1793522448.42,
+     "summary": "DHCP REQUEST xid=0x5a1c9e01 client 02:11:22:33:44:15 server 192.168.1.66"
+    },
+    {
+     "no": 307,
+     "ts": 1793522497.002,
+     "summary": "DHCP DISCOVER xid=0x11c0ffee client 02:11:22:33:44:22 0.0.0.0 → 255.255.255.255"
+    },
+    {
+     "no": 308,
+     "ts": 1793522497.004,
+     "summary": "DHCP OFFER xid=0x11c0ffee client 02:11:22:33:44:22 offer 192.168.1.22 192.168.1.66 → 255.255.255.255"
+    },
+    {
+     "no": 512,
+     "ts": 1793522553.87,
+     "summary": "DHCP REQUEST xid=0x7e7e0031 client 02:11:22:33:44:31 hostname \"><img src=x onerror=alert(1)>"
+    },
+    {
+     "no": 514,
+     "ts": 1793522553.873,
+     "summary": "DHCP ACK xid=0x7e7e0031 client 02:11:22:33:44:31 offer 192.168.1.31 192.168.1.66 → 192.168.1.31"
+    },
+    {
+     "no": 890,
+     "ts": 1793522621.88,
+     "summary": "DHCP DISCOVER xid=0x0b0b0b50 client 02:11:22:33:44:50 0.0.0.0 → 255.255.255.255"
+    },
+    {
+     "no": 891,
+     "ts": 1793522621.882,
+     "summary": "DHCP OFFER xid=0x0b0b0b50 client 02:11:22:33:44:50 offer 192.168.1.50 192.168.1.66 → 255.255.255.255"
+    }
+   ]
+  },
+  {
+   "id": "F2",
+   "kind": "dns.hijack",
+   "category": "attack",
+   "severity": 4,
+   "severity_name": "critical",
+   "confidence": 0.91,
+   "title": "Website names are being answered with fake addresses",
+   "summary": "Lookups for online-banking and webmail sites came back pointing at 192.168.1.66, a device inside your office.",
+   "explanation": "Before visiting a website, a device asks a DNS server for the site's address. The devices that got the fake DHCP settings now ask 192.168.1.66, and it lies: it says your bank's website lives on 192.168.1.66 itself. Anything typed into that page goes to the attacker.",
+   "analogy": "It is like a phone book where someone pasted their own number over the bank's.",
+   "cause": "The rogue DHCP server (F1) made itself the DNS server, so it can answer every lookup however it likes.",
+   "fix": [
+    "Fix F1 first: once devices get their settings from the real router, this stops.",
+    "Flush the DNS cache on affected devices: `ipconfig /flushdns` or `sudo resolvectl flush-caches`.",
+    "Tell staff not to log in anywhere until the fix is confirmed, then reset passwords used during the window."
+   ],
+   "technical": "17 A-record answers from 192.168.1.66 mapping public names to RFC 1918 address 192.168.1.66 (TTL 5). For 3 names, a second answer from 192.168.1.1 with a public address arrived 9–21 ms later (race).",
+   "mitre": "T1557 Adversary-in-the-Middle",
+   "hosts": [
+    "192.168.1.66",
+    "192.168.1.15",
+    "192.168.1.22",
+    "192.168.1.31"
+   ],
+   "packets": [
+    402,
+    403,
+    404,
+    611,
+    612,
+    613,
+    702,
+    703,
+    1011,
+    1012,
+    1013,
+    1440
+   ],
+   "packet_total": 17,
+   "first_ts": 1793522516.2,
+   "last_ts": 1793522832.7,
+   "metrics": {
+    "fake_answers": 17,
+    "names": [
+     "login.examplebank.com",
+     "mail.example.org",
+     "<script>alert(1)</script>.example.com"
+    ],
+    "race_pairs": 3,
+    "min_ttl": 5
+   },
+   "indicators": [
+    {
+     "text": "Public website names resolved to a private office address",
+     "supports": "attack",
+     "weight": 3
+    },
+    {
+     "text": "Two different answers for the same question (race)",
+     "supports": "attack",
+     "weight": 2.5
+    },
+    {
+     "text": "Very short TTL (5 s) keeps victims coming back",
+     "supports": "attack",
+     "weight": 1
+    },
+    {
+     "text": "Answers come from the server DHCP assigned",
+     "supports": "misconfig",
+     "weight": 0.5
+    }
+   ],
+   "scores": {
+    "fault": 0.0,
+    "misconfig": 0.5,
+    "attack": 7.5
+   },
+   "alternatives": [
+    {
+     "category": "misconfig",
+     "title": "A local DNS override (split-horizon DNS)",
+     "score": 0.5,
+     "why_not": "Split-horizon overrides your own internal names. These are other companies' public websites, and the real router gave different answers."
+    },
+    {
+     "category": "fault",
+     "title": "A broken or stale DNS cache",
+     "score": 0.0,
+     "why_not": "A broken cache returns errors or old public addresses, not your own LAN address for unrelated sites."
+    }
+   ],
+   "symptom_of": "F1",
+   "incident": "I1",
+   "evidence_lines": [
+    {
+     "no": 402,
+     "ts": 1793522516.21,
+     "summary": "DNS query 0x1a2b A login.examplebank.com (192.168.1.15 → 192.168.1.66)"
+    },
+    {
+     "no": 403,
+     "ts": 1793522516.212,
+     "summary": "DNS response 0x1a2b login.examplebank.com NOERROR → 192.168.1.66 (192.168.1.66 → 192.168.1.15)"
+    },
+    {
+     "no": 404,
+     "ts": 1793522516.231,
+     "summary": "DNS response 0x1a2b login.examplebank.com NOERROR → 203.0.113.80 (192.168.1.1 → 192.168.1.15)"
+    },
+    {
+     "no": 611,
+     "ts": 1793522580.004,
+     "summary": "DNS query 0x2c3d A mail.example.org (192.168.1.22 → 192.168.1.66)"
+    },
+    {
+     "no": 612,
+     "ts": 1793522580.006,
+     "summary": "DNS response 0x2c3d mail.example.org NOERROR → 192.168.1.66 (192.168.1.66 → 192.168.1.22)"
+    },
+    {
+     "no": 613,
+     "ts": 1793522580.017,
+     "summary": "DNS response 0x2c3d mail.example.org NOERROR → 198.51.100.25 (192.168.1.1 → 192.168.1.22)"
+    },
+    {
+     "no": 702,
+     "ts": 1793522608.39,
+     "summary": "DNS query 0x3e4f A <script>alert(1)</script>.example.com (192.168.1.31 → 192.168.1.66)"
+    },
+    {
+     "no": 703,
+     "ts": 1793522608.391,
+     "summary": "DNS response 0x3e4f <script>alert(1)</script>.example.com NOERROR → 192.168.1.66 (192.168.1.66 → 192.168.1.31)"
+    },
+    {
+     "no": 1011,
+     "ts": 1793522722.551,
+     "summary": "DNS query 0x5a5a A login.examplebank.com (192.168.1.22 → 192.168.1.66)"
+    },
+    {
+     "no": 1012,
+     "ts": 1793522722.553,
+     "summary": "DNS response 0x5a5a login.examplebank.com NOERROR → 192.168.1.66 (192.168.1.66 → 192.168.1.22)"
+    },
+    {
+     "no": 1013,
+     "ts": 1793522722.574,
+     "summary": "DNS response 0x5a5a login.examplebank.com NOERROR → 203.0.113.80 (192.168.1.1 → 192.168.1.22)"
+    },
+    {
+     "no": 1440,
+     "ts": 1793522832.7,
+     "summary": "DNS response 0x6b6b mail.example.org NOERROR → 192.168.1.66 (192.168.1.66 → 192.168.1.15)"
+    }
+   ]
+  },
+  {
+   "id": "F3",
+   "kind": "tcp.loss_downstream",
+   "category": "fault",
+   "severity": 3,
+   "severity_name": "high",
+   "confidence": 0.86,
+   "title": "Wi-Fi is dropping packets on the way to devices",
+   "summary": "6.2% of data sent to Wi-Fi devices had to be sent again. The loss happens between the capture point and the devices.",
+   "explanation": "Data arrives from the internet fine, but some of it never reaches the phones and laptops on Wi-Fi, so it is sent again. Each resend costs time: video calls freeze and pages stall.",
+   "analogy": "Like a courier who keeps losing parcels on the last street before your house: the depot is fine, the final stretch is not.",
+   "cause": "Weak or congested Wi-Fi near the access point (interference, distance, or too many devices on one channel).",
+   "fix": [
+    "Move the access point higher and away from walls or microwaves, or add a second one.",
+    "Switch the 2.4 GHz radio to channel 1, 6 or 11, whichever is least busy, or move devices to 5 GHz.",
+    "Re-test with a new capture: loss should fall below 1%."
+   ],
+   "technical": "Retransmissions 412/6,640 data segments (6.2%) toward 192.168.1.50/192.168.1.15, with the original segment seen at the capture point (loss downstream). Dup-ACK bursts of 3–9. Upstream loss 0.1%. RTT p50 38 ms, p95 410 ms.",
+   "mitre": null,
+   "hosts": [
+    "192.168.1.50",
+    "192.168.1.15",
+    "142.250.183.4"
+   ],
+   "packets": [
+    1500,
+    1529,
+    1552,
+    1606,
+    1663,
+    1715,
+    1740,
+    1764,
+    1819,
+    1875,
+    1909,
+    1966,
+    2022,
+    2045
+   ],
+   "packet_total": 412,
+   "first_ts": 1793522650.1,
+   "last_ts": 1793522920.0,
+   "metrics": {
+    "loss_pct": 6.2,
+    "where": "downstream",
+    "retransmissions": 412,
+    "segments": 6640,
+    "rtt_p95_ms": 410
+   },
+   "indicators": [
+    {
+     "text": "Original packets were seen, then resent: lost after the capture point",
+     "supports": "fault",
+     "weight": 2.5
+    },
+    {
+     "text": "Loss spread across many unrelated servers",
+     "supports": "fault",
+     "weight": 2
+    },
+    {
+     "text": "Only Wi-Fi clients are affected",
+     "supports": "fault",
+     "weight": 1.5
+    },
+    {
+     "text": "Loss started after a new device joined",
+     "supports": "attack",
+     "weight": 0.5
+    }
+   ],
+   "scores": {
+    "fault": 6.0,
+    "misconfig": 0.0,
+    "attack": 0.5
+   },
+   "alternatives": [
+    {
+     "category": "attack",
+     "title": "Someone is jamming or flooding the Wi-Fi",
+     "score": 0.5,
+     "why_not": "There is no flood of traffic, no deauthentication pattern and loss rises and falls gradually, which is typical of radio interference."
+    }
+   ],
+   "symptom_of": null,
+   "incident": "I2",
+   "evidence_lines": [
+    {
+     "no": 1500,
+     "ts": 1793522650.324,
+     "summary": "TCP 142.250.183.4:443 → 192.168.1.50:51200 [PA] seq=88000 ack=1 win=501 len=1448 (retransmission)"
+    },
+    {
+     "no": 1529,
+     "ts": 1793522657.695,
+     "summary": "TCP 142.250.183.4:443 → 192.168.1.50:51201 [PA] seq=89448 ack=1 win=501 len=1448 (retransmission)"
+    },
+    {
+     "no": 1552,
+     "ts": 1793522664.672,
+     "summary": "TCP 142.250.183.4:443 → 192.168.1.50:51202 [PA] seq=90896 ack=1 win=501 len=1448 (retransmission)"
+    },
+    {
+     "no": 1606,
+     "ts": 1793522671.994,
+     "summary": "TCP 142.250.183.4:443 → 192.168.1.50:51203 [PA] seq=92344 ack=1 win=501 len=1448 (retransmission)"
+    },
+    {
+     "no": 1663,
+     "ts": 1793522679.258,
+     "summary": "TCP 142.250.183.4:443 → 192.168.1.50:51204 [PA] seq=93792 ack=1 win=501 len=1448 (retransmission)"
+    },
+    {
+     "no": 1715,
+     "ts": 1793522686.715,
+     "summary": "TCP 142.250.183.4:443 → 192.168.1.50:51205 [PA] seq=95240 ack=1 win=501 len=1448 (retransmission)"
+    },
+    {
+     "no": 1740,
+     "ts": 1793522694.234,
+     "summary": "TCP 142.250.183.4:443 → 192.168.1.50:51206 [PA] seq=96688 ack=1 win=501 len=1448 (retransmission)"
+    },
+    {
+     "no": 1764,
+     "ts": 1793522701.341,
+     "summary": "TCP 142.250.183.4:443 → 192.168.1.50:51207 [PA] seq=98136 ack=1 win=501 len=1448 (retransmission)"
+    },
+    {
+     "no": 1819,
+     "ts": 1793522708.825,
+     "summary": "TCP 142.250.183.4:443 → 192.168.1.50:51208 [PA] seq=99584 ack=1 win=501 len=1448 (retransmission)"
+    },
+    {
+     "no": 1875,
+     "ts": 1793522715.824,
+     "summary": "TCP 142.250.183.4:443 → 192.168.1.50:51209 [PA] seq=101032 ack=1 win=501 len=1448 (retransmission)"
+    },
+    {
+     "no": 1909,
+     "ts": 1793522723.631,
+     "summary": "TCP 142.250.183.4:443 → 192.168.1.50:51210 [PA] seq=102480 ack=1 win=501 len=1448 (retransmission)"
+    },
+    {
+     "no": 1966,
+     "ts": 1793522731.248,
+     "summary": "TCP 142.250.183.4:443 → 192.168.1.50:51211 [PA] seq=103928 ack=1 win=501 len=1448 (retransmission)"
+    },
+    {
+     "no": 2022,
+     "ts": 1793522738.186,
+     "summary": "TCP 142.250.183.4:443 → 192.168.1.50:51212 [PA] seq=105376 ack=1 win=501 len=1448 (retransmission)"
+    },
+    {
+     "no": 2045,
+     "ts": 1793522745.876,
+     "summary": "TCP 142.250.183.4:443 → 192.168.1.50:51213 [PA] seq=106824 ack=1 win=501 len=1448 (retransmission)"
+    }
+   ]
+  },
+  {
+   "id": "F4",
+   "kind": "app.cleartext_credentials",
+   "category": "misconfig",
+   "severity": 3,
+   "severity_name": "high",
+   "confidence": 0.97,
+   "title": "Passwords are sent without encryption (FTP)",
+   "summary": "192.168.1.22 logged in to the file server 192.168.1.20 over FTP, which sends the password as plain text.",
+   "explanation": "Anyone who can see this network traffic, including the rogue device above, can read the username and password. Faultline detected the login but never stores or shows the password.",
+   "analogy": "Like writing your PIN on the back of a postcard.",
+   "cause": "The file server still has plain FTP enabled.",
+   "fix": [
+    "Turn off FTP on the NAS and use SFTP or SMB with encryption instead.",
+    "Change the password of the account that logged in."
+   ],
+   "technical": "FTP USER/PASS on tcp/21, 192.168.1.22:50211 → 192.168.1.20:21, 2 logins. Credential values are not retained.",
+   "mitre": null,
+   "hosts": [
+    "192.168.1.22",
+    "192.168.1.20"
+   ],
+   "packets": [
+    955,
+    957,
+    959,
+    1720,
+    1722
+   ],
+   "packet_total": 5,
+   "first_ts": 1793522691.0,
+   "last_ts": 1793522871.4,
+   "metrics": {
+    "protocol": "FTP",
+    "logins": 2
+   },
+   "indicators": [
+    {
+     "text": "Login over a protocol without encryption",
+     "supports": "misconfig",
+     "weight": 3
+    },
+    {
+     "text": "Server accepted the login normally",
+     "supports": "misconfig",
+     "weight": 1
+    }
+   ],
+   "scores": {
+    "fault": 0.0,
+    "misconfig": 4.0,
+    "attack": 0.0
+   },
+   "alternatives": [],
+   "symptom_of": null,
+   "incident": null,
+   "evidence_lines": [
+    {
+     "no": 955,
+     "ts": 1793522691.002,
+     "summary": "TCP 192.168.1.22:50211 → 192.168.1.20:21 [S] seq=0 ack=0 win=64240 len=0"
+    },
+    {
+     "no": 957,
+     "ts": 1793522691.011,
+     "summary": "FTP USER (credential present, value hidden) 192.168.1.22 → 192.168.1.20"
+    },
+    {
+     "no": 959,
+     "ts": 1793522691.04,
+     "summary": "FTP PASS (credential present, value hidden) 192.168.1.22 → 192.168.1.20"
+    },
+    {
+     "no": 1720,
+     "ts": 1793522871.4,
+     "summary": "FTP USER (credential present, value hidden) 192.168.1.22 → 192.168.1.20"
+    },
+    {
+     "no": 1722,
+     "ts": 1793522871.431,
+     "summary": "FTP PASS (credential present, value hidden) 192.168.1.22 → 192.168.1.20"
+    }
+   ]
+  },
+  {
+   "id": "F5",
+   "kind": "arp.duplicate_ip",
+   "category": "misconfig",
+   "severity": 2,
+   "severity_name": "medium",
+   "confidence": 0.82,
+   "title": "Two devices share one IP address",
+   "summary": "The printer and a laptop both use 192.168.1.40, so they keep knocking each other offline.",
+   "explanation": "Every device needs its own address. Two devices both claim 192.168.1.40, so the network sends their traffic to whichever spoke last. Printing fails at random and the laptop drops off.",
+   "analogy": "Two families with the same house number: the post goes to whoever was seen at the door most recently.",
+   "cause": "The printer has a fixed (static) IP that is also inside the router's DHCP range.",
+   "fix": [
+    "Give the printer an address outside the DHCP range (e.g. 192.168.1.240), or reserve 192.168.1.40 for it in the router.",
+    "Restart the laptop's network connection so it picks a new address."
+   ],
+   "technical": "192.168.1.40 claimed by 3c:2a:f4:10:20:30 (HP) and a4:83:e7:9a:bc:de (Apple). 6 ownership flips over 410 s, both MACs answer ARP for the same IP, no gratuitous floods, neither claims the gateway.",
+   "mitre": null,
+   "hosts": [
+    "192.168.1.40"
+   ],
+   "packets": [
+    140,
+    141,
+    520,
+    521,
+    1102,
+    1103,
+    1530,
+    1531
+   ],
+   "packet_total": 14,
+   "first_ts": 1793522461.0,
+   "last_ts": 1793522871.0,
+   "metrics": {
+    "ip": "192.168.1.40",
+    "macs": [
+     "3c:2a:f4:10:20:30",
+     "a4:83:e7:9a:bc:de"
+    ],
+    "flips": 6
+   },
+   "indicators": [
+    {
+     "text": "Both devices stay online and answer normally",
+     "supports": "misconfig",
+     "weight": 2
+    },
+    {
+     "text": "Ownership flips rarely (6 times in 7 minutes)",
+     "supports": "misconfig",
+     "weight": 1.5
+    },
+    {
+     "text": "A DHCP probe saw the address already in use",
+     "supports": "misconfig",
+     "weight": 1
+    },
+    {
+     "text": "Address is not the gateway",
+     "supports": "misconfig",
+     "weight": 0.5
+    },
+    {
+     "text": "Unsolicited ARP replies were seen",
+     "supports": "attack",
+     "weight": 0.5
+    }
+   ],
+   "scores": {
+    "fault": 0.0,
+    "misconfig": 5.0,
+    "attack": 0.5
+   },
+   "alternatives": [
+    {
+     "category": "attack",
+     "title": "ARP spoofing (someone impersonating the device)",
+     "score": 0.5,
+     "why_not": "Spoofing usually targets the router's address and floods replies many times a second. Here only a printer address is involved and replies are rare and answered normally."
+    }
+   ],
+   "symptom_of": null,
+   "incident": null,
+   "evidence_lines": [
+    {
+     "no": 140,
+     "ts": 1793522461.002,
+     "summary": "ARP who-has 192.168.1.40? tell 192.168.1.15 (02:11:22:33:44:15)"
+    },
+    {
+     "no": 141,
+     "ts": 1793522461.004,
+     "summary": "ARP 192.168.1.40 is-at 3c:2a:f4:10:20:30 (to 192.168.1.15)"
+    },
+    {
+     "no": 520,
+     "ts": 1793522556.4,
+     "summary": "ARP who-has 192.168.1.40? tell 0.0.0.0 (a4:83:e7:9a:bc:de)"
+    },
+    {
+     "no": 521,
+     "ts": 1793522556.402,
+     "summary": "ARP 192.168.1.40 is-at 3c:2a:f4:10:20:30 (to 0.0.0.0)"
+    },
+    {
+     "no": 1102,
+     "ts": 1793522751.55,
+     "summary": "ARP 192.168.1.40 is-at a4:83:e7:9a:bc:de (to 192.168.1.1)"
+    },
+    {
+     "no": 1103,
+     "ts": 1793522751.901,
+     "summary": "ARP 192.168.1.40 is-at 3c:2a:f4:10:20:30 (to 192.168.1.1)"
+    },
+    {
+     "no": 1530,
+     "ts": 1793522871.0,
+     "summary": "ARP who-has 192.168.1.40? tell 192.168.1.1 (02:00:c0:a8:01:01)"
+    },
+    {
+     "no": 1531,
+     "ts": 1793522871.003,
+     "summary": "ARP 192.168.1.40 is-at a4:83:e7:9a:bc:de (to 192.168.1.1)"
+    }
+   ]
+  },
+  {
+   "id": "F6",
+   "kind": "dns.timeout",
+   "category": "fault",
+   "severity": 2,
+   "severity_name": "medium",
+   "confidence": 0.74,
+   "title": "Some name lookups get no answer",
+   "summary": "23 DNS questions from Wi-Fi devices went unanswered, so some pages took seconds to start loading.",
+   "explanation": "When a lookup gets lost the device waits, then asks again. That pause is the moment a page looks frozen before it suddenly loads.",
+   "analogy": "Asking a question in a noisy room: sometimes you have to ask twice.",
+   "cause": "The same Wi-Fi packet loss as F3: the questions or answers are lost on the radio link.",
+   "fix": [
+    "Fix the Wi-Fi loss (F3); these timeouts should disappear with it."
+   ],
+   "technical": "23/310 queries (7.4%) without response within 2 s, all from Wi-Fi clients, to 192.168.1.1. Retries succeeded in 21 cases.",
+   "mitre": null,
+   "hosts": [
+    "192.168.1.50",
+    "192.168.1.15",
+    "192.168.1.1"
+   ],
+   "packets": [
+    1610,
+    1644,
+    1702,
+    1765,
+    1801,
+    1850
+   ],
+   "packet_total": 23,
+   "first_ts": 1793522658.0,
+   "last_ts": 1793522910.2,
+   "metrics": {
+    "timeouts": 23,
+    "queries": 310,
+    "timeout_pct": 7.4
+   },
+   "indicators": [
+    {
+     "text": "Timeouts only from devices that also lose TCP data",
+     "supports": "fault",
+     "weight": 2
+    },
+    {
+     "text": "Retries usually succeed",
+     "supports": "fault",
+     "weight": 1
+    }
+   ],
+   "scores": {
+    "fault": 3.0,
+    "misconfig": 0.0,
+    "attack": 0.0
+   },
+   "alternatives": [],
+   "symptom_of": "F3",
+   "incident": "I2",
+   "evidence_lines": [
+    {
+     "no": 1610,
+     "ts": 1793522658.0,
+     "summary": "DNS query 0x7a01 A meet.example.com (192.168.1.50 → 192.168.1.1) (no response)"
+    },
+    {
+     "no": 1644,
+     "ts": 1793522672.4,
+     "summary": "DNS query 0x7a09 AAAA meet.example.com (192.168.1.50 → 192.168.1.1) (no response)"
+    },
+    {
+     "no": 1702,
+     "ts": 1793522721.9,
+     "summary": "DNS query 0x8c10 A cdn.example.net (192.168.1.15 → 192.168.1.1) (no response)"
+    },
+    {
+     "no": 1765,
+     "ts": 1793522775.2,
+     "summary": "DNS query 0x8c33 A api.example.net (192.168.1.15 → 192.168.1.1) (no response)"
+    },
+    {
+     "no": 1801,
+     "ts": 1793522840.7,
+     "summary": "DNS query 0x9d02 A meet.example.com (192.168.1.50 → 192.168.1.1) (no response)"
+    },
+    {
+     "no": 1850,
+     "ts": 1793522910.2,
+     "summary": "DNS query 0x9d40 HTTPS updates.example.com (192.168.1.50 → 192.168.1.1) (no response)"
+    }
+   ]
+  },
+  {
+   "id": "F7",
+   "kind": "tls.deprecated",
+   "category": "info",
+   "severity": 1,
+   "severity_name": "low",
+   "confidence": 0.9,
+   "title": "The printer's web page uses an outdated encryption version",
+   "summary": "The printer's admin page at 192.168.1.40 only offers TLS 1.0, which is no longer considered safe.",
+   "explanation": "The connection is encrypted, but with a version from 1999 that modern browsers warn about. It is not urgent, but worth updating.",
+   "analogy": "A lock that still works, but the key design has been copied for years.",
+   "cause": "Old printer firmware.",
+   "fix": [
+    "Update the printer firmware from the vendor's support site.",
+    "If no update exists, only reach the admin page from a wired PC."
+   ],
+   "technical": "ServerHello version 0x0301 from 192.168.1.40:443; ClientHello offered up to TLS 1.3.",
+   "mitre": null,
+   "hosts": [
+    "192.168.1.40",
+    "192.168.1.15"
+   ],
+   "packets": [
+    1208,
+    1210,
+    1211,
+    1212,
+    1214
+   ],
+   "packet_total": 5,
+   "first_ts": 1793522775.0,
+   "last_ts": 1793522775.3,
+   "metrics": {
+    "version": "TLS 1.0"
+   },
+   "indicators": [
+    {
+     "text": "Server negotiated TLS 1.0",
+     "supports": "misconfig",
+     "weight": 1
+    }
+   ],
+   "scores": {
+    "fault": 0.0,
+    "misconfig": 1.0,
+    "attack": 0.0
+   },
+   "alternatives": [],
+   "symptom_of": null,
+   "incident": null,
+   "evidence_lines": [
+    {
+     "no": 1208,
+     "ts": 1793522775.0,
+     "summary": "TCP 192.168.1.15:50991 → 192.168.1.40:443 [S] seq=0 ack=0 win=64240 len=0"
+    },
+    {
+     "no": 1210,
+     "ts": 1793522775.01,
+     "summary": "TCP 192.168.1.15:50991 → 192.168.1.40:443 [PA] TLS ClientHello SNI=printer.office.lan"
+    },
+    {
+     "no": 1211,
+     "ts": 1793522775.12,
+     "summary": "TCP 192.168.1.40:443 → 192.168.1.15:50991 [PA] TLS ServerHello version=TLS 1.0"
+    },
+    {
+     "no": 1212,
+     "ts": 1793522775.121,
+     "summary": "TCP 192.168.1.40:443 → 192.168.1.15:50991 [PA] TLS Certificate"
+    },
+    {
+     "no": 1214,
+     "ts": 1793522775.3,
+     "summary": "TCP 192.168.1.15:50991 → 192.168.1.40:443 [PA] TLS Application Data"
+    }
+   ]
+  }
+ ],
+ "incidents": [
+  {
+   "id": "I1",
+   "title": "Man-in-the-middle through a rogue DHCP server",
+   "category": "attack",
+   "severity": 4,
+   "severity_name": "critical",
+   "story": "A device at 192.168.1.66 started answering DHCP requests faster than the real router. Every device that joined after that was told to use 192.168.1.66 for directions, and it then sent them to fake copies of banking and webmail sites.",
+   "root_cause": "F1",
+   "findings": [
+    "F1",
+    "F2"
+   ],
+   "hosts": [
+    "192.168.1.66",
+    "192.168.1.15",
+    "192.168.1.22",
+    "192.168.1.31"
+   ],
+   "first_ts": 1793522448.4,
+   "last_ts": 1793522832.7,
+   "first_fix": [
+    "Unplug the device with MAC `02:66:de:ad:be:ef` (192.168.1.66).",
+    "Enable DHCP snooping on the switch.",
+    "Renew leases on affected devices and reset passwords used since 14:12."
+   ]
+  },
+  {
+   "id": "I2",
+   "title": "Weak Wi-Fi is causing freezes and slow page loads",
+   "category": "fault",
+   "severity": 3,
+   "severity_name": "high",
+   "story": "Packets are lost on the Wi-Fi link between the access point and the devices. Lost data is resent (slow transfers, frozen calls) and lost name lookups make pages hang before loading.",
+   "root_cause": "F3",
+   "findings": [
+    "F3",
+    "F6"
+   ],
+   "hosts": [
+    "192.168.1.50",
+    "192.168.1.15"
+   ],
+   "first_ts": 1793522650.1,
+   "last_ts": 1793522920.0,
+   "first_fix": [
+    "Move devices to 5 GHz or change the 2.4 GHz channel to 1, 6 or 11.",
+    "Re-capture and check that loss is under 1%."
+   ]
+  }
+ ],
+ "hosts": [
+  {
+   "ip": "192.168.1.1",
+   "macs": [
+    "02:00:c0:a8:01:01"
+   ],
+   "roles": [
+    "gateway",
+    "dns-server",
+    "dhcp-server"
+   ],
+   "names": [
+    "router.office.lan"
+   ],
+   "local": true,
+   "packets_sent": 40211,
+   "packets_recv": 38870,
+   "bytes_sent": 41200331,
+   "bytes_recv": 9100221,
+   "first_ts": 1793522320.4,
+   "last_ts": 1793522919.2
+  },
+  {
+   "ip": "192.168.1.66",
+   "macs": [
+    "02:66:de:ad:be:ef"
+   ],
+   "roles": [
+    "dhcp-server",
+    "dns-server"
+   ],
+   "names": [],
+   "local": true,
+   "packets_sent": 1240,
+   "packets_recv": 2210,
+   "bytes_sent": 190220,
+   "bytes_recv": 310442,
+   "first_ts": 1793522320.4,
+   "last_ts": 1793522919.2
+  },
+  {
+   "ip": "192.168.1.15",
+   "macs": [
+    "02:11:22:33:44:15"
+   ],
+   "roles": [],
+   "names": [
+    "priya-laptop"
+   ],
+   "local": true,
+   "packets_sent": 12011,
+   "packets_recv": 18450,
+   "bytes_sent": 2101442,
+   "bytes_recv": 21033120,
+   "first_ts": 1793522320.4,
+   "last_ts": 1793522919.2
+  },
+  {
+   "ip": "192.168.1.22",
+   "macs": [
+    "02:11:22:33:44:22"
+   ],
+   "roles": [],
+   "names": [
+    "reception-pc"
+   ],
+   "local": true,
+   "packets_sent": 6610,
+   "packets_recv": 7702,
+   "bytes_sent": 1004221,
+   "bytes_recv": 6102231,
+   "first_ts": 1793522320.4,
+   "last_ts": 1793522919.2
+  },
+  {
+   "ip": "192.168.1.31",
+   "macs": [
+    "02:11:22:33:44:31"
+   ],
+   "roles": [],
+   "names": [
+    "\"><img src=x onerror=alert(1)>"
+   ],
+   "local": true,
+   "packets_sent": 2101,
+   "packets_recv": 2650,
+   "bytes_sent": 330120,
+   "bytes_recv": 1502203,
+   "first_ts": 1793522320.4,
+   "last_ts": 1793522919.2
+  },
+  {
+   "ip": "192.168.1.40",
+   "macs": [
+    "3c:2a:f4:10:20:30",
+    "a4:83:e7:9a:bc:de"
+   ],
+   "roles": [],
+   "names": [
+    "hp-laserjet",
+    "dev-mbp"
+   ],
+   "local": true,
+   "packets_sent": 3120,
+   "packets_recv": 2988,
+   "bytes_sent": 802110,
+   "bytes_recv": 410002,
+   "first_ts": 1793522320.4,
+   "last_ts": 1793522919.2
+  },
+  {
+   "ip": "192.168.1.20",
+   "macs": [
+    "00:11:32:aa:bb:cc"
+   ],
+   "roles": [],
+   "names": [
+    "nas.office.lan"
+   ],
+   "local": true,
+   "packets_sent": 4410,
+   "packets_recv": 3990,
+   "bytes_sent": 5120330,
+   "bytes_recv": 820114,
+   "first_ts": 1793522320.4,
+   "last_ts": 1793522919.2
+  },
+  {
+   "ip": "192.168.1.50",
+   "macs": [
+    "02:11:22:33:44:50"
+   ],
+   "roles": [],
+   "names": [
+    "arjun-phone"
+   ],
+   "local": true,
+   "packets_sent": 9001,
+   "packets_recv": 15520,
+   "bytes_sent": 1203004,
+   "bytes_recv": 17004410,
+   "first_ts": 1793522320.4,
+   "last_ts": 1793522919.2
+  },
+  {
+   "ip": "142.250.183.4",
+   "macs": [
+    "02:00:c0:a8:01:01"
+   ],
+   "roles": [],
+   "names": [
+    "meet.example.com"
+   ],
+   "local": false,
+   "packets_sent": 14002,
+   "packets_recv": 9020,
+   "bytes_sent": 15600221,
+   "bytes_recv": 1200330,
+   "first_ts": 1793522320.4,
+   "last_ts": 1793522919.2
+  },
+  {
+   "ip": "203.0.113.80",
+   "macs": [
+    "02:00:c0:a8:01:01"
+   ],
+   "roles": [],
+   "names": [
+    "login.examplebank.com"
+   ],
+   "local": false,
+   "packets_sent": 610,
+   "packets_recv": 702,
+   "bytes_sent": 410220,
+   "bytes_recv": 90112,
+   "first_ts": 1793522320.4,
+   "last_ts": 1793522919.2
+  }
+ ],
+ "stats": {
+  "protocols": {
+   "TCP": 48210,
+   "TLS": 30122,
+   "UDP": 18044,
+   "DNS": 6102,
+   "HTTP": 2110,
+   "ARP": 702,
+   "ICMP": 311,
+   "DHCP": 42,
+   "FTP": 18,
+   "Other": 4033
+  },
+  "top_talkers": [
+   {
+    "ip": "192.168.1.1",
+    "packets": 79081,
+    "bytes": 50300552
+   },
+   {
+    "ip": "192.168.1.15",
+    "packets": 30461,
+    "bytes": 23134562
+   },
+   {
+    "ip": "192.168.1.50",
+    "packets": 24521,
+    "bytes": 18207414
+   },
+   {
+    "ip": "142.250.183.4",
+    "packets": 23022,
+    "bytes": 16800551
+   },
+   {
+    "ip": "192.168.1.22",
+    "packets": 14312,
+    "bytes": 7106452
+   },
+   {
+    "ip": "192.168.1.20",
+    "packets": 8400,
+    "bytes": 5940444
+   },
+   {
+    "ip": "192.168.1.40",
+    "packets": 6108,
+    "bytes": 1212112
+   },
+   {
+    "ip": "192.168.1.31",
+    "packets": 4751,
+    "bytes": 1832323
+   }
+  ],
+  "conversations": [
+   {
+    "a": "192.168.1.50",
+    "b": "142.250.183.4",
+    "proto": "TCP",
+    "packets": 18220,
+    "bytes": 15400221
+   },
+   {
+    "a": "192.168.1.15",
+    "b": "142.250.183.4",
+    "proto": "TCP",
+    "packets": 4802,
+    "bytes": 1400330
+   },
+   {
+    "a": "192.168.1.22",
+    "b": "192.168.1.20",
+    "proto": "TCP",
+    "packets": 6100,
+    "bytes": 4900110
+   },
+   {
+    "a": "192.168.1.15",
+    "b": "192.168.1.66",
+    "proto": "UDP",
+    "packets": 902,
+    "bytes": 120332
+   },
+   {
+    "a": "192.168.1.31",
+    "b": "192.168.1.66",
+    "proto": "UDP",
+    "packets": 611,
+    "bytes": 88201
+   },
+   {
+    "a": "192.168.1.15",
+    "b": "192.168.1.40",
+    "proto": "TCP",
+    "packets": 480,
+    "bytes": 220110
+   },
+   {
+    "a": "192.168.1.22",
+    "b": "203.0.113.80",
+    "proto": "TCP",
+    "packets": 1310,
+    "bytes": 500332
+   }
+  ],
+  "timeline": {
+   "start": 1793522320.0,
+   "bucket_seconds": 5.0,
+   "series": [
+    {
+     "t": 1793522320.0,
+     "packets": 491,
+     "bytes": 362849
+    },
+    {
+     "t": 1793522325.0,
+     "packets": 450,
+     "bytes": 267300
+    },
+    {
+     "t": 1793522330.0,
+     "packets": 499,
+     "bytes": 277444
+    },
+    {
+     "t": 1793522335.0,
+     "packets": 528,
+     "bytes": 290400
+    },
+    {
+     "t": 1793522340.0,
+     "packets": 544,
+     "bytes": 325312
+    },
+    {
+     "t": 1793522345.0,
+     "packets": 554,
+     "bytes": 403312
+    },
+    {
+     "t": 1793522350.0,
+     "packets": 581,
+     "bytes": 328846
+    },
+    {
+     "t": 1793522355.0,
+     "packets": 517,
+     "bytes": 345356
+    },
+    {
+     "t": 1793522360.0,
+     "packets": 586,
+     "bytes": 400238
+    },
+    {
+     "t": 1793522365.0,
+     "packets": 544,
+     "bytes": 334560
+    },
+    {
+     "t": 1793522370.0,
+     "packets": 539,
+     "bytes": 355740
+    },
+    {
+     "t": 1793522375.0,
+     "packets": 623,
+     "bytes": 333928
+    },
+    {
+     "t": 1793522380.0,
+     "packets": 608,
+     "bytes": 325280
+    },
+    {
+     "t": 1793522385.0,
+     "packets": 618,
+     "bytes": 353496
+    },
+    {
+     "t": 1793522390.0,
+     "packets": 602,
+     "bytes": 417788
+    },
+    {
+     "t": 1793522395.0,
+     "packets": 607,
+     "bytes": 381803
+    },
+    {
+     "t": 1793522400.0,
+     "packets": 636,
+     "bytes": 381600
+    },
+    {
+     "t": 1793522405.0,
+     "packets": 592,
+     "bytes": 396048
+    },
+    {
+     "t": 1793522410.0,
+     "packets": 647,
+     "bytes": 411492
+    },
+    {
+     "t": 1793522415.0,
+     "packets": 568,
+     "bytes": 338528
+    },
+    {
+     "t": 1793522420.0,
+     "packets": 546,
+     "bytes": 394758
+    },
+    {
+     "t": 1793522425.0,
+     "packets": 529,
+     "bytes": 369242
+    },
+    {
+     "t": 1793522430.0,
+     "packets": 596,
+     "bytes": 346872
+    },
+    {
+     "t": 1793522435.0,
+     "packets": 496,
+     "bytes": 330832
+    },
+    {
+     "t": 1793522440.0,
+     "packets": 512,
+     "bytes": 334848
+    },
+    {
+     "t": 1793522445.0,
+     "packets": 615,
+     "bytes": 457560
+    },
+    {
+     "t": 1793522450.0,
+     "packets": 583,
+     "bytes": 411598
+    },
+    {
+     "t": 1793522455.0,
+     "packets": 583,
+     "bytes": 345719
+    },
+    {
+     "t": 1793522460.0,
+     "packets": 590,
+     "bytes": 317420
+    },
+    {
+     "t": 1793522465.0,
+     "packets": 515,
+     "bytes": 335265
+    },
+    {
+     "t": 1793522470.0,
+     "packets": 540,
+     "bytes": 303480
+    },
+    {
+     "t": 1793522475.0,
+     "packets": 570,
+     "bytes": 345990
+    },
+    {
+     "t": 1793522480.0,
+     "packets": 480,
+     "bytes": 363840
+    },
+    {
+     "t": 1793522485.0,
+     "packets": 511,
+     "bytes": 320397
+    },
+    {
+     "t": 1793522490.0,
+     "packets": 443,
+     "bytes": 306113
+    },
+    {
+     "t": 1793522495.0,
+     "packets": 437,
+     "bytes": 312455
+    },
+    {
+     "t": 1793522500.0,
+     "packets": 490,
+     "bytes": 326340
+    },
+    {
+     "t": 1793522505.0,
+     "packets": 512,
+     "bytes": 380928
+    },
+    {
+     "t": 1793522510.0,
+     "packets": 508,
+     "bytes": 304800
+    },
+    {
+     "t": 1793522515.0,
+     "packets": 441,
+     "bytes": 307377
+    },
+    {
+     "t": 1793522520.0,
+     "packets": 438,
+     "bytes": 294336
+    },
+    {
+     "t": 1793522525.0,
+     "packets": 454,
+     "bytes": 303272
+    },
+    {
+     "t": 1793522530.0,
+     "packets": 492,
+     "bytes": 312912
+    },
+    {
+     "t": 1793522535.0,
+     "packets": 398,
+     "bytes": 292530
+    },
+    {
+     "t": 1793522540.0,
+     "packets": 402,
+     "bytes": 236778
+    },
+    {
+     "t": 1793522545.0,
+     "packets": 454,
+     "bytes": 316892
+    },
+    {
+     "t": 1793522550.0,
+     "packets": 484,
+     "bytes": 259424
+    },
+    {
+     "t": 1793522555.0,
+     "packets": 412,
+     "bytes": 291284
+    },
+    {
+     "t": 1793522560.0,
+     "packets": 501,
+     "bytes": 300099
+    },
+    {
+     "t": 1793522565.0,
+     "packets": 502,
+     "bytes": 334834
+    },
+    {
+     "t": 1793522570.0,
+     "packets": 517,
+     "bytes": 377410
+    },
+    {
+     "t": 1793522575.0,
+     "packets": 497,
+     "bytes": 294224
+    },
+    {
+     "t": 1793522580.0,
+     "packets": 542,
+     "bytes": 334956
+    },
+    {
+     "t": 1793522585.0,
+     "packets": 576,
+     "bytes": 398016
+    },
+    {
+     "t": 1793522590.0,
+     "packets": 520,
+     "bytes": 273000
+    },
+    {
+     "t": 1793522595.0,
+     "packets": 609,
+     "bytes": 388542
+    },
+    {
+     "t": 1793522600.0,
+     "packets": 547,
+     "bytes": 307961
+    },
+    {
+     "t": 1793522605.0,
+     "packets": 594,
+     "bytes": 326106
+    },
+    {
+     "t": 1793522610.0,
+     "packets": 592,
+     "bytes": 316720
+    },
+    {
+     "t": 1793522615.0,
+     "packets": 569,
+     "bytes": 407404
+    },
+    {
+     "t": 1793522620.0,
+     "packets": 590,
+     "bytes": 326270
+    },
+    {
+     "t": 1793522625.0,
+     "packets": 660,
+     "bytes": 384780
+    },
+    {
+     "t": 1793522630.0,
+     "packets": 538,
+     "bytes": 333560
+    },
+    {
+     "t": 1793522635.0,
+     "packets": 615,
+     "bytes": 456945
+    },
+    {
+     "t": 1793522640.0,
+     "packets": 571,
+     "bytes": 308340
+    },
+    {
+     "t": 1793522645.0,
+     "packets": 537,
+     "bytes": 340458
+    },
+    {
+     "t": 1793522650.0,
+     "packets": 885,
+     "bytes": 523035
+    },
+    {
+     "t": 1793522655.0,
+     "packets": 848,
+     "bytes": 618192
+    },
+    {
+     "t": 1793522660.0,
+     "packets": 980,
+     "bytes": 646800
+    },
+    {
+     "t": 1793522665.0,
+     "packets": 922,
+     "bytes": 577172
+    },
+    {
+     "t": 1793522670.0,
+     "packets": 928,
+     "bytes": 692288
+    },
+    {
+     "t": 1793522675.0,
+     "packets": 816,
+     "bytes": 455328
+    },
+    {
+     "t": 1793522680.0,
+     "packets": 763,
+     "bytes": 425754
+    },
+    {
+     "t": 1793522685.0,
+     "packets": 903,
+     "bytes": 522837
+    },
+    {
+     "t": 1793522690.0,
+     "packets": 826,
+     "bytes": 604632
+    },
+    {
+     "t": 1793522695.0,
+     "packets": 817,
+     "bytes": 479579
+    },
+    {
+     "t": 1793522700.0,
+     "packets": 726,
+     "bytes": 404382
+    },
+    {
+     "t": 1793522705.0,
+     "packets": 870,
+     "bytes": 534180
+    },
+    {
+     "t": 1793522710.0,
+     "packets": 894,
+     "bytes": 537294
+    },
+    {
+     "t": 1793522715.0,
+     "packets": 854,
+     "bytes": 631106
+    },
+    {
+     "t": 1793522720.0,
+     "packets": 874,
+     "bytes": 600438
+    },
+    {
+     "t": 1793522725.0,
+     "packets": 914,
+     "bytes": 487162
+    },
+    {
+     "t": 1793522730.0,
+     "packets": 915,
+     "bytes": 678930
+    },
+    {
+     "t": 1793522735.0,
+     "packets": 936,
+     "bytes": 649584
+    },
+    {
+     "t": 1793522740.0,
+     "packets": 845,
+     "bytes": 523900
+    },
+    {
+     "t": 1793522745.0,
+     "packets": 739,
+     "bytes": 458180
+    },
+    {
+     "t": 1793522750.0,
+     "packets": 710,
+     "bytes": 484220
+    },
+    {
+     "t": 1793522755.0,
+     "packets": 627,
+     "bytes": 356136
+    },
+    {
+     "t": 1793522760.0,
+     "packets": 609,
+     "bytes": 384888
+    },
+    {
+     "t": 1793522765.0,
+     "packets": 584,
+     "bytes": 354488
+    },
+    {
+     "t": 1793522770.0,
+     "packets": 613,
+     "bytes": 334698
+    },
+    {
+     "t": 1793522775.0,
+     "packets": 658,
+     "bytes": 367164
+    },
+    {
+     "t": 1793522780.0,
+     "packets": 597,
+     "bytes": 365961
+    },
+    {
+     "t": 1793522785.0,
+     "packets": 579,
+     "bytes": 311502
+    },
+    {
+     "t": 1793522790.0,
+     "packets": 651,
+     "bytes": 440727
+    },
+    {
+     "t": 1793522795.0,
+     "packets": 567,
+     "bytes": 386694
+    },
+    {
+     "t": 1793522800.0,
+     "packets": 596,
+     "bytes": 401704
+    },
+    {
+     "t": 1793522805.0,
+     "packets": 639,
+     "bytes": 352089
+    },
+    {
+     "t": 1793522810.0,
+     "packets": 701,
+     "bytes": 451444
+    },
+    {
+     "t": 1793522815.0,
+     "packets": 651,
+     "bytes": 418593
+    },
+    {
+     "t": 1793522820.0,
+     "packets": 530,
+     "bytes": 294680
+    },
+    {
+     "t": 1793522825.0,
+     "packets": 677,
+     "bytes": 410939
+    },
+    {
+     "t": 1793522830.0,
+     "packets": 637,
+     "bytes": 408954
+    },
+    {
+     "t": 1793522835.0,
+     "packets": 764,
+     "bytes": 428604
+    },
+    {
+     "t": 1793522840.0,
+     "packets": 559,
+     "bytes": 319748
+    },
+    {
+     "t": 1793522845.0,
+     "packets": 655,
+     "bytes": 364835
+    },
+    {
+     "t": 1793522850.0,
+     "packets": 731,
+     "bytes": 551174
+    },
+    {
+     "t": 1793522855.0,
+     "packets": 711,
+     "bytes": 465705
+    },
+    {
+     "t": 1793522860.0,
+     "packets": 727,
+     "bytes": 538707
+    },
+    {
+     "t": 1793522865.0,
+     "packets": 726,
+     "bytes": 534336
+    },
+    {
+     "t": 1793522870.0,
+     "packets": 714,
+     "bytes": 437682
+    },
+    {
+     "t": 1793522875.0,
+     "packets": 720,
+     "bytes": 439920
+    },
+    {
+     "t": 1793522880.0,
+     "packets": 730,
+     "bytes": 478880
+    },
+    {
+     "t": 1793522885.0,
+     "packets": 856,
+     "bytes": 554688
+    },
+    {
+     "t": 1793522890.0,
+     "packets": 806,
+     "bytes": 465062
+    },
+    {
+     "t": 1793522895.0,
+     "packets": 900,
+     "bytes": 648900
+    },
+    {
+     "t": 1793522900.0,
+     "packets": 943,
+     "bytes": 536567
+    },
+    {
+     "t": 1793522905.0,
+     "packets": 804,
+     "bytes": 586116
+    },
+    {
+     "t": 1793522910.0,
+     "packets": 892,
+     "bytes": 646700
+    },
+    {
+     "t": 1793522915.0,
+     "packets": 743,
+     "bytes": 484436
+    }
+   ],
+   "markers": [
+    {
+     "t": 1793522448.4,
+     "end": 1793522621.9,
+     "finding": "F1",
+     "category": "attack",
+     "title": "A second, unauthorised DHCP server is handing out addresses"
+    },
+    {
+     "t": 1793522516.2,
+     "end": 1793522832.7,
+     "finding": "F2",
+     "category": "attack",
+     "title": "Website names are being answered with fake addresses"
+    },
+    {
+     "t": 1793522650.1,
+     "end": 1793522920.0,
+     "finding": "F3",
+     "category": "fault",
+     "title": "Wi-Fi is dropping packets on the way to devices"
+    },
+    {
+     "t": 1793522691.0,
+     "end": 1793522871.4,
+     "finding": "F4",
+     "category": "misconfig",
+     "title": "Passwords are sent without encryption (FTP)"
+    },
+    {
+     "t": 1793522461.0,
+     "end": 1793522871.0,
+     "finding": "F5",
+     "category": "misconfig",
+     "title": "Two devices share one IP address"
+    },
+    {
+     "t": 1793522658.0,
+     "end": 1793522910.2,
+     "finding": "F6",
+     "category": "fault",
+     "title": "Some name lookups get no answer"
+    },
+    {
+     "t": 1793522775.0,
+     "end": 1793522775.3,
+     "finding": "F7",
+     "category": "info",
+     "title": "The printer's web page uses an outdated encryption version"
+    }
+   ]
+  }
+ },
+ "redacted": false,
+ "evidence": {
+  "F1": "1MOyoQIABAAAAAAAAAAAAP//AAABAAAAE/vmakANAwA8AAAAPAAAAP///////wIRIjNEFQgGAAEIAAYEAAECESIzRBXAqAEPAAAAAAAAwKgBQgAAAAAAAAAAAAAAAAAAAAAAABP75mpQNAMAPAAAADwAAAACESIzRBUCZt6tvu8IBgABCAAGBAACAmberb7vwKgBQgIRIjNEFcCoAQ8AAAAAAAAAAAAAAAAAAAAAAAA="
+ },
+ "warnings": [
+  "3 packets could not be fully decoded and were counted as malformed."
+ ]
+}

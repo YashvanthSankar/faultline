@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "faultline"
+version = "1.0.0"
+description = "Is my network broken, or is someone breaking it? Offline packet-capture diagnosis that separates faults from attacks and explains them in plain language."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Yashvanth Sankar" }]
+keywords = ["pcap", "network", "diagnostics", "security", "ids", "troubleshooting"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Environment :: Console",
+  "Topic :: System :: Networking :: Monitoring",
+  "Topic :: Security",
+]
+dependencies = [
+  "rich>=13",
+  "flask>=3.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+faultline = "faultline.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["faultline*"]
+
+[tool.setuptools.package-data]
+"faultline.report" = ["assets/*"]
+"faultline.web" = ["templates/*", "static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
