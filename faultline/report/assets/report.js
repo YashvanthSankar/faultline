@@ -346,7 +346,102 @@
     return L.join("\n");
   }
 
-  // ------------------------------------------------------------ top bar
+  // ------------------------------------------------------------- icons (nav)
+  var NAV_ICON = {
+    overview: "M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z",
+    incidents: "M8 2.5 14 13H2zM8 7v2.6M8 11.2v.2",
+    findings: "M3 3.5h10M3 8h10M3 12.5h6",
+    network: "M8 3a1.6 1.6 0 1 0 0 .1M3.5 13a1.6 1.6 0 1 0 0 .1M12.5 13a1.6 1.6 0 1 0 0 .1M8 4.6v3.2M8 7.8 3.9 11.6M8 7.8l4.1 3.8",
+    evidence: "M3 2.5h7l3 3v8H3zM10 2.5v3h3M5.5 9h5M5.5 11.5h5",
+    capture: "M2.5 5.5 8 2.5l5.5 3v5L8 13.5l-5.5-3zM8 8l5.5-2.5M8 8 2.5 5.5M8 8v5.5"
+  };
+  var I_MENU = "M2.5 4h11M2.5 8h11M2.5 12h11";
+  var I_SEARCH = "M7 11.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zM10.3 10.3 13.5 13.5";
+  var I_ARROW = "M3 8h10M9 4l4 4-4 4";
+
+  // ------------------------------------------------------------ app state
+  var SECTIONS = [
+    ["overview", "Overview"], ["incidents", "Incidents"], ["findings", "Findings"],
+    ["network", "Network"], ["evidence", "Evidence"], ["capture", "Capture details"]
+  ];
+  var views = {}, navEls = {}, currentSection = null;
+  var mainEl = null;
+  var selectFinding = null;   // set by findingsSection(): selectFinding(id, tab)
+  var currentTab = "explain";
+
+  function parseHash() {
+    var hsh = str(location.hash).replace(/^#/, "");
+    var legacy = /^finding-([A-Za-z0-9_-]+)$/.exec(hsh);
+    if (legacy) { return { section: "findings", id: legacy[1], tab: null }; }
+    var parts = hsh.split("/");
+    var sec = parts[0];
+    if (!views[sec]) { sec = "overview"; }
+    return { section: sec, id: parts[1] && byId[parts[1]] ? parts[1] : null, tab: parts[2] || null };
+  }
+  function setHash(section, id, tab) {
+    var hsh = "#" + section + (id ? "/" + id + (tab ? "/" + tab : "") : "");
+    if (location.hash !== hsh) {
+      try { history.pushState(null, "", hsh); } catch (e) { location.hash = hsh; }
+    }
+  }
+  function showSection(name, keepScroll) {
+    if (!views[name]) { name = "overview"; }
+    var changed = currentSection !== name;
+    currentSection = name;
+    Object.keys(views).forEach(function (k) { views[k].hidden = k !== name; });
+    Object.keys(navEls).forEach(function (k) {
+      if (k === name) { navEls[k].setAttribute("aria-current", "page"); } else { navEls[k].removeAttribute("aria-current"); }
+    });
+    doc.body.classList.remove("nav-open");
+    if (changed && !keepScroll && mainEl) { mainEl.scrollTop = 0; }
+    if (name === "overview" && chartRedraw) { chartRedraw(); }
+    var hd = views[name].querySelector("h1, h2");
+    if (hd && changed) { try { hd.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
+  }
+  function route() {
+    var r = parseHash();
+    showSection(r.section, !!r.id);
+    if (r.section === "findings" && selectFinding) { selectFinding(r.id, r.tab, true); }
+  }
+  function nav(section, id, tab) {
+    setHash(section, id, tab);
+    route();
+  }
+  // Used by rich text, the timeline, the incident chain and the network map.
+  function goto(id, tab) {
+    if (!byId[id]) { return; }
+    if (hostFilter || currentFilter !== "all" || searchText) {
+      // make sure the finding is visible in the list
+      hostFilter = null; searchText = ""; if (searchEl) { searchEl.value = ""; }
+      setFilter("all");
+    }
+    nav("findings", id, tab || null);
+  }
+
+  // ------------------------------------------------------------- sidebar
+  function sidebar() {
+    var counts = { incidents: incidents.length, findings: findings.length, network: hosts.length,
+      evidence: findings.filter(function (f) { return arr(f.evidence_lines).length || arr(f.packets).length; }).length,
+      capture: arr(capture.warnings).length + arr(R.warnings).length };
+    var items = SECTIONS.map(function (sdef) {
+      var key = sdef[0], n = counts[key];
+      var a = h("a", { "class": "nav-item", href: "#" + key, "data-section": key, onclick: function (e) { e.preventDefault(); nav(key); } },
+        icon(NAV_ICON[key]), h("span", { "class": "nav-label" }, sdef[1]),
+        typeof n === "number" && n > 0 ? h("span", { "class": "nav-count" + (key === "capture" ? " warn" : "") }, String(n)) : null);
+      navEls[key] = a;
+      return h("li", null, a);
+    });
+    var foot = h("div", { "class": "side-foot" },
+      h("p", null, "Faultline " + str(tool.version || "")),
+      h("p", null, redacted ? "Addresses redacted" : "Analysed offline"));
+    return h("aside", { "class": "side", "aria-label": "Report sections" },
+      h("a", { "class": "brand", href: "#overview", onclick: function (e) { e.preventDefault(); nav("overview"); } },
+        brandMark(), h("span", { "class": "brand-name" }, "Faultline")),
+      h("nav", null, h("ul", { "class": "nav" }, items)),
+      foot);
+  }
+
+  // -------------------------------------------------------------- top bar
   function topbar() {
     var modeBtns = [
       h("button", { type: "button", "aria-pressed": "true", "data-mode": "beginner" }, "Beginner"),
@@ -373,34 +468,26 @@
       tools.push(h("button", { type: "button", "class": "btn", title: "Download this report as a single HTML file",
         onclick: function () { download("faultline-" + safeFileStem(capture.name) + ".html", "text/html", exportHtml()); } },
         icon(I_DOWN), h("span", { "class": "label" }, "HTML")));
-      tools.push(h("a", { "class": "btn primary", href: "/" }, "Analyze another capture"));
+      tools.push(h("a", { "class": "btn primary", href: "/" }, "New analysis"));
     }
-    var links = [["#verdict", "Verdict"], ["#fix-first", incidents.length ? "Fix first" : "Start here"], ["#findings", "Findings"], ["#network", "Network"], ["#capture", "Capture"]];
-    var mini = h("a", { "class": "mini-verdict", href: "#verdict", "aria-hidden": "true", tabindex: "-1" },
-      h("span", { "class": "dot" }), h("b", null, STATUS[status].word), h("span", { "class": "mini-head" }, headline()));
+    var sc = num(verdict.score);
+    var pillEl = h("a", { "class": "mini-verdict s-" + status, href: "#overview", onclick: function (e) { e.preventDefault(); nav("overview"); } },
+      h("span", { "class": "dot" }), h("b", null, STATUS[status].word));
+    var menu = h("button", { type: "button", "class": "btn icon menu", "aria-label": "Show sections",
+      onclick: function () { doc.body.classList.toggle("nav-open"); } }, icon(I_MENU));
     return h("header", { "class": "topbar" },
-      h("div", { "class": "wrap" },
-        h("a", { "class": "brand", href: "#verdict" }, brandMark(), h("span", { "class": "brand-name" }, "Faultline")),
-        mini,
-        h("nav", { "class": "navlinks", "aria-label": "Report sections" },
-          links.filter(function (l) { return l[0] !== "#fix-first" || hasFixFirst(); })
-            .map(function (l) { return h("a", { href: l[0] }, l[1]); })),
-        h("div", { "class": "tools" }, tools)));
+      menu,
+      h("div", { "class": "crumb" },
+        h("span", { "class": "crumb-label" }, "Capture"),
+        h("span", { "class": "crumb-name mono", title: str(capture.name) }, str(capture.name) || "unnamed")),
+      pillEl,
+      h("span", { "class": "health", title: "Health score out of 100" }, h("b", null, sc === null ? "?" : String(Math.round(sc))), h("span", null, "/100 health")),
+      h("div", { "class": "tools" }, tools));
   }
-  function watchScroll() {
-    var heroEl = doc.getElementById("verdict");
-    if (!heroEl) { return; }
-    function set(on) { doc.body.classList.toggle("scrolled", on); }
-    if (window.IntersectionObserver) {
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) { set(!e.isIntersecting); });
-      }, { rootMargin: "-120px 0px 0px 0px", threshold: 0 });
-      io.observe(heroEl);
-    } else {
-      window.addEventListener("scroll", function () { set(window.scrollY > heroEl.offsetHeight - 120); }, { passive: true });
-    }
+  function sectionHead(title, sub, extra) {
+    return h("div", { "class": "view-head" },
+      h("div", null, h("h2", { tabindex: "-1" }, title), sub ? h("p", null, sub) : null), extra || null);
   }
-
   // ------------------------------------------------------------- gauge
   function gauge(score) {
     var sc = clamp(num(score) === null ? 0 : num(score), 0, 100);
@@ -435,50 +522,6 @@
     if (t.toLowerCase().indexOf(w.toLowerCase() + ":") === 0) { t = t.slice(w.length + 1).trim(); }
     return t ? t.charAt(0).toUpperCase() + t.slice(1) : "Analysis complete.";
   }
-  function hero() {
-    var counts = obj(verdict.counts);
-    var countEls = ["attack", "fault", "misconfig", "info"].map(function (k) {
-      var n = num(counts[k]);
-      if (n === null) { n = findings.filter(function (f) { return cat(f.category) === k; }).length; }
-      if (k === "info" && n === 0) { return null; }
-      var label = n === 1 ? CAT[k].one.toLowerCase() : CAT[k].many;
-      if (k === "misconfig") { label = n === 1 ? "misconfig" : "misconfigs"; }
-      return h("li", null, h("button", {
-        type: "button", "class": "count c-" + k + (n === 0 ? " zero" : ""), disabled: n === 0 ? true : null,
-        onclick: function () { setFilter(k); var el = doc.getElementById("findings"); if (el) { el.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" }); } }
-      }, h("b", null, String(n)), h("span", null, label)));
-    });
-    var meta = h("dl", { "class": "meta" },
-      h("dt", null, "Capture"), h("dd", null, str(capture.name) || "unnamed"),
-      h("dt", null, "Duration"), h("dd", null, fmtDur(capture.duration)),
-      h("dt", null, "Packets"), h("dd", null, fmtInt(capture.packets)),
-      h("dt", null, "Started"), h("dd", null, fmtDate(capture.first_ts)));
-    var notices = [];
-    var capWarn = arr(capture.warnings).concat(arr(R.warnings));
-    if (capture.truncated === true || capture.limited === true) {
-      notices.push(h("p", { "class": "notice" },
-        h("span", null, capture.truncated === true ? "This capture file is incomplete, so the results cover only the part that could be read." :
-          "This capture hit a safety limit, so only part of it was analysed."), " ",
-        h("a", { href: "#capture" }, "Capture details")));
-    } else if (capWarn.length) {
-      notices.push(h("p", { "class": "notice" }, h("span", null, capWarn.length + " " + plural(capWarn.length, "note", "notes") + " from reading the file."), " ", h("a", { href: "#capture" }, "Capture details")));
-    }
-    if (redacted) {
-      notices.push(h("p", { "class": "notice privacy" }, h("span", null, "Privacy mode: IP and MAC addresses are replaced with consistent pseudonyms, and evidence downloads are turned off, so this report is safe to share.")));
-    }
-    return h("section", { id: "verdict", "class": "hero", "aria-labelledby": "verdict-word" },
-      h("div", { "class": "wrap" },
-        h("div", { "class": "hero-grid" },
-          h("div", { "class": "hero-text" },
-            h("p", { "class": "status-word", id: "verdict-word" }, statusGlyph(), STATUS[status].word),
-            h("h1", { "class": "headline" }, headline()),
-            verdict.summary ? h("p", { "class": "summary" }, rich(verdict.summary)) : null,
-            h("ul", { "class": "counts", "aria-label": "Findings by type" }, countEls)),
-          h("div", { "class": "hero-side" }, gauge(verdict.score), meta)),
-        notices,
-        timeline()));
-  }
-
   // ---------------------------------------------------------- timeline
   var chartRedraw = null;
   function niceStep(raw) {
@@ -642,78 +685,178 @@
     return h("span", { "class": "conf" }, Math.round(clamp(v, 0, 1) * 100) + "% confident");
   }
 
-  // ---------------------------------------------------------- fix first
+  // ----------------------------------------------------------- incidents
   function hasFixFirst() {
     return incidents.length > 0 || findings.some(function (f) { return cat(f.category) !== "info"; });
   }
-  function fixFirst() {
-    if (!hasFixFirst()) { return null; }
-    var items = incidents.slice(), single = null;
-    if (!items.length) {
-      // No linked chain of problems: feature the most important finding instead of
-      // dressing it up as an "incident".
-      var top = findings.filter(function (f) { return cat(f.category) !== "info"; })[0];
-      single = { title: top.title, category: top.category, severity: top.severity, story: top.summary,
-        root_cause: top.id, findings: [top.id], first_fix: arr(top.fix).slice(0, 3), confidence: top.confidence };
-    }
-    var others = single ? findings.filter(function (f) { return cat(f.category) !== "info"; }).length - 1 : 0;
-    return h("section", { id: "fix-first", "class": "section" },
-      h("div", { "class": "wrap" },
-        h("div", { "class": "section-head" },
-          h("div", null,
-            h("h2", null, single ? "Start with this" : "Fix this first"),
-            h("p", null, single ?
-              "The most important finding, with the first things to try." + (others > 0 ? " " + others + " other " + plural(others, "finding is", "findings are") + " listed below." : "") :
-              "Related problems are grouped into one story. Fixing the root cause usually clears the symptoms that follow from it."))),
-        h("div", { "class": "incidents" }, single ? incidentEl(single, true) : items.map(function (i) { return incidentEl(i, false); }))));
+  function topIncident() {
+    // The incident (or, failing a linked chain, the most important finding) to show first.
+    if (incidents.length) { return { inc: incidents[0], single: false }; }
+    var top = findings.filter(function (f) { return cat(f.category) !== "info"; })[0];
+    if (!top) { return null; }
+    return { inc: { title: top.title, category: top.category, severity: top.severity, story: top.summary,
+      root_cause: top.id, findings: [top.id], first_fix: arr(top.fix).slice(0, 3), confidence: top.confidence }, single: true };
   }
-  function incidentEl(inc, single) {
-    var k = cat(inc.category);
+  function chainEl(inc) {
     var ids = arr(inc.findings).filter(function (id) { return byId[id]; });
     var rootId = byId[inc.root_cause] ? inc.root_cause : ids[0];
     var order = [rootId].concat(ids.filter(function (id) { return id !== rootId; })).filter(Boolean);
+    if (!order.length) { return null; }
+    return h("ol", { "class": "chain", "aria-label": "Root cause, then consequences" }, order.map(function (id, i) {
+      var f = byId[id], fk = cat(f.category);
+      return h("li", { "class": "c-" + fk }, h("button", { type: "button", "class": "node" + (i === 0 ? " root" : ""), onclick: function () { goto(id); } },
+        h("small", null, h("b", { "class": "mono" }, str(id)), i === 0 ? "Root cause" : "Consequence"),
+        h("span", null, str(f.title))));
+    }));
+  }
+  function incidentEl(inc, single, compact) {
+    var k = cat(inc.category);
+    var ids = arr(inc.findings).filter(function (id) { return byId[id]; });
+    var rootId = byId[inc.root_cause] ? inc.root_cause : ids[0];
     var steps = arr(inc.first_fix);
     if (!steps.length && byId[rootId]) { steps = arr(byId[rootId].fix).slice(0, 3); }
-    return h("article", { "class": "incident c-" + k },
+    return h("article", { "class": "incident c-" + k + (compact ? " compact" : "") },
       h("div", { "class": "incident-main" },
         h("div", { "class": "row" }, pill(k), sevEl(inc.severity), single ? confEl(inc.confidence) : null,
-          single ? h("span", { "class": "fid-tag" }, str(rootId)) : null,
           ids.length > 1 ? h("span", { "class": "conf" }, ids.length + " linked findings") : null),
         h("h3", null, str(inc.title)),
         inc.story ? h("p", { "class": "story" }, rich(inc.story)) : null,
-        single ? h("p", { "class": "symlink" }, jump(rootId, "Read the full finding"), " ", h("span", null, "for the evidence and reasoning.")) : null,
-        !single && order.length ? h("ol", { "class": "chain", "aria-label": "Root cause, then symptoms" }, order.map(function (id, i) {
-          var f = byId[id], fk = cat(f.category);
-          return h("li", { "class": "c-" + fk }, h("button", { type: "button", "class": "node" + (i === 0 ? " root" : ""), onclick: function () { goto(id); } },
-            h("small", null, h("b", null, str(id)), i === 0 ? " root cause" : " symptom"),
-            h("span", null, str(f.title))));
-        })) : null),
+        !single ? chainEl(inc) : null,
+        rootId ? h("p", { "class": "symlink" }, h("button", { type: "button", "class": "linkish arrow", onclick: function () { goto(rootId, "why"); } },
+          single ? "Open the finding and its evidence" : "Why this is an attack, not a fault", icon(I_ARROW))) : null),
       h("div", { "class": "incident-fix" },
         h("h4", null, "Do this first"),
         steps.length ? h("ol", { "class": "steps" }, steps.map(function (st) { return h("li", null, h("span", null, rich(st))); }))
           : h("p", null, "See the finding for details.")));
+  }
+  function incidentsSection() {
+    var body;
+    if (!hasFixFirst()) {
+      body = h("div", { "class": "empty calm" },
+        h("h3", null, "No incidents"),
+        h("p", null, "Nothing in this capture needs fixing. Related problems would be grouped here as one story, root cause first."));
+    } else if (incidents.length) {
+      body = h("div", { "class": "incidents" }, incidents.map(function (i) { return incidentEl(i, false, false); }));
+    } else {
+      var t = topIncident();
+      var others = findings.filter(function (f) { return cat(f.category) !== "info"; }).length - 1;
+      body = h("div", { "class": "incidents" }, incidentEl(t.inc, true, false),
+        others > 0 ? h("p", { "class": "more" }, others + " other " + plural(others, "finding is", "findings are") + " listed under Findings.") : null);
+    }
+    return h("section", { "class": "view", id: "incidents" },
+      sectionHead(incidents.length ? "Fix this first" : "Start with this",
+        incidents.length ? "Related problems grouped into one story. Fixing the root cause usually clears the symptoms that follow from it."
+          : "The most important finding, with the first things to try."),
+      body);
+  }
+
+  // ------------------------------------------------------------ overview
+  function kpiTiles() {
+    var counts = obj(verdict.counts);
+    function cnt(k) {
+      var n = num(counts[k]);
+      return n === null ? findings.filter(function (f) { return cat(f.category) === k; }).length : n;
+    }
+    var tiles = [
+      ["attack", "Attacks", cnt("attack"), function () { setFilter("attack"); nav("findings"); }],
+      ["fault", "Faults", cnt("fault"), function () { setFilter("fault"); nav("findings"); }],
+      ["misconfig", "Misconfigurations", cnt("misconfig"), function () { setFilter("misconfig"); nav("findings"); }],
+      [null, "Packets", fmtInt(capture.packets), function () { nav("capture"); }],
+      [null, "Duration", fmtDur(capture.duration), function () { nav("capture"); }],
+      [null, "Devices", fmtInt(hosts.length), function () { nav("network"); }]
+    ];
+    return h("div", { "class": "kpis" }, tiles.map(function (t) {
+      var zero = t[0] && t[2] === 0;
+      return h("button", { type: "button", "class": "kpi" + (t[0] ? " c-" + t[0] : "") + (zero ? " zero" : ""), onclick: t[3] },
+        h("span", { "class": "kpi-label" }, t[1]), h("b", null, String(t[2])));
+    }));
+  }
+  function notices() {
+    var out = [];
+    var capWarn = arr(capture.warnings).concat(arr(R.warnings));
+    if (capture.truncated === true || capture.limited === true) {
+      out.push(h("p", { "class": "notice" },
+        h("span", null, capture.truncated === true ? "This capture file is incomplete, so the results cover only the part that could be read." :
+          "This capture hit a safety limit, so only part of it was analysed."), " ",
+        h("button", { type: "button", "class": "linkish", onclick: function () { nav("capture"); } }, "Capture details")));
+    } else if (capWarn.length) {
+      out.push(h("p", { "class": "notice" }, h("span", null, capWarn.length + " " + plural(capWarn.length, "note", "notes") + " from reading the file."), " ",
+        h("button", { type: "button", "class": "linkish", onclick: function () { nav("capture"); } }, "Capture details")));
+    }
+    if (redacted) {
+      out.push(h("p", { "class": "notice privacy" }, h("span", null, "Privacy mode: IP and MAC addresses are replaced with consistent pseudonyms, and evidence downloads are turned off, so this report is safe to share.")));
+    }
+    return out.length ? h("div", { "class": "notices" }, out) : null;
+  }
+  function compactFindings() {
+    var list = findings.slice(0, 6);
+    if (!list.length) {
+      return h("div", { "class": "panel" }, h("h3", null, "Findings"),
+        h("p", { "class": "more" }, "No findings. Faultline checked TCP, DNS, DHCP, ARP, ICMP and TLS behaviour."));
+    }
+    return h("div", { "class": "panel" },
+      h("div", { "class": "panel-head" }, h("h3", null, "Findings"),
+        h("button", { type: "button", "class": "linkish arrow", onclick: function () { nav("findings"); } }, "All " + findings.length, icon(I_ARROW))),
+      h("ol", { "class": "mini-findings" }, list.map(function (f) {
+        var k = cat(f.category);
+        return h("li", { "class": "c-" + k }, h("button", { type: "button", onclick: function () { goto(f.id); } },
+          h("span", { "class": "fid mono" }, str(f.id)), h("span", { "class": "mf-title" }, str(f.title)), sevEl(f.severity)));
+      })));
+  }
+  function overview() {
+    var ti = topIncident();
+    var healthy = !hasFixFirst();
+    var verdictCard = h("div", { "class": "panel verdict-card s-" + status },
+      h("div", { "class": "verdict-text" },
+        h("p", { "class": "status-word", id: "verdict-word" }, statusGlyph(), STATUS[status].word),
+        h("h1", { "class": "headline", tabindex: "-1" }, healthy && status === "healthy" ? "No problems found" : headline()),
+        h("p", { "class": "summary" }, verdict.summary ? rich(verdict.summary) :
+          (healthy ? "Faultline checked TCP, DNS, DHCP, ARP, ICMP and TLS behaviour in this capture and found nothing that needs attention." : headline())),
+        notices()),
+      h("div", { "class": "verdict-gauge" }, gauge(verdict.score)));
+    var bottom = h("div", { "class": "ov-bottom" },
+      ti ? h("div", { "class": "panel top-incident" },
+        h("div", { "class": "panel-head" }, h("h3", null, incidents.length ? "Fix this first" : "Start with this"),
+          incidents.length > 1 ? h("button", { type: "button", "class": "linkish arrow", onclick: function () { nav("incidents"); } }, incidents.length + " incidents", icon(I_ARROW)) : null),
+        incidentEl(ti.inc, ti.single, true))
+        : h("div", { "class": "panel calm" },
+          h("h3", null, "Nothing to fix"),
+          h("p", null, "No attack, fault or misconfiguration was found. The timeline and network map are still here if you want to look around.")),
+      compactFindings());
+    return h("section", { "class": "view", id: "overview" },
+      verdictCard,
+      kpiTiles(),
+      timeline(),
+      bottom);
   }
 
   // ----------------------------------------------------------- findings
   var cards = [];
   var chipEls = {};
   var currentFilter = "all";
+  var searchText = "";
+  var searchEl = null;
   var hostFilter = null;          // an IP from the network map, or null
   var hostChip = null;            // "Involving 192.168.1.66  x" chip
   var onHostFilterChange = null;  // the map re-highlights its node
+  var listEmptyEl = null;
+  function matchesSearch(c) {
+    if (!searchText) { return true; }
+    return c.text.indexOf(searchText) !== -1;
+  }
   function applyFilters() {
+    var shown = 0;
     cards.forEach(function (c) {
       var okCat = currentFilter === "all" || c.cat === currentFilter;
       var okHost = !hostFilter || c.hosts.indexOf(hostFilter) !== -1;
-      c.el.hidden = !(okCat && okHost);
+      c.el.hidden = !(okCat && okHost && matchesSearch(c));
+      if (!c.el.hidden) { shown++; }
     });
     if (hostChip) {
       hostChip.hidden = !hostFilter;
-      if (hostFilter) {
-        var n = cards.filter(function (c) { return !c.el.hidden; }).length;
-        hostChip.firstChild.textContent = "Involving " + hostFilter + " (" + n + ")";
-      }
+      if (hostFilter) { hostChip.firstChild.textContent = "Involving " + hostFilter + " (" + shown + ")"; }
     }
+    if (listEmptyEl) { listEmptyEl.hidden = shown > 0 || !cards.length; }
     if (onHostFilterChange) { onHostFilterChange(hostFilter); }
   }
   function setFilter(k) {
@@ -721,14 +864,12 @@
     Object.keys(chipEls).forEach(function (c) { chipEls[c].setAttribute("aria-pressed", String(c === k)); });
     applyFilters();
   }
-  function setHostFilter(ip, scroll) {
+  function setHostFilter(ip, go) {
     hostFilter = ip || null;
     if (hostFilter) { setFilter("all"); } else { applyFilters(); }
-    if (scroll && hostFilter) {
-      var el = doc.getElementById("findings");
-      if (el) { el.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" }); }
-    }
+    if (go && hostFilter) { nav("findings"); }
   }
+  var TABS = [["explain", "Explanation"], ["fix", "Fix"], ["why", "Why this verdict"], ["evidence", "Evidence"], ["technical", "Technical"]];
   function findingsSection() {
     var counts = { all: findings.length, attack: 0, fault: 0, misconfig: 0, info: 0 };
     findings.forEach(function (f) { counts[cat(f.category)]++; });
@@ -743,25 +884,140 @@
     hostChip = h("button", { type: "button", "class": "chip host", hidden: true, title: "Clear the device filter",
       onclick: function () { setHostFilter(null); } }, h("span", null, ""), h("span", { "class": "x", "aria-hidden": "true" }, "×"), h("span", { "class": "sr-only" }, "clear device filter"));
     chips.appendChild(hostChip);
-    var list = h("div", { "class": "finding-list" });
-    if (!findings.length) {
-      list.appendChild(h("div", { "class": "empty" },
-        h("h3", null, "Nothing looks wrong"),
-        h("p", null, "Faultline checked TCP, DNS, DHCP, ARP, ICMP and TLS behaviour in this capture and found no faults, misconfigurations or attacks.")));
+    searchEl = h("input", { type: "search", "class": "search", "aria-label": "Search findings", "data-role": "search" });
+    searchEl.placeholder = "Search findings";
+    searchEl.addEventListener("input", function () { searchText = searchEl.value.trim().toLowerCase(); applyFilters(); });
+    var list = h("div", { "class": "fl-list", role: "listbox", "aria-label": "Findings" });
+    listEmptyEl = h("p", { "class": "more list-empty", hidden: true }, "No finding matches this filter.");
+    var detail = h("div", { "class": "fl-detail" });
+    var detailCache = {};
+    var selected = null;
+
+    function item(f) {
+      var k = cat(f.category), id = str(f.id);
+      var host = arr(f.hosts).map(str)[0] || "";
+      var el = h("button", { type: "button", "class": "fl-item c-" + k, role: "option", "aria-selected": "false", "data-id": id,
+        id: "finding-" + id.replace(/[^A-Za-z0-9_-]/g, ""),
+        onclick: function () { nav("findings", f.id, currentTab); } },
+        h("span", { "class": "fl-top" }, pill(k), sevEl(f.severity), h("span", { "class": "fid mono" }, id)),
+        h("span", { "class": "fl-title" }, str(f.title)),
+        h("span", { "class": "fl-meta" }, host ? h("span", { "class": "mono" }, host) : h("span", null, "No single device"), confEl(f.confidence)));
+      return el;
     }
-    findings.forEach(function (f, i) {
-      var c = card(f, i === 0);
-      cards.push({ el: c.el, cat: cat(f.category), id: f.id, open: c.open, hosts: arr(f.hosts).map(str) });
-      list.appendChild(c.el);
+    findings.forEach(function (f) {
+      var el = item(f);
+      var text = [f.id, f.title, f.summary, f.kind, f.mitre].concat(arr(f.hosts)).map(str).join(" ").toLowerCase();
+      cards.push({ el: el, cat: cat(f.category), id: f.id, hosts: arr(f.hosts).map(str), text: text });
+      list.appendChild(el);
     });
-    return h("section", { id: "findings", "class": "section" },
-      h("div", { "class": "wrap" },
-        h("div", { "class": "section-head" },
-          h("div", null,
-            h("h2", null, "What we found"),
-            h("p", null, "Most important first. Open a finding to see what it means, how to fix it, and the exact packets behind it.")),
-          findings.length ? chips : null),
-        list));
+    list.appendChild(listEmptyEl);
+    list.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowDown" && e.key !== "ArrowUp") { return; }
+      e.preventDefault();
+      var visible = cards.filter(function (c) { return !c.el.hidden; });
+      var idx = -1;
+      visible.forEach(function (c, i) { if (selected && c.id === selected.id) { idx = i; } });
+      var nxt = visible[clamp(idx + (e.key === "ArrowDown" ? 1 : -1), 0, visible.length - 1)];
+      if (nxt) { nav("findings", nxt.id, currentTab); nxt.el.focus(); }
+    });
+
+    function detailFor(f) {
+      var id = str(f.id);
+      if (detailCache[id]) { return detailCache[id]; }
+      var k = cat(f.category);
+      var mitre = str(f.mitre).trim();
+      var mm = /^(T\d{4}(?:\.\d{3})?)\s*(.*)$/.exec(mitre);
+      var causes = findings.filter(function (x) { return x.symptom_of === f.id; }).map(function (x) { return x.id; });
+      var panels = {
+        explain: h("div", { "class": "fd-panel", "data-panel": "explain", role: "tabpanel" },
+          block("What's happening", [h("p", null, rich(f.explanation || f.summary)),
+            f.analogy ? h("p", { "class": "analogy beginner-only" }, rich(f.analogy)) : null]),
+          f.cause ? block("Likely cause", h("p", null, rich(f.cause))) : null,
+          arr(f.hosts).length ? block("Devices involved", h("ul", { "class": "hostlist" }, arr(f.hosts).slice(0, 60).map(function (x) {
+            return h("li", null, h("button", { type: "button", "class": "host-btn mono", onclick: function () { nav("network"); } }, str(x)));
+          }))) : null),
+        fix: h("div", { "class": "fd-panel", "data-panel": "fix", role: "tabpanel" },
+          arr(f.fix).length ? h("div", { "class": "block" }, h("h4", null, "How to fix"),
+            h("ol", { "class": "steps big" }, arr(f.fix).map(function (st) { return h("li", null, h("span", null, rich(st))); }))) :
+            h("p", { "class": "more" }, "No fix is needed for this finding.")),
+        why: h("div", { "class": "fd-panel", "data-panel": "why", role: "tabpanel" },
+          reasoning(f) || h("p", { "class": "more" }, "No weighed evidence for this finding.")),
+        evidence: h("div", { "class": "fd-panel", "data-panel": "evidence", role: "tabpanel" },
+          evidenceBlock(f) || h("p", { "class": "more" }, "No packet evidence is attached to this finding.")),
+        technical: h("div", { "class": "fd-panel", "data-panel": "technical", role: "tabpanel" },
+          h("div", { "class": "block" },
+            h("h4", null, "Technical details"),
+            f.technical ? h("pre", { "class": "tech" }, str(f.technical)) : null,
+            h("dl", { "class": "metrics" },
+              h("div", null, h("dt", null, "detector"), h("dd", { "class": "mono" }, str(f.kind))),
+              h("div", null, h("dt", null, "time"), h("dd", { "class": "mono" }, (rel(f.first_ts) === null ? "?" : "+" + fmtClock(rel(f.first_ts), true)) + " to " + (rel(f.last_ts) === null ? "?" : "+" + fmtClock(rel(f.last_ts), true))))),
+            metricsEl(f.metrics)))
+      };
+      var tabBtns = {};
+      var tablist = h("div", { "class": "tabs", role: "tablist", "aria-label": "Finding details" }, TABS.map(function (t) {
+        var b = h("button", { type: "button", role: "tab", "class": "tab" + (t[0] === "technical" ? " expert-only" : ""), "data-tab": t[0], "aria-selected": "false",
+          onclick: function () { nav("findings", f.id, t[0]); } }, t[1]);
+        tabBtns[t[0]] = b;
+        return b;
+      }));
+      var el = h("article", { "class": "finding c-" + k, "aria-labelledby": "fd-title" },
+        h("div", { "class": "fd-head" },
+          h("div", { "class": "card-tags" }, pill(k), sevEl(f.severity), confEl(f.confidence), h("span", { "class": "fid-tag mono" }, id),
+            mitre ? h("span", { "class": "mitre" }, "MITRE ATT&CK", mm ? h("b", null, mm[1]) : null, mm ? mm[2] : mitre) : null),
+          h("h3", { id: "fd-title" }, str(f.title)),
+          h("p", { "class": "fd-summary" }, rich(f.summary)),
+          f.symptom_of && byId[f.symptom_of] ? h("p", { "class": "symlink" }, "Symptom of ", jump(f.symptom_of, f.symptom_of + ": " + str(byId[f.symptom_of].title))) : null,
+          causes.length ? h("p", { "class": "symlink" }, "Leads to ", causes.map(function (c) { return jump(c, c + ": " + str(byId[c].title)); })) : null),
+        tablist,
+        panels.explain, panels.fix, panels.why, panels.evidence, panels.technical);
+      var rec = { el: el, panels: panels, tabBtns: tabBtns };
+      detailCache[id] = rec;
+      return rec;
+    }
+    function showTab(rec, tab) {
+      if (!rec.panels[tab]) { tab = "explain"; }
+      if (tab === "technical" && !doc.body.classList.contains("expert")) { tab = "explain"; }
+      currentTab = tab;
+      Object.keys(rec.panels).forEach(function (t) {
+        rec.panels[t].hidden = t !== tab;
+        rec.tabBtns[t].setAttribute("aria-selected", String(t === tab));
+      });
+    }
+    selectFinding = function (id, tab, fromRoute) {
+      var f = id ? byId[id] : null;
+      if (!f) {
+        var firstVisible = cards.filter(function (c) { return !c.el.hidden; })[0];
+        f = firstVisible ? byId[firstVisible.id] : findings[0];
+      }
+      selected = f || null;
+      cards.forEach(function (c) { c.el.setAttribute("aria-selected", String(!!f && c.id === f.id)); });
+      while (detail.firstChild) { detail.removeChild(detail.firstChild); }
+      if (!f) { return; }
+      var rec = detailFor(f);
+      showTab(rec, tab || currentTab);
+      detail.appendChild(rec.el);
+      detail.scrollTop = 0;
+      if (fromRoute) {
+        var c = cards.filter(function (x) { return x.id === f.id; })[0];
+        if (c && c.el.scrollIntoView) { c.el.scrollIntoView({ block: "nearest" }); }
+      }
+      if (!doc.body.classList.contains("expert")) {
+        Array.prototype.forEach.call(rec.el.querySelectorAll(".term"), function (t) { t.setAttribute("tabindex", "0"); });
+      }
+    };
+    var body;
+    if (!findings.length) {
+      body = h("div", { "class": "empty calm" },
+        h("h3", null, "Nothing looks wrong"),
+        h("p", null, "Faultline checked TCP, DNS, DHCP, ARP, ICMP and TLS behaviour in this capture and found no faults, misconfigurations or attacks."));
+    } else {
+      body = h("div", { "class": "fl" },
+        h("div", { "class": "fl-side" }, h("div", { "class": "fl-tools" }, h("label", { "class": "search-wrap" }, icon(I_SEARCH), searchEl), chips), list),
+        detail);
+    }
+    return h("section", { "class": "view", id: "findings" },
+      sectionHead("Findings", "Most important first. Use ↑ ↓ to move through the list.", null),
+      body);
   }
 
   function block(title, kids, extraClass) {
@@ -798,47 +1054,62 @@
       var mine = inds.filter(function (i) { return cat(i.supports) === k; });
       if (!mine.length) { return null; }
       mine.sort(function (a, b) { return (num(b.weight) || 0) - (num(a.weight) || 0); });
-      return h("div", { "class": "hyp c-" + k },
-        h("h5", null, CAT[k].hyp),
+      return h("div", { "class": "hyp c-" + k + (k === win ? " win" : "") },
+        h("h5", null, CAT[k].hyp, h("span", { "class": "n" }, mine.length + " " + plural(mine.length, "indicator", "indicators"))),
         h("ul", null, mine.map(function (i) { return h("li", null, dots(i.weight, k), h("span", null, str(i.text))); })));
     });
     return h("div", { "class": "reason" },
-      h("h4", null, "Fault or attack? Why we think so"),
-      h("p", { "class": "lead" }, lead),
-      total ? bar : null,
-      total ? h("ul", { "class": "scorekey" }, hypKeys.map(function (k) {
-        return h("li", { "class": "c-" + k + (k === win ? " win" : "") }, CAT[k].one + " " + vals[k].toFixed(1));
-      })) : null,
+      h("div", { "class": "reason-head" },
+        h("h4", null, "Fault or attack? Why we think so"),
+        h("p", { "class": "lead" }, lead)),
+      total ? h("div", { "class": "scoreboard" }, bar,
+        h("ul", { "class": "scorekey" }, hypKeys.map(function (k) {
+          return h("li", { "class": "c-" + k + (k === win ? " win" : "") }, h("i", null), h("span", null, CAT[k].one), h("b", { "class": "num" }, vals[k].toFixed(1)));
+        }))) : null,
       h("div", { "class": "hyps" }, groups),
-      alts.length ? h("ul", { "class": "whynot" }, alts.map(function (a) {
-        return h("li", null, h("b", null, "Why not “" + str(a.title) + "”?"), " ", pill(a.category),
-          a.why_not ? h("p", null, rich(a.why_not)) : null);
-      })) : null);
+      alts.length ? h("div", { "class": "whynot-wrap" }, h("h5", null, "Alternatives we ruled out"),
+        h("ul", { "class": "whynot" }, alts.map(function (a) {
+          return h("li", null, h("div", { "class": "wn-head" }, pill(a.category), h("b", null, "Why not “" + str(a.title) + "”?")),
+            a.why_not ? h("p", null, rich(a.why_not)) : null);
+        }))) : null);
+  }
+  function evidenceTools(f, pk) {
+    var filter = pk.length ? "frame.number in {" + pk.join(" ") + "}" : "";
+    var tools = [];
+    if (!redacted && typeof evidence[f.id] === "string") {
+      tools.push(h("button", { type: "button", "class": "btn", onclick: function () { downloadEvidence(f); } },
+        icon(I_DOWN), "Download evidence .pcap"));
+    }
+    if (filter) {
+      tools.push(h("span", { "class": "filter" }, h("span", { "class": "filter-label" }, "Wireshark"), h("code", { title: filter }, filter),
+        h("button", { type: "button", "class": "btn", onclick: function () { copyText(filter, "Wireshark filter copied"); } }, icon(I_COPY), "Copy filter")));
+    }
+    return tools;
+  }
+  function evidenceRows(lines, cap) {
+    return lines.slice(0, cap).map(function (l) {
+      var r = rel(l.ts);
+      return h("tr", null,
+        h("td", { "class": "num" }, fmtInt(l.no)),
+        h("td", { "class": "num mono" }, r === null ? "" : "+" + fmtClock(r, true)),
+        h("td", { "class": "mono" }, str(l.summary)));
+    });
+  }
+  function evidenceTable(rows) {
+    return h("div", { "class": "table-scroll" }, h("table", { "class": "packets" },
+      h("thead", null, h("tr", null, h("th", { "class": "num", scope: "col" }, "No."), h("th", { "class": "num", scope: "col" }, "Time"), h("th", { scope: "col" }, "What happened"))),
+      h("tbody", null, rows)));
   }
   function evidenceBlock(f) {
     var lines = arr(f.evidence_lines).filter(function (l) { return l && typeof l === "object"; });
     var pk = arr(f.packets).filter(function (n) { return num(n) !== null; }).map(function (n) { return Math.round(n); });
     if (!pk.length) { pk = lines.map(function (l) { return Math.round(num(l.no) || 0); }).filter(Boolean); }
     if (!lines.length && !pk.length) { return null; }
-    var filter = pk.length ? "frame.number in {" + pk.join(" ") + "}" : "";
-    var tools = [];
-    if (!redacted && typeof evidence[f.id] === "string") {
-      tools.push(h("button", { type: "button", "class": "btn", onclick: function () { downloadEvidence(f); } },
-        icon(I_DOWN), "Download evidence .pcap (open in Wireshark)"));
-    }
-    if (filter) {
-      tools.push(h("span", { "class": "filter" }, "In Wireshark:", h("code", { title: filter }, filter),
-        h("button", { type: "button", "class": "btn", onclick: function () { copyText(filter, "Wireshark filter copied"); } }, icon(I_COPY), "Copy filter")));
-    }
+    var tools = evidenceTools(f, pk);
     var total = num(f.packet_total);
     var PREVIEW = 8, CAP = 200;
-    var rows = lines.slice(0, CAP).map(function (l, i) {
-      var r = rel(l.ts);
-      return h("tr", { hidden: i >= PREVIEW ? true : null, "class": i >= PREVIEW ? "extra" : null },
-        h("td", { "class": "num" }, fmtInt(l.no)),
-        h("td", { "class": "num mono" }, r === null ? "" : "+" + fmtClock(r, true)),
-        h("td", { "class": "mono" }, str(l.summary)));
-    });
+    var rows = evidenceRows(lines, CAP);
+    rows.forEach(function (r, i) { if (i >= PREVIEW) { r.hidden = true; r.classList.add("extra"); } });
     var shown = rows.length, expanded = false;
     var toggleBtn = null;
     if (shown > PREVIEW) {
@@ -854,12 +1125,11 @@
       moreText = "The table lists " + fmtInt(shown) + " of " + fmtInt(total) + " matching packets." + (pk.length > shown ? " The filter and the evidence file include " + fmtInt(pk.length) + "." : "");
     }
     return h("div", { "class": "block evidence" },
-      h("h4", null, "Evidence: the exact packets"),
+      h("h4", null, "The exact packets"),
       tools.length ? h("div", { "class": "evidence-tools" }, tools) : null,
-      shown ? h("div", { "class": "table-scroll" }, h("table", null,
-        h("thead", null, h("tr", null, h("th", { "class": "num", scope: "col" }, "No."), h("th", { "class": "num", scope: "col" }, "Time"), h("th", { scope: "col" }, "What happened"))),
-        h("tbody", null, rows))) : null,
-      toggleBtn || moreText ? h("div", { "class": "evidence-foot" }, toggleBtn, moreText ? h("p", { "class": "more" }, moreText) : null) : null);
+      shown ? evidenceTable(rows) : null,
+      toggleBtn || moreText ? h("div", { "class": "evidence-foot" }, toggleBtn, moreText ? h("p", { "class": "more" }, moreText) : null) : null,
+      arr(f.hosts).length ? h("p", { "class": "more hosts-line" }, "Devices: ", arr(f.hosts).slice(0, 12).map(function (x, i) { return [i ? ", " : null, h("span", { "class": "mono" }, str(x))]; })) : null);
   }
   function metricsEl(m) {
     m = obj(m);
@@ -868,82 +1138,32 @@
     return h("dl", { "class": "metrics" }, keys.map(function (k) {
       var v = m[k];
       var txt = Array.isArray(v) ? v.slice(0, 20).map(str).join(", ") : (v && typeof v === "object" ? JSON.stringify(v).slice(0, 300) : str(v));
-      return h("div", null, h("dt", null, k.replace(/_/g, " ")), h("dd", null, txt));
+      return h("div", null, h("dt", null, k.replace(/_/g, " ")), h("dd", { "class": "mono" }, txt));
     }));
   }
-  function card(f, openByDefault) {
-    var k = cat(f.category), id = str(f.id);
-    var bodyId = "fb-" + id.replace(/[^A-Za-z0-9_-]/g, "");
-    var causes = findings.filter(function (x) { return x.symptom_of === f.id; }).map(function (x) { return x.id; });
-    var toggle = h("button", { type: "button", "class": "toggle", "aria-expanded": "false", "aria-controls": bodyId },
-      h("span", null, "Details"), chevron());
-    var body = h("div", { "class": "card-body", id: bodyId, hidden: true });
-    var built = false;
-    function build() {
-      if (built) { return; }
-      built = true;
-      var mitre = str(f.mitre).trim();
-      var mm = /^(T\d{4}(?:\.\d{3})?)\s*(.*)$/.exec(mitre);
-      append(body, [
-        h("div", { "class": "cols" },
-          h("div", null,
-            block("What's happening", [
-              h("p", null, rich(f.explanation || f.summary)),
-              f.analogy ? h("p", { "class": "analogy beginner-only" }, rich(f.analogy)) : null
-            ])),
-          h("div", { "class": "cols-right" },
-            f.cause ? block("Likely cause", h("p", null, rich(f.cause))) : null,
-            arr(f.fix).length ? h("div", { "class": "block", id: null }, h("h4", null, "How to fix"),
-              h("ol", { "class": "ordered" }, arr(f.fix).map(function (st) { return h("li", null, h("span", null, rich(st))); }))) : null)),
-        reasoning(f),
-        mitre ? h("p", { "class": "mitre" }, "MITRE ATT&CK", mm ? h("b", null, mm[1]) : null, mm ? mm[2] : mitre) : null,
-        evidenceBlock(f),
-        arr(f.hosts).length ? block("Devices involved", h("ul", { "class": "hostlist" }, arr(f.hosts).slice(0, 60).map(function (x) { return h("li", null, str(x)); }))) : null,
-        h("div", { "class": "block expert-only" },
-          h("h4", null, "Technical details"),
-          f.technical ? h("pre", { "class": "tech" }, str(f.technical)) : null,
-          h("dl", { "class": "metrics" },
-            h("div", null, h("dt", null, "detector"), h("dd", null, str(f.kind))),
-            h("div", null, h("dt", null, "time"), h("dd", null, (rel(f.first_ts) === null ? "?" : "+" + fmtClock(rel(f.first_ts), true)) + " to " + (rel(f.last_ts) === null ? "?" : "+" + fmtClock(rel(f.last_ts), true))))),
-          metricsEl(f.metrics))
-      ]);
-    }
-    function open(state) {
-      var isOpen = toggle.getAttribute("aria-expanded") === "true";
-      var want = state === undefined ? !isOpen : state;
-      if (want) { build(); }
-      toggle.setAttribute("aria-expanded", String(want));
-      toggle.firstChild.textContent = want ? "Hide details" : "Details";
-      body.hidden = !want;
-    }
-    toggle.addEventListener("click", function () { open(); });
-    var el = h("article", { "class": "card c-" + k, id: "finding-" + id.replace(/[^A-Za-z0-9_-]/g, ""), "aria-labelledby": bodyId + "-t" },
-      h("div", { "class": "card-head" },
-        h("div", null,
-          h("div", { "class": "card-tags" }, pill(k), sevEl(f.severity), confEl(f.confidence), h("span", { "class": "fid-tag" }, id)),
-          h("h3", { id: bodyId + "-t", tabindex: "-1" }, str(f.title)),
-          h("p", null, rich(f.summary)),
-          f.symptom_of && byId[f.symptom_of] ? h("p", { "class": "symlink" }, "Symptom of", jump(f.symptom_of, f.symptom_of + ": " + str(byId[f.symptom_of].title))) : null,
-          causes.length ? h("p", { "class": "symlink" }, "Leads to", causes.map(function (c) { return jump(c, c); })) : null),
-        toggle),
-      body);
-    if (openByDefault) { open(true); }
-    return { el: el, open: open };
-  }
-  function goto(id) {
-    var c = null;
-    for (var i = 0; i < cards.length; i++) { if (cards[i].id === id) { c = cards[i]; } }
-    if (!c) { return; }
-    if (c.el.hidden) { hostFilter = null; setFilter("all"); }
-    c.open(true);
-    c.el.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "start" });
-    c.el.classList.remove("flash");
-    void c.el.offsetWidth;
-    c.el.classList.add("flash");
-    var t = c.el.querySelector("h3");
-    if (t) { try { t.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
-  }
 
+  // ------------------------------------------------------------ evidence
+  function evidenceSection() {
+    var groups = findings.map(function (f) {
+      var lines = arr(f.evidence_lines).filter(function (l) { return l && typeof l === "object"; });
+      var pk = arr(f.packets).filter(function (n) { return num(n) !== null; }).map(function (n) { return Math.round(n); });
+      if (!pk.length) { pk = lines.map(function (l) { return Math.round(num(l.no) || 0); }).filter(Boolean); }
+      if (!lines.length && !pk.length) { return null; }
+      var k = cat(f.category);
+      var total = num(f.packet_total);
+      return h("div", { "class": "panel ev-group c-" + k, "data-id": str(f.id) },
+        h("div", { "class": "ev-head" },
+          h("div", null, h("div", { "class": "card-tags" }, pill(k), h("span", { "class": "fid-tag mono" }, str(f.id)), sevEl(f.severity)),
+            h("h3", null, h("button", { type: "button", "class": "linkish", onclick: function () { goto(f.id, "evidence"); } }, str(f.title)))),
+          h("div", { "class": "evidence-tools" }, evidenceTools(f, pk))),
+        lines.length ? evidenceTable(evidenceRows(lines, 200)) : h("p", { "class": "more" }, "Packet list not included; the Wireshark filter above selects the packets."),
+        total !== null && total > Math.min(lines.length, 200) ? h("p", { "class": "more" }, "Showing " + fmtInt(Math.min(lines.length, 200)) + " of " + fmtInt(total) + " matching packets.") : null);
+    }).filter(Boolean);
+    return h("section", { "class": "view", id: "evidence" },
+      sectionHead("Evidence", "Every packet Faultline used, grouped by finding. Frame numbers match the original capture."),
+      groups.length ? h("div", { "class": "ev-groups" }, groups)
+        : h("div", { "class": "empty calm" }, h("h3", null, "No packet evidence"), h("p", null, "There are no findings, so nothing to prove.")));
+  }
   // ------------------------------------------------------------ network
   function barsList(rows, labelMono) {
     var max = Math.max.apply(null, rows.map(function (r) { return r.v; }).concat([1]));
@@ -1243,7 +1463,7 @@
       box, legend, textList);
   }
 
-  function networkSection() {
+  function devicesTable() {
     var attackHosts = {};
     findings.forEach(function (f) {
       if (cat(f.category) !== "attack") { return; }
@@ -1253,8 +1473,8 @@
       return ((num(b.packets_sent) || 0) + (num(b.packets_recv) || 0)) - ((num(a.packets_sent) || 0) + (num(a.packets_recv) || 0));
     });
     var shown = hs.slice(0, 60);
-    var hostTable = h("div", { "class": "panel", id: "devices" },
-      h("h3", null, "All devices"),
+    return h("div", { "class": "panel", id: "devices" },
+      h("div", { "class": "panel-head" }, h("h3", null, "Devices"), h("span", { "class": "more" }, fmtInt(hs.length) + " seen")),
       shown.length ? h("div", { "class": "table-scroll" }, h("table", { "class": "hosts" },
         h("thead", null, h("tr", null, ["Address", "Name", "Hardware (MAC)", "Role", "Sent", "Received", "Data"].map(function (t, i) {
           return h("th", { scope: "col", "class": i >= 4 ? "num" : null }, t);
@@ -1264,7 +1484,7 @@
           var macs = arr(x.macs).map(str);
           return h("tr", null,
             h("td", { "class": "mono" }, ip, x.local === false ? h("div", { "class": "ext" }, "outside network") : null),
-            h("td", null, arr(x.names).slice(0, 4).map(function (n, i) { return h("div", null, str(n)); })),
+            h("td", null, arr(x.names).slice(0, 4).map(function (n) { return h("div", null, str(n)); })),
             h("td", { "class": "mono" }, macs.slice(0, 4).map(function (m) { return h("div", null, m); }),
               macs.length > 1 ? h("span", { "class": "badge flag" }, macs.length + " MACs for one IP") : null),
             h("td", null, arr(x.roles).map(function (r) {
@@ -1276,7 +1496,45 @@
             h("td", { "class": "num" }, fmtBytes((num(x.bytes_sent) || 0) + (num(x.bytes_recv) || 0))));
         })))) : h("p", { "class": "more" }, "No devices were seen."),
       hs.length > shown.length ? h("p", { "class": "more" }, "Showing the " + shown.length + " busiest of " + fmtInt(hs.length) + " devices.") : null);
+  }
+  function networkSection() {
+    var convs = arr(stats.conversations).filter(function (c) { return c && typeof c === "object"; }).slice(0, 12);
+    return h("section", { "class": "view", id: "network" },
+      sectionHead("Network", "The network as seen in this capture. Hover a device for details; click one to filter the findings to it."),
+      networkMap() || h("div", { "class": "empty calm" }, h("h3", null, "No devices"), h("p", null, "No IP hosts were seen in this capture.")),
+      devicesTable(),
+      convs.length ? h("div", { "class": "panel", id: "conversations" },
+        h("div", { "class": "panel-head" }, h("h3", null, "Busiest conversations")),
+        h("div", { "class": "table-scroll" }, h("table", null,
+          h("thead", null, h("tr", null, h("th", { scope: "col" }, "Between"), h("th", { scope: "col" }, "And"), h("th", { scope: "col" }, "Protocol"),
+            h("th", { scope: "col", "class": "num" }, "Packets"), h("th", { scope: "col", "class": "num" }, "Data"))),
+          h("tbody", null, convs.map(function (c) {
+            return h("tr", null, h("td", { "class": "mono" }, str(c.a)), h("td", { "class": "mono" }, str(c.b)), h("td", null, str(c.proto)),
+              h("td", { "class": "num" }, fmtInt(c.packets)), h("td", { "class": "num" }, fmtBytes(c.bytes)));
+          }))))) : null);
+  }
 
+  // ------------------------------------------------------------ capture
+  function captureSection() {
+    var c = capture;
+    var lt = arr(c.linktypes).map(function (x) { return ({ 0: "Null/loopback", 1: "Ethernet", 101: "Raw IP", 105: "802.11", 113: "Linux cooked", 127: "802.11 radiotap", 228: "Raw IPv4", 229: "Raw IPv6", 276: "Linux cooked v2" })[x] || ("type " + str(x)); });
+    var rows = [
+      ["File", str(c.name) || "unnamed", "mono"],
+      ["Format", (str(c.format) || "?") + (c.compressed === true ? " (gzip compressed)" : "")],
+      ["File size", fmtBytes(c.file_bytes)],
+      ["Packets", fmtInt(c.packets) + (num(c.malformed_packets) ? " (" + fmtInt(c.malformed_packets) + " malformed)" : "")],
+      ["Data captured", fmtBytes(c.bytes_captured)],
+      ["Link type", lt.join(", ") || "?"],
+      ["Started", fmtDate(c.first_ts)],
+      ["Ended", fmtDate(c.last_ts)],
+      ["Duration", fmtDur(c.duration)],
+      ["SHA-256", str(c.sha256) || "?", "mono"],
+      ["Report created", str(R.generated_at), "mono"]
+    ];
+    var warns = [];
+    if (c.truncated === true) { warns.push("The file was truncated. Faultline analysed every complete packet before the cut."); }
+    if (c.limited === true) { warns.push("A safety limit was reached, so only part of the file was analysed."); }
+    warns = warns.concat(arr(c.warnings).map(str), arr(R.warnings).map(str));
     var protos = obj(stats.protocols);
     var pkeys = Object.keys(protos).filter(function (k) { return num(protos[k]) !== null; });
     var ptotal = pkeys.reduce(function (a, k) { return a + protos[k]; }, 0) || 1;
@@ -1286,80 +1544,36 @@
     var talk = arr(stats.top_talkers).filter(function (t) { return t && typeof t === "object"; }).slice(0, 10).map(function (t) {
       return { label: str(t.ip), v: num(t.bytes) || 0, text: fmtBytes(t.bytes) };
     });
-    var convs = arr(stats.conversations).filter(function (c) { return c && typeof c === "object"; }).slice(0, 12);
-    return h("section", { id: "network", "class": "section" },
-      h("div", { "class": "wrap" },
-        h("div", { "class": "section-head" }, h("div", null,
-          h("h2", null, "Who was talking"),
-          h("p", null, "A picture of the network as seen in this capture, then every device, what it does, and how much it sent."))),
-        networkMap(),
-        hostTable,
-        h("div", { "class": "net-grid" },
-          h("div", { "class": "panel" }, h("h3", null, "Protocols"), prow.length ? barsList(prow, false) : h("p", { "class": "more" }, "No protocol data.")),
-          h("div", { "class": "panel" }, h("h3", null, "Busiest devices by data"), talk.length ? barsList(talk, true) : h("p", { "class": "more" }, "No traffic data."))),
-        convs.length ? h("div", { "class": "panel", id: "conversations" },
-          h("h3", null, "Busiest conversations"),
-          h("div", { "class": "table-scroll" }, h("table", null,
-            h("thead", null, h("tr", null, h("th", { scope: "col" }, "Between"), h("th", { scope: "col" }, "And"), h("th", { scope: "col" }, "Protocol"),
-              h("th", { scope: "col", "class": "num" }, "Packets"), h("th", { scope: "col", "class": "num" }, "Data"))),
-            h("tbody", null, convs.map(function (c) {
-              return h("tr", null, h("td", { "class": "mono" }, str(c.a)), h("td", { "class": "mono" }, str(c.b)), h("td", null, str(c.proto)),
-                h("td", { "class": "num" }, fmtInt(c.packets)), h("td", { "class": "num" }, fmtBytes(c.bytes)));
-            }))))) : null));
-  }
-
-  // ------------------------------------------------------------ capture
-  function captureSection() {
-    var c = capture;
-    var lt = arr(c.linktypes).map(function (x) { return ({ 0: "Null/loopback", 1: "Ethernet", 101: "Raw IP", 105: "802.11", 113: "Linux cooked", 127: "802.11 radiotap", 228: "Raw IPv4", 229: "Raw IPv6", 276: "Linux cooked v2" })[x] || ("type " + str(x)); });
-    var rows = [
-      ["File", str(c.name) || "unnamed"],
-      ["Format", (str(c.format) || "?") + (c.compressed === true ? " (gzip compressed)" : "")],
-      ["File size", fmtBytes(c.file_bytes)],
-      ["Packets", fmtInt(c.packets) + (num(c.malformed_packets) ? " (" + fmtInt(c.malformed_packets) + " malformed)" : "")],
-      ["Data captured", fmtBytes(c.bytes_captured)],
-      ["Link type", lt.join(", ") || "?"],
-      ["Started", fmtDate(c.first_ts)],
-      ["Ended", fmtDate(c.last_ts)],
-      ["Duration", fmtDur(c.duration)],
-      ["SHA-256", str(c.sha256) || "?"],
-      ["Report created", str(R.generated_at)]
-    ];
-    var warns = [];
-    if (c.truncated === true) { warns.push("The file was truncated. Faultline analysed every complete packet before the cut."); }
-    if (c.limited === true) { warns.push("A safety limit was reached, so only part of the file was analysed."); }
-    warns = warns.concat(arr(c.warnings).map(str), arr(R.warnings).map(str));
-    return h("section", { id: "capture", "class": "section" },
-      h("div", { "class": "wrap" },
-        h("div", { "class": "section-head" }, h("div", null,
-          h("h2", null, "About this capture"),
-          h("p", null, "The file Faultline read, and anything unusual about reading it."))),
-        h("div", { "class": "capture-grid" },
-          h("div", { "class": "panel" }, h("dl", { "class": "kv" }, rows.map(function (r) {
-            return [h("dt", null, r[0]), h("dd", { "class": r[0] === "SHA-256" ? "mono" : null }, r[1])];
-          }))),
-          h("div", { "class": "panel" }, h("h3", null, "Reading notes"),
+    return h("section", { "class": "view", id: "capture" },
+      sectionHead("Capture details", "The file Faultline read, and anything unusual about reading it."),
+      h("div", { "class": "capture-grid" },
+        h("div", { "class": "panel" }, h("h3", null, "File"), h("dl", { "class": "kv" }, rows.map(function (r) {
+          return [h("dt", null, r[0]), h("dd", { "class": r[2] || null }, r[1])];
+        }))),
+        h("div", { "class": "capture-col" },
+          h("div", { "class": "panel" }, h("div", { "class": "panel-head" }, h("h3", null, "Reader notes"), warns.length ? h("span", { "class": "badge flag" }, String(warns.length)) : null),
             warns.length ? h("ul", { "class": "warnlist" }, warns.slice(0, 50).map(function (w) { return h("li", null, w); }))
-              : h("p", { "class": "more" }, "The file was read completely, with no problems.")))));
-  }
-
-  function footer() {
-    return h("footer", { "class": "footer" },
-      h("div", { "class": "wrap" },
-        h("p", null, h("strong", null, "Generated offline by Faultline " + str(tool.version) + "."), " No data left this machine."),
-        redacted ? h("p", null, "Privacy mode was on: addresses are pseudonymised and no raw packets are included.") :
-          h("p", null, "This report contains addresses from your network. Re-run with redaction before sharing it publicly.")));
+              : h("p", { "class": "more" }, "The file was read completely, with no problems.")),
+          h("div", { "class": "panel" }, h("h3", null, "Protocols"), prow.length ? barsList(prow, false) : h("p", { "class": "more" }, "No protocol data.")),
+          h("div", { "class": "panel" }, h("h3", null, "Busiest devices by data"), talk.length ? barsList(talk, true) : h("p", { "class": "more" }, "No traffic data.")))),
+      h("p", { "class": "foot-note" }, h("strong", null, "Generated offline by Faultline " + str(tool.version) + "."), " ",
+        redacted ? "Privacy mode was on: addresses are pseudonymised and no raw packets are included." :
+          "This report contains addresses from your network. Re-run with redaction before sharing it publicly."));
   }
 
   // -------------------------------------------------------------- mount
-  var frag = doc.createDocumentFragment();
-  append(frag, [topbar(), h("main", null, hero(), fixFirst(), findingsSection(), networkSection(), captureSection()), footer(), toastEl]);
-  root.appendChild(frag);
-  watchScroll();
+  var sections = [overview(), incidentsSection(), findingsSection(), networkSection(), evidenceSection(), captureSection()];
+  sections.forEach(function (sec) { views[sec.id] = sec; sec.hidden = true; });
+  mainEl = h("main", { "class": "views", id: "main" }, sections);
+  var scrim = h("div", { "class": "scrim", onclick: function () { doc.body.classList.remove("nav-open"); } });
+  append(root, [h("div", { "class": "shell" }, sidebar(), h("div", { "class": "stage" }, topbar(), mainEl)), scrim, toastEl]);
+  window.addEventListener("hashchange", route);
+  window.addEventListener("popstate", route);
+  route();
   if (chartRedraw) {
-    chartRedraw();
     var rt = null;
-    window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(chartRedraw, 120); });
+    window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(function () { if (currentSection === "overview") { chartRedraw(); } }, 120); });
   }
-  if (location.hash && /^#finding-[A-Za-z0-9_-]+$/.test(location.hash)) { goto(location.hash.slice(9)); }
+  window.addEventListener("beforeprint", function () { Object.keys(views).forEach(function (k) { views[k].hidden = false; }); if (chartRedraw) { chartRedraw(); } });
+  window.addEventListener("afterprint", function () { showSection(currentSection, true); });
 })();

@@ -1,119 +1,101 @@
 {% extends "_base.html" %}
 {% block title %}Faultline: is my network broken, or is someone breaking it?{% endblock %}
-{% block body %}
-<main>
-  <section class="landing">
-    <div class="wrap landing-grid">
-      <div>
-        <h1 class="claim">Is my network broken, or is someone breaking it?</h1>
-        <p class="claim-sub">Give Faultline a packet capture. It tells you in plain language what is wrong, whether it is a fault or an attack, what to fix first, and which packets prove it.</p>
-        <ul class="answers" aria-label="Possible answers">
-          <li class="c-ok"><b>Healthy</b><span>Nothing needs your attention.</span></li>
-          <li class="c-misconfig"><b>Minor issues</b><span>Small settings worth tidying up.</span></li>
-          <li class="c-fault"><b>Faulty</b><span>Something is broken, like lossy Wi-Fi or a dead DNS server.</span></li>
-          <li class="c-attack"><b>Under attack</b><span>Someone is spoofing, scanning or intercepting traffic.</span></li>
-        </ul>
-      </div>
-
-      <form class="upload" id="upload" method="post" action="/analyze" enctype="multipart/form-data">
-        <h2>Analyze a capture</h2>
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-        <fieldset class="opts">
-          <legend class="sr-only">Options</legend>
-          <div class="opt">
-            <label class="opt-label" for="redact">Hide IP and MAC addresses</label>
-            <span class="switch"><input type="checkbox" id="redact" name="redact" value="1" aria-describedby="redact-hint"><span></span></span>
-            <p class="hint" id="redact-hint">Swaps addresses for pseudonyms so the report is safe to share. Evidence downloads are turned off.</p>
-          </div>
-          <div class="opt">
-            <span class="opt-label" id="sens-label">Sensitivity</span>
-            <span class="radios" role="radiogroup" aria-labelledby="sens-label">
-              <label><input type="radio" name="sensitivity" value="low"><span>Low</span></label>
-              <label><input type="radio" name="sensitivity" value="normal" checked><span>Normal</span></label>
-              <label><input type="radio" name="sensitivity" value="high"><span>High</span></label>
-            </span>
-            <p class="hint">High catches subtler problems but may raise more false alarms.</p>
-          </div>
-        </fieldset>
-
-        <label class="drop" id="drop">
-          <input type="file" id="capture" name="capture" accept=".pcap,.pcapng,.cap,.gz,application/vnd.tcpdump.pcap" required>
-          <svg class="trace" viewBox="0 0 220 44" aria-hidden="true" focusable="false"><path d="M2 22h70l6-10 7 22 8-30 7 30 6-18 5 6h107" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <strong id="drop-title">Drop a capture file here</strong>
-          <span class="small" id="drop-sub">or click to choose one. pcap, pcapng, cap or .pcap.gz, up to {{ max_upload_mb }} MB.</span>
-        </label>
-        <p class="form-error" id="form-error" role="alert" hidden></p>
-        <div class="form-actions">
-          <p>The file is analysed on this computer and deleted as soon as the report is ready.</p>
-          <button class="btn primary big" type="submit">Analyze capture</button>
-        </div>
-      </form>
-    </div>
-  </section>
-
 {% set names = samples|map(attribute='name')|list %}
-  <section class="section how" id="how">
-    <div class="wrap">
-      <ol class="how-steps" aria-label="How Faultline works">
-        <li><span class="step-n">1</span><div><b>Drop a capture</b><span>A .pcap or .pcapng from Wireshark, tcpdump or your router. It never leaves this computer.</span></div></li>
-        <li><span class="step-n">2</span><div><b>Faultline checks 38 kinds of problems</b><span>ARP, DHCP, DNS, TCP, ICMP and TLS behaviour, then weighs fault against attack for each one.</span></div></li>
-        <li><span class="step-n">3</span><div><b>You get a verdict</b><span>Fault or attack, in plain language, with what to fix first and the exact packets that prove it.</span></div></li>
-      </ol>
-    </div>
-  </section>
-
-  {% set has_cmp1 = 'ip_conflict.pcap' in names and 'arp_spoofing.pcap' in names %}
-  {% set has_cmp2 = 'dns_failure.pcap' in names and 'clean_office.pcap' in names %}
-  {% if 'mitm_chain.pcap' in names or 'outage_vs_attack_mixed.pcap' in names or has_cmp1 %}
-  <section class="section start" id="start">
-    <div class="wrap">
-      <div class="section-head">
-        <div>
-          <h2>Start here</h2>
-          <p>Three picks that show what Faultline does best.</p>
+{% set has_cmp1 = 'ip_conflict.pcap' in names and 'arp_spoofing.pcap' in names %}
+{% set has_cmp2 = 'dns_failure.pcap' in names and 'clean_office.pcap' in names %}
+{% block sidenav %}
+  <li><a class="nav-item" href="#new" data-nav><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 2v8M4.5 7 8 10.5 11.5 7M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-label">New analysis</span></a></li>
+  <li><a class="nav-item" href="#samples" data-nav><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 3.5h10M3 8h10M3 12.5h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-label">Sample library</span><span class="nav-count">{{ samples|length }}</span></a></li>
+  {% if samples %}<li><a class="nav-item" href="#compare" data-nav><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2.5 3h4.5v10H2.5zM9 3h4.5v10H9z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-label">Compare</span></a></li>{% endif %}
+{% endblock %}
+{% block body %}
+<section class="view" id="new">
+  <div class="view-head"><div><h2>New analysis</h2><p>Give Faultline a packet capture. It tells you whether the network is broken or under attack, what to fix first, and which packets prove it.</p></div></div>
+  <div class="intro">
+    <form class="panel upload" id="upload" method="post" action="/analyze" enctype="multipart/form-data">
+      <h2>Analyze a capture</h2>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <label class="drop" id="drop">
+        <input type="file" id="capture" name="capture" accept=".pcap,.pcapng,.cap,.gz,application/vnd.tcpdump.pcap" required>
+        <svg class="trace" viewBox="0 0 220 44" aria-hidden="true" focusable="false"><path d="M2 22h70l6-10 7 22 8-30 7 30 6-18 5 6h107" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <strong id="drop-title">Drop a capture file here</strong>
+        <span class="small" id="drop-sub">or click to choose one. pcap, pcapng, cap or .pcap.gz, up to {{ max_upload_mb }} MB.</span>
+      </label>
+      <fieldset class="opts">
+        <legend class="sr-only">Options</legend>
+        <div class="opt">
+          <div class="opt-row"><label class="opt-label" for="redact">Hide IP and MAC addresses</label>
+          <span class="switch"><input type="checkbox" id="redact" name="redact" value="1" aria-describedby="redact-hint"><span></span></span></div>
+          <p class="hint" id="redact-hint">Pseudonyms instead of addresses, so the report is safe to share. Evidence downloads are turned off.</p>
         </div>
+        <div class="opt">
+          <div class="opt-row"><span class="opt-label" id="sens-label">Sensitivity</span>
+          <span class="radios" role="radiogroup" aria-labelledby="sens-label">
+            <label><input type="radio" name="sensitivity" value="low"><span>Low</span></label>
+            <label><input type="radio" name="sensitivity" value="normal" checked><span>Normal</span></label>
+            <label><input type="radio" name="sensitivity" value="high"><span>High</span></label>
+          </span></div>
+          <p class="hint">High catches subtler problems but may raise more false alarms.</p>
+        </div>
+      </fieldset>
+      <p class="form-error" id="form-error" role="alert" hidden></p>
+      <div class="form-actions">
+        <p>The file is analysed on this computer and deleted as soon as the report is ready.</p>
+        <button class="btn primary big" type="submit">Analyze capture</button>
       </div>
+    </form>
+    <div class="panel">
+      <h1 class="claim">Is my network broken, or is someone breaking it?</h1>
+      <p class="claim-sub">One of four verdicts, in plain language, with the reasons, the fix and the exact packets behind it.</p>
+      <ul class="answers" aria-label="Possible answers">
+        <li class="c-ok"><b>Healthy</b><span>Nothing needs your attention.</span></li>
+        <li class="c-misconfig"><b>Minor issues</b><span>Small settings worth tidying up.</span></li>
+        <li class="c-fault"><b>Faulty</b><span>Something is broken, like lossy Wi-Fi or a dead DNS server.</span></li>
+        <li class="c-attack"><b>Under attack</b><span>Someone is spoofing, scanning or intercepting traffic.</span></li>
+      </ul>
+      <ol class="how" aria-label="How Faultline works">
+        <li><b>Drop a capture</b><span>From Wireshark, tcpdump or your router. It never leaves this computer.</span></li>
+        <li><b>38 checks run</b><span>ARP, DHCP, DNS, TCP, ICMP and TLS behaviour, each weighed fault against attack.</span></li>
+        <li><b>You get a verdict</b><span>What to fix first and the packets that prove it.</span></li>
+      </ol>
+      {% if 'mitm_chain.pcap' in names or 'outage_vs_attack_mixed.pcap' in names or has_cmp1 %}
+      <div class="lib-head" id="start"><h2>Start here</h2><span class="more">Three picks that show what Faultline does best</span></div>
       <div class="picks">
         {% if 'mitm_chain.pcap' in names %}
         <a class="pick c-attack" href="/sample/mitm_chain.pcap" data-sample data-busy="mitm_chain.pcap">
           <span class="pill">Attack</span>
-          <h3>The full man-in-the-middle story</h3>
-          <p>A rogue DHCP server, a fake DNS answer and a stolen password, linked into one root cause.</p>
-          <span class="foot"><span class="mono">mitm_chain.pcap</span><span class="go">Analyze</span></span>
+          <span><h3>The full man-in-the-middle story</h3><p>A rogue DHCP server, a fake DNS answer and a stolen password, linked into one root cause.</p></span>
+          <span class="go">Analyze</span>
         </a>
         {% endif %}
         {% if 'outage_vs_attack_mixed.pcap' in names %}
         <a class="pick c-fault" href="/sample/outage_vs_attack_mixed.pcap" data-sample data-busy="outage_vs_attack_mixed.pcap">
           <span class="pill">Fault + attack</span>
-          <h3>An outage and an attack at once</h3>
-          <p>A DNS outage and an unrelated port scan in the same capture. Faultline reports the fault and the attack separately.</p>
-          <span class="foot"><span class="mono">outage_vs_attack_mixed.pcap</span><span class="go">Analyze</span></span>
+          <span><h3>An outage and an attack at once</h3><p>A DNS outage and an unrelated port scan in the same capture, reported separately.</p></span>
+          <span class="go">Analyze</span>
         </a>
         {% endif %}
         {% if has_cmp1 %}
         <a class="pick c-misconfig" href="/compare?a=ip_conflict.pcap&amp;b=arp_spoofing.pcap" data-compare data-busy="ip_conflict.pcap vs arp_spoofing.pcap">
           <span class="pill">Compare</span>
-          <h3>Same symptom, opposite diagnosis</h3>
-          <p>Two devices answering for one address: an honest IP conflict next to a deliberate ARP spoof, side by side.</p>
-          <span class="foot"><span class="mono">ip_conflict vs arp_spoofing</span><span class="go">Compare</span></span>
+          <span><h3>Same symptom, opposite diagnosis</h3><p>Two devices answering for one address: an honest IP conflict next to a deliberate ARP spoof.</p></span>
+          <span class="go">Compare</span>
         </a>
         {% endif %}
       </div>
+      {% endif %}
     </div>
-  </section>
-  {% endif %}
+  </div>
 
-  <section class="section" id="samples">
-    <div class="wrap">
-      <div class="section-head">
-        <div>
-          <h2>Try a bundled capture</h2>
-          <p>Recorded scenarios with a known answer. Pick one to see what Faultline reports.</p>
-        </div>
-        {% if samples %}
-        {% set counts = {'all': samples|length, 'attack': 0, 'fault': 0, 'misconfig': 0, 'clean': 0, 'hostile': 0} %}
-        {% for s in samples %}{% set grp = 'hostile' if s.badge in ('corrupt', 'hostile') else s.badge %}{% if grp in counts %}{% if counts.update({grp: counts[grp] + 1}) %}{% endif %}{% endif %}{% endfor %}
-        <div class="tabs" role="group" aria-label="Filter samples" id="sample-tabs">
+  <div class="panel" id="samples">
+    <div class="lib-head">
+      <div><h2>Sample library</h2><span class="more">Recorded scenarios with a known answer. Pick one to see what Faultline reports.</span></div>
+      {% if samples %}
+      {% set counts = {'all': samples|length, 'attack': 0, 'fault': 0, 'misconfig': 0, 'clean': 0, 'hostile': 0} %}
+      {% for s in samples %}{% set grp = 'hostile' if s.badge in ('corrupt', 'hostile') else s.badge %}{% if grp in counts %}{% if counts.update({grp: counts[grp] + 1}) %}{% endif %}{% endif %}{% endfor %}
+      <div class="lib-tools">
+        <label class="search-wrap"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M7 11.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zM10.3 10.3 13.5 13.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input class="search" type="search" id="sample-search" placeholder="Search samples" aria-label="Search samples"></label>
+        <div class="chips" role="group" aria-label="Filter samples" id="sample-tabs">
           <button type="button" class="chip" aria-pressed="true" data-filter="all">All <span class="n">{{ counts.all }}</span></button>
           <button type="button" class="chip" aria-pressed="false" data-filter="attack">Attacks <span class="n">{{ counts.attack }}</span></button>
           <button type="button" class="chip" aria-pressed="false" data-filter="fault">Faults <span class="n">{{ counts.fault }}</span></button>
@@ -121,74 +103,71 @@
           <button type="button" class="chip" aria-pressed="false" data-filter="clean">Healthy <span class="n">{{ counts.clean }}</span></button>
           <button type="button" class="chip" aria-pressed="false" data-filter="hostile">Hostile files <span class="n">{{ counts.hostile }}</span></button>
         </div>
-        {% endif %}
-      </div>
-      {% if samples %}
-      <div class="gallery" id="gallery">
-        {% for s in samples %}
-        <a class="tile c-{{ s.badge }}" href="/sample/{{ s.name|urlencode }}" data-sample data-badge="{{ 'hostile' if s.badge in ('corrupt', 'hostile') else s.badge }}" data-busy="{{ s.name }}">
-          <span><span class="pill">{% if s.badge == 'misconfig' %}Misconfiguration{% elif s.badge == 'corrupt' %}Corrupt file{% elif s.badge == 'hostile' %}Hostile strings{% elif s.badge == 'clean' %}Healthy{% else %}{{ s.badge|capitalize }}{% endif %}</span></span>
-          <h3>{{ s.title }}</h3>
-          {% if s.story %}<p>{{ s.story }}</p>{% endif %}
-          <span class="foot"><span class="mono">{{ s.name }}</span><span class="go">Analyze</span></span>
-        </a>
-        {% endfor %}
-      </div>
-      <p class="none-match" id="none-match" hidden>No bundled capture in this group.</p>
-      {% else %}
-      <div class="empty">
-        <h3>No sample captures yet</h3>
-        <p>Generate the scenario lab with <code>faultline lab</code>, then reload this page.</p>
       </div>
       {% endif %}
     </div>
-  </section>
+    {% if samples %}
+    <div class="table-scroll">
+      <table class="samples" id="gallery">
+        <thead><tr><th scope="col">Expected</th><th scope="col">Scenario</th><th scope="col">File</th><th scope="col"></th></tr></thead>
+        <tbody>
+        {% for s in samples %}
+        <tr class="c-{{ s.badge }}" data-badge="{{ 'hostile' if s.badge in ('corrupt', 'hostile') else s.badge }}">
+          <td><span class="pill">{% if s.badge == 'misconfig' %}Misconfiguration{% elif s.badge == 'corrupt' %}Corrupt file{% elif s.badge == 'hostile' %}Hostile strings{% elif s.badge == 'clean' %}Healthy{% else %}{{ s.badge|capitalize }}{% endif %}</span></td>
+          <td><div class="t">{{ s.title }}</div>{% if s.story %}<div class="story">{{ s.story }}</div>{% endif %}</td>
+          <td class="mono">{{ s.name }}</td>
+          <td class="num"><a class="btn small" href="/sample/{{ s.name|urlencode }}" data-sample data-busy="{{ s.name }}">Analyze</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="none-match" id="none-match" hidden>No bundled capture matches.</p>
+    {% else %}
+    <div class="empty">
+      <h3>No sample captures yet</h3>
+      <p>Generate the scenario lab with <code>faultline lab</code>, then reload this page.</p>
+    </div>
+    {% endif %}
+  </div>
 
   {% if samples %}
-  <section class="section" id="compare">
-    <div class="wrap">
-      <div class="section-head">
-        <div>
-          <h2>Compare two captures</h2>
-          <p>Did the fix work? Is this the same symptom with a different cause? Put two verdicts side by side.</p>
-        </div>
-      </div>
-      <div class="cmp-box">
-        <form class="cmp-form" method="get" action="/compare" id="cmp-form">
-          <label><span>Capture A</span>
-            <select name="a" required>{% for s in samples %}<option value="{{ s.name }}"{% if s.name == 'ip_conflict.pcap' %} selected{% endif %}>{{ s.name }}</option>{% endfor %}</select></label>
-          <span class="vs" aria-hidden="true">vs</span>
-          <label><span>Capture B</span>
-            <select name="b" required>{% for s in samples %}<option value="{{ s.name }}"{% if s.name == 'arp_spoofing.pcap' %} selected{% endif %}>{{ s.name }}</option>{% endfor %}</select></label>
-          <button class="btn primary" type="submit">Compare</button>
+  <div class="cmp-grid" id="compare">
+    <div class="panel">
+      <div class="lib-head"><div><h2>Compare two captures</h2><span class="more">Did the fix work? Same symptom, different cause? Put two verdicts side by side.</span></div></div>
+      <form class="cmp-form" method="get" action="/compare" id="cmp-form">
+        <label><span>Capture A</span>
+          <select name="a" required>{% for s in samples %}<option value="{{ s.name }}"{% if s.name == 'ip_conflict.pcap' %} selected{% endif %}>{{ s.name }}</option>{% endfor %}</select></label>
+        <span class="vs" aria-hidden="true">vs</span>
+        <label><span>Capture B</span>
+          <select name="b" required>{% for s in samples %}<option value="{{ s.name }}"{% if s.name == 'arp_spoofing.pcap' %} selected{% endif %}>{{ s.name }}</option>{% endfor %}</select></label>
+        <button class="btn primary" type="submit">Compare</button>
+      </form>
+      <details class="cmp-upload">
+        <summary>Or upload two of your own files (before and after a fix)</summary>
+        <form method="post" action="/compare" enctype="multipart/form-data" id="cmp-upload-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <input type="hidden" name="mode" value="diff">
+          <label><span>Before</span><input type="file" name="capture_a" accept=".pcap,.pcapng,.cap,.gz" required></label>
+          <label><span>After</span><input type="file" name="capture_b" accept=".pcap,.pcapng,.cap,.gz" required></label>
+          <button class="btn primary" type="submit">Compare uploads</button>
         </form>
-        {% if has_cmp1 or has_cmp2 %}
-        <div class="presets">
-          {% if has_cmp1 %}<a class="preset" href="/compare?a=ip_conflict.pcap&amp;b=arp_spoofing.pcap" data-compare data-busy="ip_conflict.pcap vs arp_spoofing.pcap"><b>Same symptom, opposite diagnosis</b><span class="mono">ip_conflict.pcap vs arp_spoofing.pcap</span></a>{% endif %}
-          {% if has_cmp2 %}<a class="preset" href="/compare?a=dns_failure.pcap&amp;b=clean_office.pcap" data-compare data-busy="dns_failure.pcap vs clean_office.pcap"><b>Before / after a fix</b><span class="mono">dns_failure.pcap vs clean_office.pcap</span></a>{% endif %}
-        </div>
-        {% endif %}
-        <details class="cmp-upload">
-          <summary>Or upload two of your own files</summary>
-          <form method="post" action="/compare" enctype="multipart/form-data" id="cmp-upload-form">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-            <label><span>Before</span><input type="file" name="capture_a" accept=".pcap,.pcapng,.cap,.gz" required></label>
-            <label><span>After</span><input type="file" name="capture_b" accept=".pcap,.pcapng,.cap,.gz" required></label>
-            <button class="btn primary" type="submit">Compare uploads</button>
-          </form>
-        </details>
+      </details>
+    </div>
+    {% if has_cmp1 or has_cmp2 %}
+    <div class="panel">
+      <h3>Presets</h3>
+      <div class="presets">
+        {% if has_cmp1 %}<a class="preset" href="/compare?a=ip_conflict.pcap&amp;b=arp_spoofing.pcap" data-compare data-busy="ip_conflict.pcap vs arp_spoofing.pcap"><b>Same symptom, opposite diagnosis</b><span class="mono">ip_conflict.pcap vs arp_spoofing.pcap</span></a>{% endif %}
+        {% if has_cmp2 %}<a class="preset" href="/compare?a=dns_failure.pcap&amp;b=clean_office.pcap&amp;mode=diff" data-compare data-busy="dns_failure.pcap vs clean_office.pcap"><b>Before / after a fix</b><span class="mono">dns_failure.pcap vs clean_office.pcap</span></a>{% endif %}
       </div>
     </div>
-  </section>
-  {% endif %}
-</main>
-
-<footer class="footer">
-  <div class="wrap">
-    <p><strong>Faultline runs offline.</strong> Captures are deleted after analysis and reports are never stored.</p>
+    {% endif %}
   </div>
-</footer>
-
+  {% endif %}
+</section>
+{% endblock %}
+{% block after %}
 <div class="loading" id="loading" role="status" aria-live="polite" hidden>
   <div class="loading-box">
     <svg viewBox="0 0 560 120" aria-hidden="true" focusable="false">
@@ -299,22 +278,43 @@
       busy((fa ? fa.name : "") + " vs " + (fb ? fb.name : ""));
     });
   }
+  // sample library: category chips + search
   var tabs = document.getElementById("sample-tabs"), gallery = document.getElementById("gallery"), noneMatch = document.getElementById("none-match");
+  var search = document.getElementById("sample-search"), filter = "all";
+  function applyLibrary() {
+    var q = search ? search.value.trim().toLowerCase() : "", shown = 0;
+    Array.prototype.forEach.call(gallery.querySelectorAll("tr[data-badge]"), function (t) {
+      var okCat = filter === "all" || t.getAttribute("data-badge") === filter;
+      var okText = !q || t.textContent.toLowerCase().indexOf(q) !== -1;
+      t.hidden = !(okCat && okText);
+      if (!t.hidden) { shown++; }
+    });
+    noneMatch.hidden = shown > 0;
+  }
   if (tabs && gallery) {
     var tabBtns = tabs.querySelectorAll("button[data-filter]");
     Array.prototype.forEach.call(tabBtns, function (b) {
       b.addEventListener("click", function () {
-        var k = b.getAttribute("data-filter"), shown = 0;
+        filter = b.getAttribute("data-filter");
         Array.prototype.forEach.call(tabBtns, function (x) { x.setAttribute("aria-pressed", String(x === b)); });
-        Array.prototype.forEach.call(gallery.querySelectorAll("a[data-badge]"), function (t) {
-          var hide = !(k === "all" || t.getAttribute("data-badge") === k);
-          t.hidden = hide;
-          if (!hide) { shown++; }
-        });
-        noneMatch.hidden = shown > 0;
+        applyLibrary();
       });
     });
+    if (search) { search.addEventListener("input", applyLibrary); }
   }
+  // sidebar: in-page navigation inside the scrolling main area
+  var navItems = document.querySelectorAll("a[data-nav]"), main = document.getElementById("main");
+  Array.prototype.forEach.call(navItems, function (a) {
+    a.addEventListener("click", function (e) {
+      var target = document.getElementById(a.getAttribute("href").slice(1));
+      if (!target) { return; }
+      e.preventDefault();
+      Array.prototype.forEach.call(navItems, function (x) { if (x === a) { x.setAttribute("aria-current", "page"); } else { x.removeAttribute("aria-current"); } });
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      try { history.replaceState(null, "", a.getAttribute("href")); } catch (x) { /* ignore */ }
+    });
+  });
+  if (navItems.length) { navItems[0].setAttribute("aria-current", "page"); }
   window.addEventListener("pageshow", function () {
     loading.hidden = true;
     document.body.classList.remove("is-busy");

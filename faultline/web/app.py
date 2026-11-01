@@ -443,11 +443,54 @@ def create_app(*, max_upload_mb: int = 200, samples_dir: str | os.PathLike | Non
                              "severity_name": str(f.get("severity_name", ""))[:12], "summary": str(f.get("summary", ""))[:400]})
         score = verdict.get("score")
         capture = report.get("capture") if isinstance(report.get("capture"), dict) else {}
+        top = None
+        for f in report.get("findings") or []:
+            if isinstance(f, dict) and f.get("category") in ("attack", "fault", "misconfig"):
+                top = _top_finding(f)
+                break
         return {
             "name": name, "link": link, "status": status, "word": STATUS_WORDS[status],
             "headline": str(verdict.get("headline") or "")[:300], "score": int(score) if isinstance(score, (int, float)) else None,
             "counts": {k: int(counts.get(k) or 0) for k in ("attack", "fault", "misconfig", "info")},
-            "findings": findings[:40], "packets": capture.get("packets"),
+            "findings": findings[:40], "packets": capture.get("packets"), "top": top,
+        }
+
+    def _top_finding(f: dict) -> dict:
+        """The evidence scoreboard of one finding, reduced to plain, bounded values for the template."""
+        cat = f["category"]
+        raw_scores = f.get("scores") if isinstance(f.get("scores"), dict) else {}
+        scores = {}
+        for k in ("attack", "fault", "misconfig"):
+            v = raw_scores.get(k)
+            scores[k] = round(max(0.0, float(v)), 1) if isinstance(v, (int, float)) and v == v else 0.0
+        total = sum(scores.values())
+        widths = {k: int(round(100 * v / total)) if total else 0 for k, v in scores.items()}
+        indicators = []
+        for i in (f.get("indicators") or [])[:40]:
+            if not isinstance(i, dict):
+                continue
+            w = i.get("weight")
+            indicators.append({"text": str(i.get("text", ""))[:300],
+                               "supports": i.get("supports") if i.get("supports") in ("attack", "fault", "misconfig", "info") else "info",
+                               "weight": max(0.0, min(3.0, float(w))) if isinstance(w, (int, float)) and w == w else 0.0})
+        indicators.sort(key=lambda i: -i["weight"])
+        alternatives = []
+        for a in (f.get("alternatives") or [])[:6]:
+            if isinstance(a, dict):
+                alternatives.append({"title": str(a.get("title", ""))[:120], "why_not": str(a.get("why_not", ""))[:400],
+                                     "category": a.get("category") if a.get("category") in ("attack", "fault", "misconfig", "info") else "info"})
+        names = {"attack": "Attack", "fault": "Fault", "misconfig": "Misconfiguration"}
+        others = [f"{scores[k]:.1f} for {names[k].lower()}" for k in ("attack", "fault", "misconfig") if k != cat and scores[k] > 0]
+        lead = f"{names[cat]} wins with {scores[cat]:.1f} points of evidence" + (
+            ", against " + " and ".join(others) + "." if others else ". Nothing pointed anywhere else.")
+        conf = f.get("confidence")
+        return {
+            "id": str(f.get("id", ""))[:12], "title": str(f.get("title", ""))[:200], "category": cat,
+            "severity_name": str(f.get("severity_name", ""))[:12],
+            "confidence": int(round(100 * max(0.0, min(1.0, float(conf))))) if isinstance(conf, (int, float)) and conf == conf else None,
+            "explanation": str(f.get("explanation") or f.get("summary") or "")[:600],
+            "scores": scores, "widths": widths, "total": total, "lead": lead,
+            "indicators": indicators, "alternatives": alternatives,
         }
 
     def _finding_brief(f: dict) -> dict:
@@ -455,10 +498,13 @@ def create_app(*, max_upload_mb: int = 200, samples_dir: str | os.PathLike | Non
         return {"id": str(f.get("id", ""))[:12], "title": str(f.get("title", ""))[:200], "category": cat,
                 "severity_name": str(f.get("severity_name", ""))[:12]}
 
-    def compare_response(ra: dict, name_a: str, link_a: str | None, rb: dict, name_b: str, link_b: str | None) -> Response:
+    def compare_response(ra: dict, name_a: str, link_a: str | None, rb: dict, name_b: str, link_b: str | None,
+                         before_after: bool = False) -> Response:
+        """Two verdicts side by side. ``before_after`` adds the "what changed from A to B" diff;
+        otherwise the page contrasts the top finding of each side (same symptom, different evidence)."""
         a, b = _side(ra, name_a, link_a), _side(rb, name_b, link_b)
         diff = None
-        if a["findings"] or b["findings"]:
+        if before_after and (a["findings"] or b["findings"]):
             try:
                 from faultline.diff import diff_reports
 
@@ -513,7 +559,8 @@ def create_app(*, max_upload_mb: int = 200, samples_dir: str | os.PathLike | Non
         qs = ("?redact=1" if redact else "") + (("&" if redact else "?") + "sensitivity=" + sensitivity if sensitivity != "normal" else "")
         ra = run_analysis(str(ta), name_a, redact, sensitivity)
         rb = run_analysis(str(tb), name_b, redact, sensitivity)
-        return compare_response(ra, name_a, "/sample/" + quote(name_a) + qs, rb, name_b, "/sample/" + quote(name_b) + qs)
+        return compare_response(ra, name_a, "/sample/" + quote(name_a) + qs, rb, name_b, "/sample/" + quote(name_b) + qs,
+                                before_after=request.args.get("mode") == "diff")
 
     @app.post("/compare")
     def compare_upload():
@@ -524,7 +571,8 @@ def create_app(*, max_upload_mb: int = 200, samples_dir: str | os.PathLike | Non
             raise UserError("Choose two capture files to compare.", 400, "Two files needed")
         ra = analyze_file(fa, redact, sensitivity, "first")
         rb = analyze_file(fb, redact, sensitivity, "second")
-        return compare_response(ra, sanitize_display_name(fa.filename), None, rb, sanitize_display_name(fb.filename), None)
+        return compare_response(ra, sanitize_display_name(fa.filename), None, rb, sanitize_display_name(fb.filename), None,
+                                before_after=request.form.get("mode", "diff") != "contrast")
 
     @app.get("/healthz")
     def healthz():

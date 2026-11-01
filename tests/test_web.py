@@ -405,7 +405,10 @@ def test_compare_get_two_samples(client, rec):
     assert r.status_code == 200
     body = r.get_data(as_text=True)
     assert "ip_conflict.pcap" in body and "arp_spoofing.pcap" in body
-    assert "What changed" in body and "Open full report" in body
+    # the "same symptom, opposite diagnosis" view contrasts the two scoreboards instead of diffing
+    assert "Same observation, different evidence" in body and "What changed" not in body
+    assert "Fault or attack? Why we think so" in body and 'class="scorebar"' in body
+    assert "Open full report" in body
     assert "/sample/ip_conflict.pcap?redact=1" in body
     assert "<script>alert" not in body and "<img src=x" not in body  # hostile fixture strings escaped
     assert [c["name"] for c in rec.calls] == ["ip_conflict.pcap", "arp_spoofing.pcap"]
@@ -413,6 +416,17 @@ def test_compare_get_two_samples(client, rec):
     assert_secure_headers(r)
     nonce = re.search(r"style-src 'nonce-([^']+)'", r.headers["Content-Security-Policy"]).group(1)
     assert f'<style nonce="{nonce}">' in body
+
+
+def test_compare_before_after_mode_shows_diff(client, rec):
+    r = client.get("/compare?a=dns_failure.pcap&b=clean_office.pcap&mode=diff")
+    assert r.status_code == 200
+    body = r.get_data(as_text=True)
+    assert "What changed from A to B" in body and "Same observation" not in body
+    assert "Fixed" in body and "Still present" in body
+    assert "<script>alert" not in body and "<img src=x" not in body
+    assert 'style="' not in body  # CSP: no inline style attributes anywhere in the page
+    assert_secure_headers(r)
 
 
 @pytest.mark.parametrize("qs", [
@@ -476,3 +490,6 @@ def test_index_landing_features(client):
     assert 'data-badge="hostile"' in body  # xss_payload.pcap
     assert "How Faultline works" in body
     assert 'action="/compare"' in body
+    # app shell: sidebar navigation, sample library table with search + filter chips
+    assert 'class="side"' in body and 'id="sample-search"' in body and 'class="samples"' in body
+    assert 'style="' not in body  # CSP nonce on <style> only; no inline style attributes

@@ -100,11 +100,35 @@ def duration(path: str) -> float:
     return float(out.strip())
 
 
+SARVAM_SPEAKER = os.environ.get("SARVAM_SPEAKER", "aditya")
+
+
+def _sarvam(text: str, path: str) -> bool:
+    """Narrate with Sarvam AI (bulbul:v3, Indian English) if SARVAM_API_KEY is set. The key is read
+    from the environment only and is never written to disk."""
+    key = os.environ.get("SARVAM_API_KEY")
+    if not key:
+        return False
+    import base64
+    import urllib.request
+    body = json.dumps({"text": text, "language_code": "en-IN", "model": "bulbul:v3", "speaker": SARVAM_SPEAKER,
+                       "pace": 1.0, "speech_sample_rate": 48000, "output_audio_codec": "wav"}).encode()
+    req = urllib.request.Request("https://api.sarvam.ai/text-to-speech", data=body,
+                                 headers={"api-subscription-key": key, "Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=120) as r:
+        data = json.load(r)
+    with open(path, "wb") as fh:
+        fh.write(base64.b64decode("".join(data["audios"])))
+    return True
+
+
 def narrate(sc: dict) -> float:
-    aiff = os.path.join(OUT, f"{sc['id']}.aiff")
-    sh(["say", "-v", VOICE, "-r", RATE, "-o", aiff, sc["say"]])
+    src = os.path.join(OUT, f"{sc['id']}_voice.wav")
+    if not _sarvam(sc["say"], src):
+        src = os.path.join(OUT, f"{sc['id']}.aiff")
+        sh(["say", "-v", VOICE, "-r", RATE, "-o", src, sc["say"]])
     wav = os.path.join(OUT, f"{sc['id']}.wav")
-    sh(["ffmpeg", "-loglevel", "error", "-y", "-i", aiff, "-af", "apad=pad_dur=0.6", "-ar", "48000", "-ac", "2", wav])
+    sh(["ffmpeg", "-loglevel", "error", "-y", "-i", src, "-af", "apad=pad_dur=0.6", "-ar", "48000", "-ac", "2", wav])
     return duration(wav)
 
 

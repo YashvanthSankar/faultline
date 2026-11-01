@@ -144,8 +144,9 @@ def test_redacted_report_has_no_evidence_downloads(report):
     r["redacted"] = True
     r.pop("evidence", None)
     html = render_html(r)
-    assert '"redacted":true' in html
-    assert '"evidence"' not in html
+    payload = re.search(r'<script type="application/json" id="faultline-data">(.*?)</script>', html, flags=re.S).group(1)
+    assert '"redacted":true' in payload
+    assert '"evidence"' not in payload  # no evidence bytes are embedded at all
 
 
 # --------------------------------------------------------------------------- new UI features
@@ -162,6 +163,28 @@ def test_network_map_and_glossary_are_in_renderer():
     assert "mini-verdict" in js and ".mini-verdict" in css
     assert "Start with this" in js
     assert ".netmap" in css and ".term .tip" in css
+
+
+def test_console_shell_and_router_are_in_renderer():
+    """App shell: sidebar sections, hash routing, master-detail findings with tabs."""
+    js = (ASSETS / "report.js").read_text(encoding="utf-8")
+    css = (ASSETS / "report.css").read_text(encoding="utf-8")
+    for sec in ("overview", "incidents", "findings", "network", "evidence", "capture"):
+        assert '["%s", ' % sec in js, sec
+    assert "function parseHash(" in js and "function showSection(" in js and '"hashchange"' in js
+    assert '["why", "Why this verdict"]' in js and '["evidence", "Evidence"]' in js and '["technical", "Technical"]' in js
+    assert '"ArrowDown"' in js and '"ArrowUp"' in js  # keyboard navigation through the list
+    assert 'type: "search"' in js  # findings search box
+    for cls in (".shell", ".side", ".topbar", ".fl-list", ".fl-detail", ".scoreboard", ".kpis", "@media print"):
+        assert cls in css, cls
+    assert "prefers-reduced-motion" in css
+
+
+def test_hash_routes_are_validated_against_findings(report):
+    """Only a finding id that exists in the report can be selected from the URL hash."""
+    js = (ASSETS / "report.js").read_text(encoding="utf-8")
+    assert "parts[1] && byId[parts[1]] ? parts[1] : null" in js
+    assert "/^finding-([A-Za-z0-9_-]+)$/" in js  # legacy #finding-F1 links still work
 
 
 def test_renderer_only_builds_dom_from_text(report):

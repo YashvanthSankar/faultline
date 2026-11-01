@@ -45,9 +45,12 @@ def main() -> None:
             b = p.chromium.launch()
             pg = b.new_page(viewport={"width": 1440, "height": 900}, device_scale_factor=2)
 
-            def shot(name, url, full=False, selector=None, wait=1800):
+            def shot(name, url, full=False, selector=None, wait=1800, click=None):
                 pg.goto(base + url)
                 pg.wait_for_timeout(wait)
+                if click:
+                    pg.click(click)
+                    pg.wait_for_timeout(500)
                 path = os.path.join(OUT, name)
                 if selector:
                     pg.locator(selector).first.scroll_into_view_if_needed()
@@ -57,14 +60,17 @@ def main() -> None:
                     pg.screenshot(path=path, full_page=full)
                 print("  wrote", os.path.relpath(path, ROOT))
 
+            # The report is an app shell with hash routes: #overview, #incidents, #findings[/F1[/tab]],
+            # #network, #evidence, #capture. Tabs: explain, fix, why, evidence, technical (expert mode).
             shot("web-landing.png", "/")
             shot("web-report-mitm.png", "/sample/mitm_chain.pcap")
-            shot("web-network-map.png", "/sample/mitm_chain.pcap", selector=".map-panel")
-            shot("web-why-attack.png", "/sample/arp_spoofing.pcap", selector=".reason")
+            shot("web-findings.png", "/sample/mitm_chain.pcap#findings/F1/explain")
+            shot("web-network-map.png", "/sample/mitm_chain.pcap#network", selector=".map-panel")
+            shot("web-why-attack.png", "/sample/arp_spoofing.pcap#findings/F1/why", selector=".fl-detail .finding")
             shot("web-compare.png", "/compare?a=ip_conflict.pcap&b=arp_spoofing.pcap")
             shot("web-report-mixed.png", "/sample/outage_vs_attack_mixed.pcap")
             shot("web-report-lossy.png", "/sample/lossy_link.pcap")
-            shot("web-report-full-mitm.png", "/sample/mitm_chain.pcap", full=True)
+            shot("web-report-full-mitm.png", "/sample/mitm_chain.pcap#incidents")
             b.close()
     finally:
         srv.terminate()

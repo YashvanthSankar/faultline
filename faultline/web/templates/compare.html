@@ -1,101 +1,143 @@
 {% extends "_base.html" %}
 {% set worst = {'under_attack': 0, 'faulty': 1, 'minor_issues': 2, 'healthy': 3} %}
-{% block status %}{% if worst[a.status] <= worst[b.status] %}{{ a.status }}{% else %}{{ b.status }}{% endif %}{% endblock %}
+{% set page_status = a.status if worst[a.status] <= worst[b.status] else b.status %}
+{% set status_word = {'under_attack': 'Under attack', 'faulty': 'Faulty', 'minor_issues': 'Minor issues', 'healthy': 'Healthy'} %}
+{% set catword = {'attack': 'Attack', 'fault': 'Fault', 'misconfig': 'Misconfig', 'info': 'Note'} %}
+{% set hypword = {'attack': 'Points to an attack', 'fault': 'Points to a fault', 'misconfig': 'Points to a misconfiguration', 'info': 'Neutral'} %}
+{% block status %}{{ page_status }}{% endblock %}
 {% block title %}Compare: {{ a.name }} vs {{ b.name }} | Faultline{% endblock %}
+{% block sidenav %}
+  <li><a class="nav-item" href="/"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 2v8M4.5 7 8 10.5 11.5 7M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-label">New analysis</span></a></li>
+  <li><a class="nav-item" href="/compare?a={{ a.name|urlencode }}&amp;b={{ b.name|urlencode }}{% if diff %}&amp;mode=diff{% endif %}" aria-current="page"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2.5 3h4.5v10H2.5zM9 3h4.5v10H9z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-label">Comparison</span></a></li>
+  {% if a.link %}<li><a class="nav-item" href="{{ a.link }}"><span class="side-tag s-{{ a.status }}">A</span><span class="nav-label">Report A</span></a></li>{% endif %}
+  {% if b.link %}<li><a class="nav-item" href="{{ b.link }}"><span class="side-tag s-{{ b.status }}">B</span><span class="nav-label">Report B</span></a></li>{% endif %}
+{% endblock %}
+{% block topbar %}
+  <div class="crumb"><span class="crumb-label">Compare</span><span class="crumb-name mono">{{ a.name }} vs {{ b.name }}</span></div>
+  <span class="mini-verdict s-{{ a.status }}"><span class="dot"></span><b>A: {{ a.word }}</b></span>
+  <span class="mini-verdict s-{{ b.status }}"><span class="dot"></span><b>B: {{ b.word }}</b></span>
+  <div class="tools"><a class="btn primary" href="/">New analysis</a></div>
+{% endblock %}
 {% block body %}
-<main class="cmp">
-  <section class="section cmp-head">
-    <div class="wrap">
-      <p class="eyebrow">Compare two captures</p>
-      <h1 class="cmp-title"><span class="mono">{{ a.name }}</span> <span class="vs">vs</span> <span class="mono">{{ b.name }}</span></h1>
-      <p class="lede">The same symptom can have opposite causes, and a fix only counts if the capture after it looks healthier. Faultline reads both files and puts the verdicts side by side.</p>
+<section class="view cmp">
+  <div class="view-head">
+    <div>
+      <h2 class="cmp-title"><span class="mono">{{ a.name }}</span> <span class="vs">vs</span> <span class="mono">{{ b.name }}</span></h2>
+      <p>{% if diff %}Before and after a fix. A fix only counts if the capture after it looks healthier.{% else %}The same symptom can have opposite causes. Faultline reads both files and shows what the evidence says in each.{% endif %}</p>
     </div>
-  </section>
+  </div>
 
-  <section class="section cmp-sides">
-    <div class="wrap">
-      <div class="sides">
-        {% for side, label in ((a, 'A'), (b, 'B')) %}
-        <article class="side s-{{ side.status }}">
-          <header class="side-head">
-            <span class="side-tag">{{ label }}</span>
-            <span class="mono side-name">{{ side.name }}</span>
-            {% if side.link %}<a class="btn" href="{{ side.link }}">Open full report</a>{% endif %}
-          </header>
-          <div class="verdict-row">
-            <div>
-              <p class="status-word small">{{ side.word }}</p>
-              <p class="side-headline">{{ side.headline or 'Analysis complete.' }}</p>
-            </div>
-            <div class="score" aria-label="Health score {{ side.score if side.score is not none else '?' }} out of 100">
-              <b>{{ side.score if side.score is not none else '?' }}</b><span>health</span>
-            </div>
-          </div>
-          <ul class="mini-counts" aria-label="Findings by type">
-            <li class="c-attack{% if not side.counts.attack %} zero{% endif %}"><b>{{ side.counts.attack }}</b> attack{{ '' if side.counts.attack == 1 else 's' }}</li>
-            <li class="c-fault{% if not side.counts.fault %} zero{% endif %}"><b>{{ side.counts.fault }}</b> fault{{ '' if side.counts.fault == 1 else 's' }}</li>
-            <li class="c-misconfig{% if not side.counts.misconfig %} zero{% endif %}"><b>{{ side.counts.misconfig }}</b> misconfig{{ '' if side.counts.misconfig == 1 else 's' }}</li>
-          </ul>
-          {% if side.findings %}
-          <ol class="side-findings">
-            {% for f in side.findings %}
-            <li class="c-{{ f.category }}">
-              <span class="pill">{% if f.category == 'misconfig' %}Misconfig{% elif f.category == 'info' %}Note{% else %}{{ f.category|capitalize }}{% endif %}</span>
-              <span class="ft"><b>{{ f.title }}</b>{% if f.summary %}<span class="fs">{{ f.summary }}</span>{% endif %}</span>
-              <span class="fid">{{ f.id }}</span>
-            </li>
-            {% endfor %}
-          </ol>
-          {% else %}
-          <p class="side-empty">Nothing looks wrong in this capture.</p>
-          {% endif %}
-        </article>
-        {% endfor %}
+  <div class="sides">
+    {% for side, label in ((a, 'A'), (b, 'B')) %}
+    <article class="panel side-card s-{{ side.status }}">
+      <header class="side-head">
+        <span class="side-tag">{{ label }}</span>
+        <span class="mono side-name">{{ side.name }}</span>
+        {% if side.link %}<a class="btn small" href="{{ side.link }}">Open full report</a>{% endif %}
+      </header>
+      <div class="verdict-row">
+        <div>
+          <p class="status-word">{{ side.word }}</p>
+          <p class="side-headline">{{ side.headline or 'Analysis complete.' }}</p>
+        </div>
+        <div class="score" aria-label="Health score {{ side.score if side.score is not none else '?' }} out of 100">
+          <b>{{ side.score if side.score is not none else '?' }}</b><span>health</span>
+        </div>
       </div>
-    </div>
-  </section>
+      <ul class="mini-counts" aria-label="Findings by type">
+        <li class="c-attack{% if not side.counts.attack %} zero{% endif %}"><b>{{ side.counts.attack }}</b> attack{{ '' if side.counts.attack == 1 else 's' }}</li>
+        <li class="c-fault{% if not side.counts.fault %} zero{% endif %}"><b>{{ side.counts.fault }}</b> fault{{ '' if side.counts.fault == 1 else 's' }}</li>
+        <li class="c-misconfig{% if not side.counts.misconfig %} zero{% endif %}"><b>{{ side.counts.misconfig }}</b> misconfig{{ '' if side.counts.misconfig == 1 else 's' }}</li>
+      </ul>
+      {% if side.findings %}
+      <ol class="side-findings">
+        {% for f in side.findings %}
+        <li class="c-{{ f.category }}">
+          <span class="pill">{{ catword[f.category] }}</span>
+          <span class="ft"><b>{{ f.title }}</b>{% if f.summary %}<span class="fs">{{ f.summary }}</span>{% endif %}</span>
+          <span class="fid">{{ f.id }}</span>
+        </li>
+        {% endfor %}
+      </ol>
+      {% else %}
+      <p class="side-empty">Nothing looks wrong in this capture.</p>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
 
   {% if diff %}
-  <section class="section" id="changed">
-    <div class="wrap">
-      <div class="section-head">
-        <div>
-          <h2>What changed from A to B</h2>
-          <p>Problems are matched by what they are and which devices they involve, so the same issue is recognised even if its numbering differs.</p>
-        </div>
+  <div class="panel" id="changed">
+    <div class="lib-head"><div><h2>What changed from A to B</h2><span class="more">Problems are matched by what they are and which devices they involve, so the same issue is recognised even if its numbering differs.</span></div></div>
+    <p class="conclusion s-{{ b.status }}">{{ diff.conclusion }}</p>
+    <div class="diff-grid">
+      <div class="d-fixed">
+        <h3><i></i>Fixed <span class="n">{{ diff.fixed|length }}</span></h3>
+        {% if diff.fixed %}<ul>{% for f in diff.fixed %}<li class="c-{{ f.category }}"><span class="pill">{{ catword[f.category] }}</span> {{ f.title }}</li>{% endfor %}</ul>
+        {% else %}<p class="none">Nothing from A disappeared in B.</p>{% endif %}
       </div>
-      <p class="conclusion s-{{ b.status }}">{{ diff.conclusion }}</p>
-      <div class="diff-grid">
-        <div class="panel d-fixed">
-          <h3><i></i>Fixed <span class="n">{{ diff.fixed|length }}</span></h3>
-          {% if diff.fixed %}<ul>{% for f in diff.fixed %}<li class="c-{{ f.category }}"><span class="pill">{{ f.category|capitalize }}</span> {{ f.title }}</li>{% endfor %}</ul>
-          {% else %}<p class="none">Nothing from A disappeared in B.</p>{% endif %}
-        </div>
-        <div class="panel d-new">
-          <h3><i></i>New <span class="n">{{ diff.new|length }}</span></h3>
-          {% if diff.new %}<ul>{% for f in diff.new %}<li class="c-{{ f.category }}"><span class="pill">{{ f.category|capitalize }}</span> {{ f.title }}</li>{% endfor %}</ul>
-          {% else %}<p class="none">B has no problems that A did not have.</p>{% endif %}
-        </div>
-        <div class="panel d-same">
-          <h3><i></i>Still present <span class="n">{{ diff.persisting|length }}</span></h3>
-          {% if diff.persisting %}<ul>{% for p in diff.persisting %}<li class="c-{{ p.after.category }}"><span class="pill">{{ p.after.category|capitalize }}</span> {{ p.after.title }} <span class="trend t-{{ p.trend }}">{{ p.trend }}</span></li>{% endfor %}</ul>
-          {% else %}<p class="none">No problem appears in both captures.</p>{% endif %}
-        </div>
+      <div class="d-new">
+        <h3><i></i>New <span class="n">{{ diff.new|length }}</span></h3>
+        {% if diff.new %}<ul>{% for f in diff.new %}<li class="c-{{ f.category }}"><span class="pill">{{ catword[f.category] }}</span> {{ f.title }}</li>{% endfor %}</ul>
+        {% else %}<p class="none">B has no problems that A did not have.</p>{% endif %}
+      </div>
+      <div class="d-same">
+        <h3><i></i>Still present <span class="n">{{ diff.persisting|length }}</span></h3>
+        {% if diff.persisting %}<ul>{% for p in diff.persisting %}<li class="c-{{ p.after.category }}"><span class="pill">{{ catword[p.after.category] }}</span> {{ p.after.title }} <span class="trend t-{{ p.trend }}">{{ p.trend }}</span></li>{% endfor %}</ul>
+        {% else %}<p class="none">No problem appears in both captures.</p>{% endif %}
       </div>
     </div>
-  </section>
+  </div>
+  {% else %}
+  <div class="panel explain-panel" id="contrast">
+    <div class="lib-head"><div><h2>Same observation, different evidence</h2></div></div>
+    <p>Both captures show a similar symptom on the wire. The verdict comes from the weight of evidence for each hypothesis, not from the symptom alone. Here is the top finding on each side and the scoreboard behind it.</p>
+  </div>
+  <div class="contrast">
+    {% for side, label in ((a, 'A'), (b, 'B')) %}
+    <article class="panel side-card s-{{ side.status }}">
+      <header class="side-head"><span class="side-tag">{{ label }}</span><span class="mono side-name">{{ side.name }}</span></header>
+      {% if side.top %}
+      {% set t = side.top %}
+      <div class="contrast-top c-{{ t.category }}">
+        <div class="card-tags"><span class="pill">{{ catword[t.category] }}</span><span class="conf">{{ t.severity_name|capitalize }}</span>{% if t.confidence is not none %}<span class="conf">{{ t.confidence }}% confident</span>{% endif %}<span class="fid-tag mono">{{ t.id }}</span></div>
+        <h3>{{ t.title }}</h3>
+        {% if t.explanation %}<p>{{ t.explanation }}</p>{% endif %}
+      </div>
+      <div class="reason">
+        <div class="reason-head"><h4>Fault or attack? Why we think so</h4><p class="lead">{{ t.lead }}</p></div>
+        {% if t.total %}
+        <div class="scoreboard">
+          <div class="scorebar" role="img" aria-label="{% for k in ('attack', 'fault', 'misconfig') %}{{ catword[k] }} {{ t.scores[k] }}{% if not loop.last %}, {% endif %}{% endfor %}">
+            {% for k in ('attack', 'fault', 'misconfig') %}{% if t.scores[k] %}<i class="c-{{ k }} w-{{ t.widths[k] }}"></i>{% endif %}{% endfor %}
+          </div>
+          <ul class="scorekey">
+            {% for k in ('attack', 'fault', 'misconfig') %}<li class="c-{{ k }}{% if k == t.category %} win{% endif %}"><i></i><span>{{ {'attack': 'Attack', 'fault': 'Fault', 'misconfig': 'Misconfiguration'}[k] }}</span><b class="num">{{ '%.1f'|format(t.scores[k]) }}</b></li>{% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+        <div class="hyps">
+          {% for k in ('attack', 'fault', 'misconfig', 'info') %}{% set mine = t.indicators|selectattr('supports', 'equalto', k)|list %}{% if mine %}
+          <div class="hyp c-{{ k }}{% if k == t.category %} win{% endif %}">
+            <h5>{{ hypword[k] }}<span class="n">{{ mine|length }} indicator{{ '' if mine|length == 1 else 's' }}</span></h5>
+            <ul>{% for i in mine %}<li><span class="dots c-{{ k }}" aria-label="weight {{ i.weight }} of 3">{% for d in (1, 2, 3) %}<i class="{{ 'on' if i.weight >= d - 0.25 else ('half' if i.weight >= d - 0.75 else '') }}"></i>{% endfor %}</span><span>{{ i.text }}</span></li>{% endfor %}</ul>
+          </div>
+          {% endif %}{% endfor %}
+        </div>
+        {% if t.alternatives %}
+        <div class="whynot-wrap"><h5>Alternatives we ruled out</h5>
+          <ul class="whynot">{% for alt in t.alternatives %}<li><div class="wn-head c-{{ alt.category }}"><span class="pill">{{ catword[alt.category] }}</span><b>Why not “{{ alt.title }}”?</b></div>{% if alt.why_not %}<p>{{ alt.why_not }}</p>{% endif %}</li>{% endfor %}</ul>
+        </div>
+        {% endif %}
+      </div>
+      {% else %}
+      <p class="side-empty">Nothing looks wrong in this capture, so there is no verdict to explain.</p>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
   {% endif %}
 
-  <section class="section">
-    <div class="wrap cmp-actions">
-      <a class="btn primary big" href="/">Compare other captures</a>
-      {% if a.link and b.link %}<span class="lede">Or open the full report for <a href="{{ a.link }}">A</a> or <a href="{{ b.link }}">B</a> to see the packets behind each verdict.</span>{% endif %}
-    </div>
-  </section>
-</main>
-<footer class="footer">
-  <div class="wrap">
-    <p><strong>Faultline runs offline.</strong> Both captures were analysed on this computer; uploads are deleted immediately.</p>
-  </div>
-</footer>
+  <p class="foot-note"><strong>Faultline runs offline.</strong> Both captures were analysed on this computer; uploads are deleted immediately.</p>
+</section>
 {% endblock %}
