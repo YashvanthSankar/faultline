@@ -4,7 +4,7 @@ Faultline is an offline tool that reads a packet capture and answers one questio
 
 Built for the IIITDM Kancheepuram Cybersecurity Club 24-hour hackathon, Network track ("Diagnosing Network Problems from Packet Captures"), by team **Moorthy Gang**: Yashvanth S (CS24I1029).
 
-[Quick start](#quick-start) · [Example output](#example-output) · [Demo video](#demo-video) · [Design](#design) · [How it works](#how-it-works) · [Evaluation](#evaluation) · [Security](#security) · [Limitations](#limitations)
+[Quick start](#quick-start) · [Example output](#example-output) · [Demo video](#demo-video) · [Design](#design) · [Why no AI](#why-faultline-does-not-use-ai-or-machine-learning) · [How it works](#how-it-works) · [Evaluation](#evaluation) · [Security](#security) · [Limitations](#limitations)
 
 <img src="docs/proof/real-terminal-mitm.png" alt="macOS Terminal running faultline analyze on a man-in-the-middle capture" width="900">
 
@@ -100,6 +100,19 @@ The reasoning behind these choices, with worked examples and the alternatives we
 4. **Use the capture point.** A capture sees traffic from one position on the path. Faultline uses that to tell packet loss before the capture point from loss after it, and to split delay into a network part and a server part.
 5. **Capture files are untrusted input.** A capture can be truncated, malformed or crafted to crash a parser or inject script into a report. The reader and decoders are our own, bounds-checked and fuzzed. Text from packets is treated as untrusted all the way into the HTML report.
 6. **Measure, then publish the numbers.** The project includes a labelled scenario lab, a benchmark with a false-alarm count, and a validation run on public captures with the misses shown. That testing found real defects in our own code: two redaction leaks, an upload limit that rejected normal files, and a false alarm on ISP traffic. Each was fixed and covered by a regression test.
+
+## Why Faultline does not use AI or machine learning
+
+The diagnosis is made by explicit, hand-written rules and a weighted-evidence score, not by a language model or a trained classifier. This was a deliberate choice, not a gap:
+
+- **Local-first and private.** Packet captures contain the most sensitive data a network has: internal addresses, device names, browsing, and sometimes passwords. Faultline never sends any of it anywhere. It needs no cloud API, no account and no key, and it works on an air-gapped lab machine.
+- **Explainable by construction.** Every verdict is the sum of named pieces of evidence with fixed weights, and each piece points to specific packets. A beginner can read why a finding is an attack, and an expert can check it in Wireshark. A model's output cannot be traced back to packets like this.
+- **Deterministic and reproducible.** The same capture always gives the same answer. That is what makes the benchmark, the regression tests and a before/after `diff` meaningful.
+- **No training data problem.** Labelled captures of real attacks on small networks are scarce, and models trained on public datasets tend to learn the lab rather than the attack. Protocol rules, such as "a second DHCP server naming itself as the router", hold on any network.
+- **Harder to fool, and safer to run.** Text inside packets is attacker-controlled. Feeding it to a language model would invite prompt injection, while rules only ever treat it as data.
+- **Fast and light.** Analysis takes well under a second for typical captures on a laptop, with no GPU and no model download.
+
+The trade-off is that new kinds of problem need new rules. A local, optional model that only rephrases the already-computed findings could be added later without changing how verdicts are made.
 
 ## Features
 
