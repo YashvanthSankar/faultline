@@ -500,6 +500,59 @@ def sc_xss_payload(o: Office) -> dict:
     )
 
 
+def sc_dns_backdoor(o: Office) -> dict:
+    """A reverse shell on TCP port 53 (modelled on the public Wireshark sample dns-remoteshell.pcap)."""
+    lan, rng, t0 = o.lan, o.rng, o.t0
+    o.background(t0 + 0.5, 100, rate=0.4)
+    victim = lan.clients[5]
+    intr = _intruder(o)
+    s = TcpSession(o.cap, intr, victim, o.port(), 53, 0.0012, t0 + 30.0)
+    s.handshake()
+    s.server_send(b"Microsoft Windows [Version 10.0.19045]\r\n(c) Microsoft Corporation.\r\n\r\nC:\\Users\\finance>", think=0.05)
+    for cmd, out in ((b"whoami\r\n", b"office\\finance\r\n\r\nC:\\Users\\finance>"),
+                     (b"dir Documents\r\n", b" Volume in drive C has no label.\r\n Directory of C:\\Users\\finance\\Documents\r\n"
+                                            b"31/10/2026  21:02    48,213 payroll-oct.xlsx\r\n\r\nC:\\Users\\finance>"),
+                     (b"ipconfig\r\n", b"Windows IP Configuration\r\n   IPv4 Address. . . : 192.168.1.20\r\n\r\nC:\\Users\\finance>")):
+        s.client_send(cmd, at=s.now + rng.uniform(2.0, 6.0))
+        s.server_send(out, think=rng.uniform(0.05, 0.3))
+    s.close("c", at=s.now + 3.0)
+    return label(
+        "A remote shell hiding on the DNS port",
+        "An unknown device controls the finance PC through a command shell that runs over port 53, the one port every "
+        "firewall lets through, disguised as DNS.",
+        expected=[("dns.non_dns_traffic", "attack")],
+    )
+
+
+def sc_teardrop(o: Office) -> dict:
+    """Overlapping UDP fragments (Teardrop), next to normal, legitimately fragmented traffic."""
+    lan, rng, t0 = o.lan, o.rng, o.t0
+    o.background(t0 + 0.5, 60, rate=0.4)
+    intr = _intruder(o)
+    target = lan.clients[4]
+    # benign: a large ping that is fragmented correctly
+    data = bytes(rng.getrandbits(8) for _ in range(2000))
+    whole = icmp_echo(True, 0x77, 1, data)
+    for k, (off, chunk, mf) in enumerate(((0, whole[:1480], True), (1480, whole[1480:], False))):
+        pkt = ipv4(lan.clients[1].ip, target.ip, PROTO_ICMP, chunk, ip_id=0x5151, df=False, mf=mf, frag_off=off)
+        o.cap.ip(t0 + 20.0 + k * 0.0001, pkt, lan.clients[1].ip, target.ip)
+    # attack: first fragment covers bytes 0..36, the second claims to start at 24 (overlap)
+    t = t0 + 30.0
+    for i in range(12):
+        ip_id = 0x0100 + i
+        first = udp_dgram(intr.ip, target.ip, 31915, 20197, bytes(28))
+        o.cap.ip(t, ipv4(intr.ip, target.ip, PROTO_UDP, first, ip_id=ip_id, df=False, mf=True, frag_off=0), intr.ip, target.ip)
+        o.cap.ip(t + 0.0003, ipv4(intr.ip, target.ip, PROTO_UDP, bytes(4), ip_id=ip_id, df=False, mf=False, frag_off=24),
+                 intr.ip, target.ip)
+        t += rng.uniform(0.5, 1.5)
+    return label(
+        "Teardrop: overlapping IP fragments",
+        "An unknown device sends packet fragments that overlap each other, a classic trick to crash or confuse the "
+        "receiver, while normal fragmented traffic on the same network is left alone.",
+        expected=[("ip.fragment_attack", "attack")],
+    )
+
+
 SCENARIOS = {
     "arp_spoofing.pcap": (sc_arp_spoofing, 101),
     "port_scan.pcap": (sc_port_scan, 102),
@@ -514,6 +567,8 @@ SCENARIOS = {
     "tls_failures.pcap": (sc_tls_failures, 111),
     "web_bruteforce.pcap": (sc_web_bruteforce, 112),
     "xss_payload.pcap": (sc_xss_payload, 113),
+    "dns_backdoor.pcap": (sc_dns_backdoor, 114),
+    "teardrop.pcap": (sc_teardrop, 115),
 }
 
 

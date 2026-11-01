@@ -6,7 +6,7 @@ import importlib
 
 from .base import REGISTRY, Detector
 
-MODULES = ["tcp", "latency", "mtu", "arp", "dhcp", "dns", "scan", "flood", "icmp", "app"]
+MODULES = ["tcp", "latency", "mtu", "arp", "dhcp", "dns", "scan", "flood", "icmp", "app", "protocol"]
 
 for _m in MODULES:
     try:

@@ -97,6 +97,19 @@
     "story": "The DHCP server is down: laptops broadcast DISCOVERs with growing backoff, get no offer, and fall back to 169.254.x.x link-local addresses.",
     "title": "No DHCP server"
   },
+  "dns_backdoor.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "attack",
+        "kind": "dns.non_dns_traffic"
+      }
+    ],
+    "malformed": false,
+    "must_not": [],
+    "story": "An unknown device controls the finance PC through a command shell that runs over port 53, the one port every firewall lets through, disguised as DNS.",
+    "title": "A remote shell hiding on the DNS port"
+  },
   "dns_failure.pcap": {
     "clean": false,
     "expected": [
@@ -422,6 +435,19 @@
     "must_not": [],
     "story": "Thousands of connection requests per second from random, spoofed internet addresses overwhelm the intranet web server, so real staff can't open it.",
     "title": "SYN flood against the intranet server"
+  },
+  "teardrop.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "attack",
+        "kind": "ip.fragment_attack"
+      }
+    ],
+    "malformed": false,
+    "must_not": [],
+    "story": "An unknown device sends packet fragments that overlap each other, a classic trick to crash or confuse the receiver, while normal fragmented traffic on the same network is left alone.",
+    "title": "Teardrop: overlapping IP fragments"
   },
   "tls_failures.pcap": {
     "clean": false,

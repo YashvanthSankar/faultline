@@ -202,10 +202,11 @@ class _Mac:
 
 
 class _Scan:
-    __slots__ = ("spa", "ts", "tgt", "seen", "requests", "frames")
+    __slots__ = ("spa", "spas", "ts", "tgt", "seen", "requests", "frames")
 
     def __init__(self, spa: str) -> None:
         self.spa = spa
+        self.spas: set[str] = {spa}  # every sender address this MAC used (a router speaks for several subnets)
         self.ts = array("d")
         self.tgt = array("L")
         self.seen: set[int] = set()
@@ -445,6 +446,8 @@ class ArpDetector(Detector):
         else:
             self.scans.move_to_end(sha)
         s.requests += 1
+        if len(s.spas) < 16 and spa and spa != "0.0.0.0":
+            s.spas.add(spa)
         if len(s.seen) >= 1024:
             return
         ti = ip4_int(tpa)
@@ -862,9 +865,19 @@ class ArpDetector(Detector):
             rate = best / dur
             answered = sum(1 for t in win if ctx.hosts.arp_claims.get(int_ip4(t)))
             ans_frac = answered / len(win)
-            infra = self._role(ctx, s.spa) == "dhcp-server" or self._is_gateway(s.spa, mac) or self._router_like(mac)
+            # One MAC answering for several subnets' gateway addresses (x.x.x.1 / .254) is a router doing
+            # neighbour resolution for its customers (e.g. an ISP cable head-end), not a scanner.
+            gw_like = [ip for ip in s.spas if ip.rsplit(".", 1)[-1] in ("1", "254")]
+            multi_subnet_router = len({ip.rsplit(".", 1)[0] for ip in s.spas}) >= 2 and len(gw_like) >= 2
+            # Scanners ask each address once or twice; routers re-ask the same absent hosts over and over.
+            repeats = s.requests / max(1, len(s.seen))
+            retrying = repeats >= 1.5 and seq < 0.3
+            infra = (self._role(ctx, s.spa) == "dhcp-server" or self._is_gateway(s.spa, mac) or self._router_like(mac)
+                     or multi_subnet_router)
             if infra and (ans_frac >= 0.5 or seq < 0.5 or rate < 1.0):
                 continue
+            if retrying and seq < 0.3 and s.spa.rsplit(".", 1)[-1] in ("1", "254"):
+                continue  # a gateway retrying unreachable neighbours in random order
             offered = sum(1 for t in win if int_ip4(t) in self.offered)
             if offered / len(win) >= 0.5:
                 continue  # DHCP server checking addresses before handing them out (conflict detection)

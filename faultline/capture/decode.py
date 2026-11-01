@@ -391,6 +391,27 @@ def _decode_tcp_options(pkt: Packet, tcp: Tcp, data: bytes, pos: int, end: int) 
         pos += olen
 
 
+_PRINTABLE = frozenset(range(0x20, 0x7F)) | {0x09, 0x0A, 0x0D}
+
+
+_SHELL_MARKERS = (b"Microsoft Windows", b"C:\\", b"uid=", b"/bin/sh", b"/bin/bash", b"root@", b"Volume in drive")
+
+
+def _text_kind(data: bytes, start: int, end: int) -> str:
+    """Classify readable text found on the DNS port (marker search only; the payload itself is never kept)."""
+    chunk = bytes(data[start:min(end, start + 512)])
+    return "shell on DNS port" if any(m in chunk for m in _SHELL_MARKERS) else "text on DNS port"
+
+
+def _looks_like_text(data: bytes, start: int, end: int) -> bool:
+    """True if a payload is human-readable text (DNS messages are binary, so text on port 53 is a red flag)."""
+    chunk = data[start:min(end, start + 128)]
+    if len(chunk) < 4:
+        return False
+    printable = sum(1 for b in chunk if b in _PRINTABLE)
+    return printable / len(chunk) >= 0.9
+
+
 def _decode_tcp_payload(pkt: Packet, tcp: Tcp, data: bytes, pos: int, end: int) -> None:
     """Application-layer sniffing over a TCP segment's captured payload."""
     sport, dport = tcp.sport, tcp.dport
@@ -399,6 +420,8 @@ def _decode_tcp_payload(pkt: Packet, tcp: Tcp, data: bytes, pos: int, end: int) 
             mlen = _U16.unpack_from(data, pos)[0]
             if pos + 2 + mlen <= end and mlen >= 12:
                 _decode_dns(pkt, data, pos + 2, pos + 2 + mlen, "tcp")
+        if pkt.dns is None and (sport == 53 or dport == 53) and _looks_like_text(data, pos, end):
+            pkt.app_anomaly = _text_kind(data, pos, end)
         return
     first = data[pos]
     if 20 <= first <= 23 and end - pos >= 5:
@@ -428,6 +451,8 @@ def _decode_udp(pkt: Packet, data: bytes, off: int, end: int, ip_len: int) -> No
         return
     if sport in DNS_PORTS or dport in DNS_PORTS:
         _decode_dns(pkt, data, pstart, pend, "udp")
+        if pkt.dns is None and (sport == 53 or dport == 53) and _looks_like_text(data, pstart, pend):
+            pkt.app_anomaly = _text_kind(data, pstart, pend)
     elif sport in DHCP_PORTS or dport in DHCP_PORTS:
         _decode_dhcp(pkt, data, pstart, pend)
 

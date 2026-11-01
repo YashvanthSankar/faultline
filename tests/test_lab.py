@@ -23,7 +23,7 @@ VALID_KINDS = {
     "dns.timeout", "dns.errors", "dhcp.multiple_servers", "dhcp.no_server", "icmp.routing_loop",
     # attack-pattern scenarios (faultline/lab/scenarios_attack.py)
     "scan.port", "scan.host_sweep", "dns.hijack", "dns.tunneling", "flood.syn", "cred.cleartext",
-    "tls.failure", "http.errors", "arp.scan",
+    "tls.failure", "http.errors", "arp.scan", "dns.non_dns_traffic", "ip.fragment_attack",
 }
 
 
@@ -82,6 +82,8 @@ def verify_frame(frame: bytes) -> list[str]:
     if inet_checksum(ip[:ihl]) != 0:
         problems.append("ipv4")
     proto = ip[9]
+    if struct.unpack("!H", ip[6:8])[0] & 0x3FFF:  # MF set or non-zero offset: L4 checksum spans fragments
+        return problems
     src, dst = ip[12:16], ip[16:20]
     l4 = ip[ihl:total]
     pseudo = src + dst + struct.pack("!BBH", 0, proto, len(l4))

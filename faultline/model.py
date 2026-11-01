@@ -227,7 +227,7 @@ class Packet:
         "eth_src", "eth_dst", "ethertype", "vlan", "arp",
         "ip_ver", "src", "dst", "ttl", "ip_id", "df", "mf", "frag_off", "ip_len", "proto",
         "tcp", "udp", "icmp", "dns", "dhcp", "tls", "http", "cred",
-        "payload_len", "malformed",
+        "payload_len", "malformed", "app_anomaly",
     )
 
     def __init__(self, no: int, ts: float, caplen: int, wirelen: int, linktype: int):
@@ -253,6 +253,7 @@ class Packet:
         self.cred = None  # e.g. "FTP", "HTTP Basic" - the secret itself is never stored
         self.payload_len = 0
         self.malformed = None  # reason string if any layer failed to decode
+        self.app_anomaly = None  # e.g. "text on DNS port": payload that cannot be the protocol its port implies
 
     # convenience ---------------------------------------------------------
     @property

@@ -55,6 +55,15 @@ RULES: tuple[ChainRule, ...] = (
         root_category=Category.ATTACK,
     ),
     ChainRule(
+        "backdoor",
+        ("dns.non_dns_traffic",),
+        ("tcp.resets", "tcp.refused", "tcp.syn_timeout", "cred.cleartext"),
+        "Backdoor on the DNS port",
+        "A remote-control session is hiding on the DNS port ({root}); the other connection problems involve the same "
+        "machines and are part of that activity ({effects}).",
+        root_category=Category.ATTACK,
+    ),
+    ChainRule(
         "rogue-router",
         ("dhcp.multiple_servers",),
         ("dns.timeout", "dns.errors", "tcp.syn_timeout", "arp.unanswered", "icmp.unreachable", "dhcp.nak"),
