@@ -46,6 +46,15 @@ RULES: tuple[ChainRule, ...] = (
         need_overlap=False,
     ),
     ChainRule(
+        "dns-spoofing",
+        ("dns.hijack",),
+        ("arp.duplicate_ip", "tls.failure", "cred.cleartext"),
+        "DNS spoofing attack",
+        "A device on your network is forging DNS answers ({root}); the other oddities come from the same device "
+        "impersonating the router or intercepting the redirected connections ({effects}).",
+        root_category=Category.ATTACK,
+    ),
+    ChainRule(
         "rogue-router",
         ("dhcp.multiple_servers",),
         ("dns.timeout", "dns.errors", "tcp.syn_timeout", "arp.unanswered", "icmp.unreachable", "dhcp.nak"),
@@ -220,7 +229,7 @@ def overall_verdict(findings: list[Finding], packets: int, duration: float) -> d
     if attacks:
         top = attacks[0]
         status = "under_attack"
-        headline = f"Under attack: {top.title.rstrip('.')}."
+        headline = f"{top.title.rstrip('.')}."
         extra = len(problems)
         summary = (
             f"We found {len(attacks)} sign{'s' if len(attacks) != 1 else ''} of malicious activity. "
@@ -231,7 +240,7 @@ def overall_verdict(findings: list[Finding], packets: int, duration: float) -> d
     elif problems:
         top = problems[0]
         status = "faulty"
-        headline = f"Something is broken: {top.title.rstrip('.')}."
+        headline = f"{top.title.rstrip('.')}."
         summary = (
             f"We found {len(problems)} problem{'s' if len(problems) != 1 else ''} affecting your network, "
             "and no sign of an attack. This looks like an ordinary fault or misconfiguration."
@@ -242,7 +251,7 @@ def overall_verdict(findings: list[Finding], packets: int, duration: float) -> d
         summary = f"Nothing serious in {packets:,} packets over {span}; see the minor notes below."
     else:
         status = "healthy"
-        headline = "Healthy: no faults or attacks found."
+        headline = "No faults or attacks found."
         summary = f"We checked {packets:,} packets over {span} and found nothing wrong."
     return {"status": status, "headline": headline, "summary": summary, "score": score, "counts": counts}
 

@@ -164,7 +164,7 @@
     "expected": [
       {
         "category": "attack",
-        "kind": "scan.host_sweep"
+        "kind": "arp.scan"
       }
     ],
     "malformed": false,

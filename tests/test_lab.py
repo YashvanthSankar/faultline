@@ -23,7 +23,7 @@ VALID_KINDS = {
     "dns.timeout", "dns.errors", "dhcp.multiple_servers", "dhcp.no_server", "icmp.routing_loop",
     # attack-pattern scenarios (faultline/lab/scenarios_attack.py)
     "scan.port", "scan.host_sweep", "dns.hijack", "dns.tunneling", "flood.syn", "cred.cleartext",
-    "tls.failure", "http.errors",
+    "tls.failure", "http.errors", "arp.scan",
 }
 
 

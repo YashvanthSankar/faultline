@@ -1,0 +1,15 @@
+{% extends "_base.html" %}
+{% block status %}{% if status >= 500 %}under_attack{% elif status == 404 %}minor_issues{% else %}faulty{% endif %}{% endblock %}
+{% block title %}{{ title }} | Faultline{% endblock %}
+{% block body %}
+<main class="msg">
+  <div class="wrap">
+    <div class="msg-box">
+      <p class="msg-code">Error {{ status }}</p>
+      <h1>{{ title }}</h1>
+      <p>{{ text }}</p>
+      <a class="btn primary big" href="/">Back to start</a>
+    </div>
+  </div>
+</main>
+{% endblock %}

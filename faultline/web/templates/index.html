@@ -1,0 +1,185 @@
+{% extends "_base.html" %}
+{% block title %}Faultline: is my network broken, or is someone breaking it?{% endblock %}
+{% block body %}
+<main>
+  <section class="landing">
+    <div class="wrap landing-grid">
+      <div>
+        <h1 class="claim">Is my network broken, or is someone breaking it?</h1>
+        <p class="claim-sub">Give Faultline a packet capture. It tells you in plain language what is wrong, whether it is a fault or an attack, what to fix first, and which packets prove it.</p>
+        <ul class="answers" aria-label="Possible answers">
+          <li class="c-ok"><b>Healthy</b><span>Nothing needs your attention.</span></li>
+          <li class="c-misconfig"><b>Minor issues</b><span>Small settings worth tidying up.</span></li>
+          <li class="c-fault"><b>Faulty</b><span>Something is broken, like lossy Wi-Fi or a dead DNS server.</span></li>
+          <li class="c-attack"><b>Under attack</b><span>Someone is spoofing, scanning or intercepting traffic.</span></li>
+        </ul>
+      </div>
+
+      <form class="upload" id="upload" method="post" action="/analyze" enctype="multipart/form-data">
+        <h2>Analyze a capture</h2>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <fieldset class="opts">
+          <legend class="sr-only">Options</legend>
+          <div class="opt">
+            <label class="opt-label" for="redact">Hide IP and MAC addresses</label>
+            <span class="switch"><input type="checkbox" id="redact" name="redact" value="1" aria-describedby="redact-hint"><span></span></span>
+            <p class="hint" id="redact-hint">Swaps addresses for pseudonyms so the report is safe to share. Evidence downloads are turned off.</p>
+          </div>
+          <div class="opt">
+            <span class="opt-label" id="sens-label">Sensitivity</span>
+            <span class="radios" role="radiogroup" aria-labelledby="sens-label">
+              <label><input type="radio" name="sensitivity" value="low"><span>Low</span></label>
+              <label><input type="radio" name="sensitivity" value="normal" checked><span>Normal</span></label>
+              <label><input type="radio" name="sensitivity" value="high"><span>High</span></label>
+            </span>
+            <p class="hint">High catches subtler problems but may raise more false alarms.</p>
+          </div>
+        </fieldset>
+
+        <label class="drop" id="drop">
+          <input type="file" id="capture" name="capture" accept=".pcap,.pcapng,.cap,.gz,application/vnd.tcpdump.pcap" required>
+          <svg class="trace" viewBox="0 0 220 44" aria-hidden="true" focusable="false"><path d="M2 22h70l6-10 7 22 8-30 7 30 6-18 5 6h107" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <strong id="drop-title">Drop a capture file here</strong>
+          <span class="small" id="drop-sub">or click to choose one. pcap, pcapng, cap or .pcap.gz, up to {{ max_upload_mb }} MB.</span>
+        </label>
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+        <div class="form-actions">
+          <p>The file is analysed on this computer and deleted as soon as the report is ready.</p>
+          <button class="btn primary big" type="submit">Analyze capture</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="section" id="samples">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <h2>Try a bundled capture</h2>
+          <p>Recorded scenarios with a known answer. Pick one to see what Faultline reports.</p>
+        </div>
+      </div>
+      {% if samples %}
+      <div class="gallery">
+        {% for s in samples %}
+        <a class="tile c-{{ s.badge }}" href="/sample/{{ s.name|urlencode }}" data-sample>
+          <span><span class="pill">{% if s.badge == 'misconfig' %}Misconfiguration{% elif s.badge == 'corrupt' %}Corrupt file{% else %}{{ s.badge|capitalize }}{% endif %}</span></span>
+          <h3>{{ s.title }}</h3>
+          {% if s.story %}<p>{{ s.story }}</p>{% endif %}
+          <span class="foot"><span class="mono">{{ s.name }}</span><span class="go">Analyze</span></span>
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty">
+        <h3>No sample captures yet</h3>
+        <p>Generate the scenario lab with <code>faultline lab</code>, then reload this page.</p>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p><strong>Faultline runs offline.</strong> Captures are deleted after analysis and reports are never stored.</p>
+  </div>
+</footer>
+
+<div class="loading" id="loading" role="status" aria-live="polite" hidden>
+  <div class="loading-box">
+    <svg viewBox="0 0 560 120" aria-hidden="true" focusable="false">
+      <line class="base" x1="0" y1="60" x2="560" y2="60"/>
+      <path class="sweep" d="M0 60h140l8-12 8 22 10-46 12 78 10-58 9 30 8-20 7 10h70l6-8 7 14 8-20 7 14 5-4h225"/>
+    </svg>
+    <h2 id="loading-step">Reading packets</h2>
+    <p>Large captures can take a minute. Everything stays on this computer.</p>
+    <p class="fname" id="loading-file"></p>
+  </div>
+</div>
+
+<script nonce="{{ nonce }}">
+(function () {
+  "use strict";
+  var form = document.getElementById("upload");
+  var input = document.getElementById("capture");
+  var drop = document.getElementById("drop");
+  var err = document.getElementById("form-error");
+  var title = document.getElementById("drop-title");
+  var sub = document.getElementById("drop-sub");
+  var loading = document.getElementById("loading");
+  var step = document.getElementById("loading-step");
+  var fileLine = document.getElementById("loading-file");
+  var MAX = {{ max_upload_mb|int }} * 1024 * 1024;
+  var EXT = /\.(pcapng|pcap|cap)(\.gz)?$/i;
+  var STEPS = ["Reading packets", "Rebuilding conversations", "Checking ARP, DHCP and DNS", "Weighing fault against attack", "Writing the report"];
+  var timer = null;
+
+  function showError(msg) { err.textContent = msg; err.hidden = !msg; }
+  function busy(name) {
+    var i = 0;
+    step.textContent = STEPS[0];
+    fileLine.textContent = name || "";
+    loading.hidden = false;
+    clearInterval(timer);
+    timer = setInterval(function () { i = Math.min(i + 1, STEPS.length - 1); step.textContent = STEPS[i]; }, 1700);
+  }
+  function check(file) {
+    if (!file) { return "Choose a capture file first."; }
+    if (!EXT.test(file.name)) { return "Faultline reads .pcap, .pcapng and .cap files, optionally gzip-compressed (.pcap.gz)."; }
+    if (file.size === 0) { return "The file is empty."; }
+    if (file.size > MAX) { return "This file is larger than " + {{ max_upload_mb|int }} + " MB. Use the command line for big captures."; }
+    return "";
+  }
+  function start() {
+    var file = input.files && input.files[0];
+    var problem = check(file);
+    if (problem) { showError(problem); return false; }
+    showError("");
+    title.textContent = "Analysing";
+    sub.textContent = "";
+    var f = document.createElement("span");
+    f.className = "file";
+    f.textContent = file.name;
+    sub.appendChild(f);
+    busy(file.name);
+    return true;
+  }
+  input.addEventListener("change", function () { if (start()) { form.submit(); } });
+  form.addEventListener("submit", function (e) { if (!start()) { e.preventDefault(); } });
+  ["dragenter", "dragover"].forEach(function (t) {
+    drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add("over"); });
+  });
+  ["dragleave", "drop"].forEach(function (t) {
+    drop.addEventListener(t, function () { drop.classList.remove("over"); });
+  });
+  drop.addEventListener("drop", function (e) {
+    e.preventDefault();
+    var files = e.dataTransfer && e.dataTransfer.files;
+    if (!files || !files.length) { return; }
+    try { input.files = files; } catch (x) { showError("Your browser does not support dropping files here. Click to choose the file instead."); return; }
+    if (start()) { form.submit(); }
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("a[data-sample]"), function (a) {
+    a.addEventListener("click", function (e) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) { return; }
+      e.preventDefault();
+      var q = [];
+      if (document.getElementById("redact").checked) { q.push("redact=1"); }
+      var s = form.querySelector("input[name=sensitivity]:checked");
+      if (s && s.value !== "normal") { q.push("sensitivity=" + encodeURIComponent(s.value)); }
+      var name = a.querySelector("h3");
+      busy(name ? name.textContent : "");
+      window.location.href = a.getAttribute("href") + (q.length ? "?" + q.join("&") : "");
+    });
+  });
+  window.addEventListener("pageshow", function () {
+    loading.hidden = true;
+    clearInterval(timer);
+    title.textContent = "Drop a capture file here";
+    sub.textContent = "or click to choose one. pcap, pcapng, cap or .pcap.gz, up to {{ max_upload_mb|int }} MB.";
+    form.reset();
+  });
+})();
+</script>
+{% endblock %}

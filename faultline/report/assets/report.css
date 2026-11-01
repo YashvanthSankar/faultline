@@ -64,7 +64,7 @@ noscript p { padding: 24px; }
 .brand { display: flex; align-items: center; gap: 9px; font: 700 17px/1 var(--display); letter-spacing: -.01em; text-decoration: none; }
 .brand svg { display: block; }
 .navlinks { display: flex; gap: 2px; margin-right: auto; }
-.navlinks a { text-decoration: none; color: var(--muted); font-size: 14px; padding: 6px 10px; border-radius: 6px; }
+.navlinks a { white-space: nowrap; text-decoration: none; color: var(--muted); font-size: 14px; padding: 6px 10px; border-radius: 6px; }
 .navlinks a:hover { color: var(--text); background: var(--surface); }
 .tools { display: flex; align-items: center; gap: 8px; }
 .btn {
@@ -142,16 +142,27 @@ button.count:hover { border-color: var(--line); background: var(--surface-2); }
 .seismo-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 6px; }
 .seismo-head h2 { margin: 0; font: 600 15px/1.2 var(--display); }
 .seismo-head p { margin: 0; color: var(--faint); font-size: 13px; }
-.chart { position: relative; height: 150px; }
+.chart { position: relative; min-height: 150px; }
 .chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .chart .grid { stroke: var(--line-soft); stroke-width: 1; }
 .chart .axis { fill: var(--faint); font: 11px var(--mono); }
 .chart .trace { fill: none; stroke: var(--text); stroke-width: 1.6; stroke-linejoin: round; }
 .chart .fill { fill: url(#fl-trace-fill); }
-.chart .band { opacity: .16; cursor: pointer; }
-.chart .band:hover, .chart .band.hot { opacity: .32; }
+.chart stop.s0 { stop-color: var(--status); stop-opacity: .26; }
+.chart stop.s1 { stop-color: var(--status); stop-opacity: 0; }
+.k-attack { fill: var(--attack); stroke: var(--attack); --c: var(--attack); }
+.k-fault { fill: var(--fault); stroke: var(--fault); --c: var(--fault); }
+.k-misconfig { fill: var(--misconfig); stroke: var(--misconfig); --c: var(--misconfig); }
+.k-info { fill: var(--info); stroke: var(--info); --c: var(--info); }
+.chart .band { stroke: none; }
+.chart .stem { stroke-width: 1; opacity: .55; fill: none; }
+.chart .pin rect { stroke: var(--bg-deep); stroke-width: 2; }
+.chart .band { opacity: .07; }
+.chart .band.hot { opacity: .2; }
+.chart .lane { opacity: .85; }
+.chart .lane.hot { opacity: 1; stroke: var(--text); stroke-width: 1; }
 .chart .pin { cursor: pointer; }
-.chart .pin-label { font: 600 11px var(--mono); fill: var(--bg); pointer-events: none; }
+.chart .pin-label { font: 700 11px var(--sans); fill: var(--bg-deep); stroke: none; pointer-events: none; }
 .chart .cursor { stroke: var(--focus); stroke-width: 1; opacity: 0; pointer-events: none; }
 .chart.hovering .cursor { opacity: .8; }
 .tooltip {
@@ -216,12 +227,9 @@ h4 { margin: 0 0 6px; font: 600 14.5px/1.3 var(--display); color: var(--text); }
 .chain { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; margin: 0; padding: 0; list-style: none; }
 .chain li { display: flex; align-items: center; }
 .chain li + li::before {
-  content: ""; width: 30px; height: 2px; flex: none;
-  background: linear-gradient(90deg, var(--line), var(--faint));
-  -webkit-mask: linear-gradient(#000, #000);
-  margin: 0 2px;
+  content: ""; width: 34px; height: 2px; flex: none; margin: 0 2px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--c) 70%, transparent), var(--line));
 }
-.chain li + li::after { content: ""; order: -1; }
 .node {
   display: flex; flex-direction: column; gap: 2px; align-items: flex-start; text-align: left;
   max-width: 250px; padding: 8px 12px; border-radius: 10px; cursor: pointer;
@@ -271,6 +279,7 @@ h4 { margin: 0 0 6px; font: 600 14.5px/1.3 var(--display); color: var(--text); }
 .card-body { border-top: 1px solid var(--line-soft); padding: 20px 22px 22px; display: grid; gap: 22px; }
 .card-body[hidden] { display: none; }
 .cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px 28px; }
+.cols-right { display: grid; gap: 20px; align-content: start; }
 .block p { margin: 0; color: var(--text); }
 .block p + p { margin-top: 8px; }
 .analogy { color: var(--muted) !important; padding-left: 12px; border-left: 2px solid var(--line); font-style: italic; }
@@ -333,7 +342,7 @@ body.expert .beginner-only { display: none !important; }
 .panel { background: var(--surface); border: 1px solid var(--line-soft); border-radius: 12px; padding: 18px 20px; }
 .panel h3 { font-size: 16px; margin-bottom: 12px; }
 .hosts td:first-child { white-space: nowrap; }
-.badge { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 2px 7px; margin: 0 4px 3px 0; border-radius: 5px; background: var(--surface-2); border: 1px solid var(--line); color: var(--text); }
+.badge { display: inline-block; font-family: var(--sans); white-space: nowrap; font-size: 11.5px; font-weight: 600; padding: 2px 7px; margin: 0 4px 3px 0; border-radius: 5px; background: var(--surface-2); border: 1px solid var(--line); color: var(--text); }
 .badge.r-gateway { border-color: color-mix(in srgb, var(--ok) 55%, transparent); color: var(--ok); }
 .badge.r-dns-server { border-color: color-mix(in srgb, var(--misconfig) 55%, transparent); color: var(--misconfig); }
 .badge.r-dhcp-server { border-color: color-mix(in srgb, var(--fault) 55%, transparent); color: var(--fault); }
@@ -367,6 +376,7 @@ body.expert .beginner-only { display: none !important; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
 /* ---------- responsive ---------- */
+@media (max-width: 1380px) { [data-embedded="1"] .navlinks { display: none; } [data-embedded="1"] .tools { margin-left: auto; } }
 @media (max-width: 980px) {
   .navlinks { display: none; }
   .hero-grid { grid-template-columns: 1fr; gap: 20px; }
@@ -398,9 +408,13 @@ body.expert .beginner-only { display: none !important; }
   .hero::before { display: none; }
   .card-body[hidden] { display: grid !important; }
   .expert-only { display: revert !important; }
-  .card, .incident, .panel, .reason { break-inside: avoid; box-shadow: none; }
+  .incident, .reason, .block, tr { break-inside: avoid; box-shadow: none; }
   .section { padding-top: 22px; }
   .chart .trace { stroke: #141a24; }
+  .gauge .value, .chart .trace, .chart .fill { animation: none !important; stroke-dashoffset: 0 !important; opacity: 1 !important; }
+  .chart .trace { stroke-dasharray: none !important; }
+  .chart .pin-label { fill: #fff; }
+  .section-head, h2, h3, h4 { break-after: avoid; page-break-after: avoid; }
   .steps li::before { color: #fff; background: #141a24; }
   a { text-decoration: none; }
 }

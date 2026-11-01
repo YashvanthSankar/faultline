@@ -176,7 +176,7 @@ def sc_host_sweep(o: Office) -> dict:
         "Network sweep: mapping every device",
         "An unknown device asks for every address from .1 to .254, pings each device that answers, then checks which ones "
         "have Windows file sharing (port 445) open.",
-        expected=[("scan.host_sweep", "attack")],
+        expected=[("arp.scan", "attack")],
     )
 
 
