@@ -9,7 +9,7 @@ description = "Is my network broken, or is someone breaking it? Offline packet-c
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "Yashvanth Sankar" }]
+authors = [{ name = "Yashvanth S (CS24I1029), team Moorthy Gang" }]
 keywords = ["pcap", "network", "diagnostics", "security", "ids", "troubleshooting"]
 classifiers = [
   "Programming Language :: Python :: 3",

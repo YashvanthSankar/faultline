@@ -52,8 +52,8 @@ IPV4_RE = re.compile(rf"(?<![\d.])(?:{_OCTET}\.){{3}}{_OCTET}(?![\d.])")
 # clock times like "12:30:45" (no '::', fewer than 8 groups) are rejected.
 IPV6_RE = re.compile(
     r"(?<![0-9A-Za-z:.\-])"
-    r"(?:[0-9A-Fa-f]{1,4})?(?::[0-9A-Fa-f]{0,4}){2,7}"
-    r"(?:(?:\d{1,3}\.){3}\d{1,3})?"
+    r"(?:[0-9A-Fa-f]{1,4})?"
+    r"(?::(?:(?:\d{1,3}\.){3}\d{1,3}(?![\d.])|[0-9A-Fa-f]{0,4})){2,7}"
     r"(?![0-9A-Za-z:])"
 )
 

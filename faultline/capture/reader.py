@@ -291,6 +291,8 @@ class CaptureReader:
             if not bh:
                 return
             if len(bh) < 8:
+                if not offset:
+                    raise CaptureError("pcapng section header is truncated")
                 self.info.truncated = True
                 self.info.warn(f"file ends inside a block header at byte {offset}")
                 return
@@ -299,6 +301,8 @@ class CaptureReader:
                 # need the byte-order magic to know how to read the length
                 bom = _read_exact(fh, 4)
                 if len(bom) < 4:
+                    if not offset:
+                        raise CaptureError("pcapng section header is truncated")
                     self.info.truncated = True
                     self.info.warn("truncated section header block")
                     return
@@ -321,6 +325,8 @@ class CaptureReader:
                     raise CaptureError(f"pcapng section header has an invalid length ({blen})")
                 rest = _read_exact(fh, blen - 12)
                 if len(rest) < blen - 12:
+                    if not offset:
+                        raise CaptureError("pcapng section header is truncated")
                     self.info.truncated = True
                     self.info.warn("truncated section header block")
                     return
