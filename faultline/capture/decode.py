@@ -286,7 +286,6 @@ def _decode_ipv6(pkt: Packet, data: bytes, off: int) -> None:
     pkt.src = _ip6(src)
     pkt.dst = _ip6(dst)
     pkt.ttl = hlim
-    pkt.df = True  # IPv6 routers never fragment
     end = off + 40 + min(plen, avail - 40)
     pos = off + 40
     remaining = plen  # upper-layer length, shrinks as ext headers are consumed

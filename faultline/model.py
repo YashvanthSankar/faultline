@@ -246,7 +246,7 @@ class Packet:
         self.ip_id = None
         self.df = self.mf = False
         self.frag_off = 0
-        self.ip_len = 0
+        self.ip_len = 0  # IP payload length (v4: total_len - IHL; v6: upper-layer length)
         self.proto = None
         self.tcp = self.udp = self.icmp = None
         self.dns = self.dhcp = self.tls = self.http = None
