@@ -44,7 +44,7 @@ import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
-from urllib.parse import urlsplit
+from urllib.parse import quote, urlsplit
 
 from flask import Flask, Response, abort, g, jsonify, render_template, request
 from werkzeug.exceptions import HTTPException
@@ -218,6 +218,8 @@ def list_samples(samples_dir: Path) -> dict[str, Path]:
 def _badge(meta: dict, name: str) -> str:
     if name.startswith("malformed/"):
         return "corrupt"
+    if meta.get("hostile_strings") is True or meta.get("hostile") is True or name == "xss_payload.pcap":
+        return "hostile"
     if meta.get("clean") is True:
         return "clean"
     cats = set()
@@ -242,7 +244,7 @@ def sample_gallery(samples_dir: Path) -> list[dict]:
                 labels = data
     except (OSError, ValueError):
         labels = {}
-    order = {"attack": 0, "fault": 1, "misconfig": 2, "clean": 3, "sample": 4, "corrupt": 5}
+    order = {"attack": 0, "fault": 1, "misconfig": 2, "clean": 3, "sample": 4, "hostile": 5, "corrupt": 6}
     items = []
     for name in sorted(files):
         meta = labels.get(name) or labels.get(name.rsplit("/", 1)[-1]) or {}
@@ -396,15 +398,14 @@ def create_app(*, max_upload_mb: int = 200, samples_dir: str | os.PathLike | Non
             report = _scrub(report, tmp, "")
         return report
 
-    def analyze_upload() -> dict:
-        f = request.files.get("capture")
+    def analyze_file(f, redact: bool, sensitivity: str, what: str = "capture") -> dict:
+        """Write one uploaded FileStorage to a private temp file, validate it, analyse, delete."""
         if f is None or not f.filename:
-            raise UserError("Choose a capture file first.", 400, "No file selected")
+            raise UserError(f"Choose a {what} file first.", 400, "No file selected")
         display = sanitize_display_name(f.filename)
         ext = allowed_extension(display)
         if ext is None:
             raise UserError("Faultline reads .pcap, .pcapng and .cap files, optionally gzip-compressed (.pcap.gz).", 400, "Unsupported file type")
-        redact, sensitivity = read_options(request.form)
         fd, path = tempfile.mkstemp(prefix="upload-", suffix=ext, dir=private_tmpdir())
         try:
             if hasattr(os, "fchmod"):
@@ -412,15 +413,68 @@ def create_app(*, max_upload_mb: int = 200, samples_dir: str | os.PathLike | Non
             with os.fdopen(fd, "wb") as out:
                 shutil.copyfileobj(f.stream, out, 1024 * 1024)
             if os.path.getsize(path) == 0:
-                raise UserError("The file is empty.", 400, "Empty file")
+                raise UserError(f"The {what} file is empty.", 400, "Empty file")
             if sniff_capture(path) is None:
-                raise UserError("This file is not a packet capture. Faultline checks the first bytes of the file: it must be pcap, pcapng, or one of those compressed with gzip.", 400, "Not a capture file")
+                raise UserError(f"The {what} file is not a packet capture. Faultline checks the first bytes of the file: it must be pcap, pcapng, or one of those compressed with gzip.", 400, "Not a capture file")
             return run_analysis(path, display, redact, sensitivity)
         finally:
             try:
                 os.unlink(path)
             except OSError:
                 pass
+
+    def analyze_upload() -> dict:
+        redact, sensitivity = read_options(request.form)
+        return analyze_file(request.files.get("capture"), redact, sensitivity)
+
+    # --------------------------------------------------------------- compare
+    STATUS_WORDS = {"under_attack": "Under attack", "faulty": "Faulty", "minor_issues": "Minor issues", "healthy": "Healthy"}
+
+    def _side(report: dict, name: str, link: str | None) -> dict:
+        verdict = report.get("verdict") if isinstance(report.get("verdict"), dict) else {}
+        status = verdict.get("status") if verdict.get("status") in STATUS_WORDS else "healthy"
+        counts = verdict.get("counts") if isinstance(verdict.get("counts"), dict) else {}
+        findings = []
+        for f in report.get("findings") or []:
+            if not isinstance(f, dict):
+                continue
+            cat = f.get("category") if f.get("category") in ("attack", "fault", "misconfig", "info") else "info"
+            findings.append({"id": str(f.get("id", ""))[:12], "title": str(f.get("title", ""))[:200], "category": cat,
+                             "severity_name": str(f.get("severity_name", ""))[:12], "summary": str(f.get("summary", ""))[:400]})
+        score = verdict.get("score")
+        capture = report.get("capture") if isinstance(report.get("capture"), dict) else {}
+        return {
+            "name": name, "link": link, "status": status, "word": STATUS_WORDS[status],
+            "headline": str(verdict.get("headline") or "")[:300], "score": int(score) if isinstance(score, (int, float)) else None,
+            "counts": {k: int(counts.get(k) or 0) for k in ("attack", "fault", "misconfig", "info")},
+            "findings": findings[:40], "packets": capture.get("packets"),
+        }
+
+    def _finding_brief(f: dict) -> dict:
+        cat = f.get("category") if f.get("category") in ("attack", "fault", "misconfig", "info") else "info"
+        return {"id": str(f.get("id", ""))[:12], "title": str(f.get("title", ""))[:200], "category": cat,
+                "severity_name": str(f.get("severity_name", ""))[:12]}
+
+    def compare_response(ra: dict, name_a: str, link_a: str | None, rb: dict, name_b: str, link_b: str | None) -> Response:
+        a, b = _side(ra, name_a, link_a), _side(rb, name_b, link_b)
+        diff = None
+        if a["findings"] or b["findings"]:
+            try:
+                from faultline.diff import diff_reports
+
+                raw = diff_reports(ra, rb)
+                diff = {
+                    "fixed": [_finding_brief(f) for f in raw.get("fixed", [])],
+                    "new": [_finding_brief(f) for f in raw.get("new", [])],
+                    "persisting": [{"before": _finding_brief(p["before"]), "after": _finding_brief(p["after"]),
+                                    "trend": p.get("trend") if p.get("trend") in ("better", "same", "worse") else "same"}
+                                   for p in raw.get("persisting", [])],
+                    "conclusion": str(raw.get("conclusion") or "")[:300],
+                }
+            except Exception:  # the diff is a bonus; never fail the page over it
+                log.warning("diff_reports failed for compare view", exc_info=True)
+                diff = None
+        return page("compare.html", a=a, b=b, diff=diff)
 
     # ---------------------------------------------------------------- routes
     @app.get("/")
@@ -447,6 +501,30 @@ def create_app(*, max_upload_mb: int = 200, samples_dir: str | os.PathLike | Non
             abort(404)
         redact, sensitivity = read_options(request.args)
         return report_response(run_analysis(str(target), name, redact, sensitivity))
+
+    @app.get("/compare")
+    def compare_samples():
+        allow = list_samples(samples_path)
+        name_a, name_b = request.args.get("a", ""), request.args.get("b", "")
+        ta, tb = allow.get(name_a), allow.get(name_b)
+        if ta is None or tb is None:
+            abort(404)
+        redact, sensitivity = read_options(request.args)
+        qs = ("?redact=1" if redact else "") + (("&" if redact else "?") + "sensitivity=" + sensitivity if sensitivity != "normal" else "")
+        ra = run_analysis(str(ta), name_a, redact, sensitivity)
+        rb = run_analysis(str(tb), name_b, redact, sensitivity)
+        return compare_response(ra, name_a, "/sample/" + quote(name_a) + qs, rb, name_b, "/sample/" + quote(name_b) + qs)
+
+    @app.post("/compare")
+    def compare_upload():
+        check_csrf(request.form.get("csrf_token"))
+        redact, sensitivity = read_options(request.form)
+        fa, fb = request.files.get("capture_a"), request.files.get("capture_b")
+        if fa is None or not fa.filename or fb is None or not fb.filename:
+            raise UserError("Choose two capture files to compare.", 400, "Two files needed")
+        ra = analyze_file(fa, redact, sensitivity, "first")
+        rb = analyze_file(fb, redact, sensitivity, "second")
+        return compare_response(ra, sanitize_display_name(fa.filename), None, rb, sanitize_display_name(fb.filename), None)
 
     @app.get("/healthz")
     def healthz():

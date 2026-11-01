@@ -2,14 +2,14 @@
 
 Deadline: **Sun 01/11/2026 21:00 IST**. Team **Moorthy Gang**: Yashvanth S (CS24I1029).
 
-## Phase 0: Core ✅
+## Phase 0: Core
 - [x] Repo, plan (idea.md / tech.md / todo.md)
 - [x] `model.py`: Packet, Finding, Indicator, Variant, Severity, Category, Incident
 - [x] `capture/reader.py`: hardened pcap / pcapng / gzip streaming reader
 - [x] `capture/decode.py`: own L2 → L7 decoders (~320k packets/s)
 - [x] `context.py` host table, `detectors/base.py`, `engine.py`, `cli.py`
 
-## Phase 1: Parallel build ✅
+## Phase 1: Parallel build
 - [x] Scenario lab: byte-level packet crafting, 35 labelled captures (faults, misconfigs, attacks, clean, hostile)
 - [x] TCP / latency / MTU detectors (loss localisation, blame split, PMTUD black hole)
 - [x] ARP / DHCP / DNS detectors (conflict vs spoofing, rogue vs misplugged DHCP, hijack vs captive portal, tunnelling)
@@ -18,7 +18,7 @@ Deadline: **Sun 01/11/2026 21:00 IST**. Team **Moorthy Gang**: Yashvanth S (CS24
 - [x] HTML report (single file, strict CSP) + Flask dashboard (CSRF, DNS-rebinding guard, upload hardening)
 - [x] Security: fuzzer, redaction, secret scanner, SECURITY.md
 
-## Phase 2: Integrate and harden ✅
+## Phase 2: Integrate and harden
 - [x] Benchmark: 30/30 detected, 30/30 correct verdicts, 0 false alarms, 4/4 clean quiet, 6/6 hostile handled
 - [x] Fuzz: 3,000 mutated captures, 0 crashes
 - [x] Fresh clone + `pip install -e .` + full test suite on Python 3.10 (334 passed)

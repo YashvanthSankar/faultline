@@ -94,7 +94,7 @@ The yellow **FAULTY** panel: "Packets are getting lost on the way to or from 203
 faultline diff samples/dns_failure.pcap samples/clean_office.pcap
 ```
 
-It prints `BEFORE → AFTER`, `dns_failure.pcap: faulty (86/100) → clean_office.pcap: healthy (100/100)`, the conclusion "Everything that was wrong before is gone. The fix worked." and three `✔ fixed` lines (DNS lookups timing out, SERVFAIL errors, slow lookups).
+It prints `BEFORE → AFTER`, `dns_failure.pcap: faulty (86/100) → clean_office.pcap: healthy (100/100)`, the conclusion "Everything that was wrong before is gone. The fix worked." and three `(done) fixed` lines (DNS lookups timing out, SERVFAIL errors, slow lookups).
 
 **Voiceover:**
 
