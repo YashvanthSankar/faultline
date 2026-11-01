@@ -305,6 +305,27 @@ Constants: `WINDOW` 60 s, `PORT_THRESHOLD` 25 distinct ports on one host, `STEAL
 - **MITRE**: T1018 (Remote System Discovery).
 - **Sample**: none dedicated (`samples/host_sweep.pcap` is an ARP sweep and reports `arp.scan`); covered by unit tests (`tests/test_scan.py`).
 
+## Stealth scans (`faultline/detectors/stealth.py`)
+
+These two scans never cross the port-count thresholds above, so they have their own detector. Both use header fields only.
+
+### `scan.idle`: an idle (zombie) scan hiding the real scanner
+
+- **Signals**: SYN/ACKs sent to a host (the zombie) that answer no SYN seen in the capture, each rejected by the zombie with a RST. The RSTs' IPv4 ID values are collected in time order; growth of 1 to 10 between samples means someone is reading the zombie's packet counter. SYNs that claim the zombie as their source, sent while it is being sampled, are the forged probes of the real target.
+- **Thresholds**: at least 4 sampled RSTs, at most 2 sampled ports on the zombie; reported when at least 60 % of the ID steps are steady or forged SYNs are present.
+- **Attribution**: the scanner is the sampling host that is not itself a target. When the forged SYNs were put on the wire by a network card other than the zombie's, and that card is the one that sent the sampling SYN/ACKs, the finding names it ("proof of a forged sender").
+- **Discriminators**: attack: unsolicited SYN/ACKs (2.0), steady ID growth (2.5), forged SYNs from the zombie's address (3.0), forged sender MAC (2.0), forged SYNs reuse the sampled port (1.0), decoy SYN/ACKs claiming other sources (0.5). Fault: no forged SYNs, so the missing SYNs may just not have been captured (asymmetric routing, 1.5). Ignored: SYN/ACKs mostly from a well-known server port (backscatter of a spoofed SYN flood).
+- **MITRE**: T1046 (Network Service Discovery).
+- **Samples**: `samples/idle_scan.pcap`; public `nmap_zombie_scan` (names `192.168.100.103`, not the zombie `.101`). Tests: `tests/test_stealth.py`.
+
+### `scan.ack_probe`: an ACK scan mapping firewall rules
+
+- **Signals**: a bare TCP ACK (no payload, no options) that is the first packet of its flow and is followed by nothing except, at most, a RST from the target. Connections that began before the capture started keep carrying traffic, so they drop out.
+- **Thresholds**: at least 2 probes from at least 2 source ports to one target; with fewer than 10 ports, every probe must also carry a scanner fingerprint (sequence number 0, or an nmap window size of 1024/2048/3072/4096).
+- **Discriminators**: attack: connection-less ACKs (2.0), a new source port per probe (1.0), sequence number 0 (1.5), nmap window and no options (1.0), 10 or more ports (2.0), RST or silence from the target (0.5). Fault: three probes or fewer, which a capture started mid-connection can also produce (1.0). Sources already reported as port scanners are skipped.
+- **MITRE**: T1046.
+- **Samples**: `samples/ack_scan.pcap`; public `nmap_ACK_scan_on_port_80` (two probes). Tests: `tests/test_stealth.py`.
+
 ## Floods (`faultline/detectors/flood.py`)
 
 Constants: `SYN_WINDOW` 10 s, `SYN_THRESHOLD` 200 SYNs per window to one service, `LOW_COMPLETION` 0.2, `ICMP_RATE` 100 echo requests/s, `ICMP_SUSTAIN` 3 s, `SMURF_THRESHOLD` 10 broadcast pings in 10 s, `BCAST_RATE` 500 frames/s, `BCAST_FRACTION` 0.30, `LOOP_COPIES` 20, `LOOP_GAP` 0.02 s. Count thresholds are scaled with floors (20 SYNs, 10 pings/s, 3 smurf pings, 50 broadcast frames/s, 5 loop copies).

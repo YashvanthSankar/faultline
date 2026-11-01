@@ -1,4 +1,20 @@
 {
+  "ack_scan.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "attack",
+        "kind": "scan.ack_probe"
+      }
+    ],
+    "malformed": false,
+    "must_not": [
+      "tcp.resets",
+      "scan.port"
+    ],
+    "story": "An unknown device sends acknowledgements for connections that never existed to 18 ports of the file server, to learn which ports a firewall would let through.",
+    "title": "ACK scan mapping the file server's firewall"
+  },
   "arp_spoofing.pcap": {
     "clean": false,
     "expected": [
@@ -184,6 +200,22 @@
     "must_not": [],
     "story": "An unknown device asks for every address from .1 to .254, pings each device that answers, then checks which ones have Windows file sharing (port 445) open.",
     "title": "Network sweep: mapping every device"
+  },
+  "idle_scan.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "attack",
+        "kind": "scan.idle"
+      }
+    ],
+    "malformed": false,
+    "must_not": [
+      "scan.port",
+      "tcp.refused"
+    ],
+    "story": "An unknown device scans the file server without ever using its own address: it forges the old printer's address and reads the printer's packet counter to learn which ports are open.",
+    "title": "Idle (zombie) scan hiding behind the printer"
   },
   "ip_conflict.pcap": {
     "clean": false,

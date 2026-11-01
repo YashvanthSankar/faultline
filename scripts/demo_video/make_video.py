@@ -78,12 +78,13 @@ SCENES: list[dict] = [
               "full of script tags cannot attack whoever opens the report.")),
     dict(id="S09", kind="term",
          cmds=["faultline bench | tail -4", "python scripts/validate_public.py"],
-         say=("Finally, the evidence that it works. On thirty seven labelled captures, Faultline detects all thirty two expected "
+         say=("Finally, the evidence that it works. On thirty nine labelled captures, Faultline detects all thirty four expected "
               "problems, classifies every one correctly, and raises no false alarms. On public real world captures from the "
-              "Wireshark project, it gets twenty out of twenty two, including real Nmap scans, a Teardrop attack and a shell "
-              "hidden on the DNS port. The two misses are stealth scans, and we list them as limitations.")),
+              "Wireshark project, it gets twenty two out of twenty two, including a Teardrop attack, a shell hidden on the DNS "
+              "port, and an idle scan, where the attacker hides behind another machine. Faultline still names the real "
+              "scanner, by reading the forged packets' network card.")),
     dict(id="S10", kind="card", title="Faultline", sub="github.com/YashvanthSankar/faultline",
-         bullets=["Offline · Python 3.10+ · own parser and detectors", "37 labelled captures · 360 tests · 0 false alarms",
+         bullets=["Offline · Python 3.10+ · own parser and detectors", "39 labelled captures · 368 tests · 22/22 public captures",
                   "Every result in this video can be reproduced from the repository"],
          foot="Narration: synthesized voice (Sarvam AI). All footage: the real tool on the bundled sample captures.",
          say="Faultline runs offline, needs only Python, and every result in this video can be reproduced from the repository. Thank you."),

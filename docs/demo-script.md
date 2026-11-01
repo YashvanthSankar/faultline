@@ -8,7 +8,7 @@ Team **Moorthy Gang** · Yashvanth S (CS24I1029). Target length: **3:30 to 4:30*
 
 - [ ] Fresh terminal, `cd ~/Dev/faultline && source .venv/bin/activate`, `pip install -e .` already done, `faultline --version` prints `faultline 1.0.0`.
 - [ ] `ls samples/` shows the 30 scenario captures, `labels.json` and `malformed/` (6 hostile files). If anything is missing, `faultline lab samples/` regenerates them.
-- [ ] `faultline bench` passes: `Detection 32/32 (100%) · Correct fault/attack verdict 32/32 (100%) · False alarms 0 · Clean captures quiet 4/4 · Hostile files handled 6/6`.
+- [ ] `faultline bench` passes: `Detection 34/34 (100%) · Correct fault/attack verdict 34/34 (100%) · False alarms 0 · Clean captures quiet 4/4 · Hostile files handled 6/6`.
 - [ ] `faultline web --no-browser` is running on `http://127.0.0.1:8765`; a browser tab is open on it and zoomed to ~125 % so text is legible at 1080p. The sample gallery on the front page lists every capture as a tile.
 - [ ] Wireshark installed and opened once (so no first-run dialog appears on camera).
 - [ ] Pre-run every command once so Python byte-code is compiled and nothing lags.
@@ -175,7 +175,7 @@ Point at the `addresses redacted` tag in the banner and the `lan-host-…` / `ma
 faultline bench
 ```
 
-Let the table render. Point at the summary line: `Detection 32/32 (100%) · Correct fault/attack verdict 32/32 (100%) · False alarms 0 · Clean captures quiet 4/4 · Hostile files handled 6/6 · 52,478 packets in …s`.
+Let the table render. Point at the summary line: `Detection 34/34 (100%) · Correct fault/attack verdict 34/34 (100%) · False alarms 0 · Clean captures quiet 4/4 · Hostile files handled 6/6 · 54,300 packets in …s`.
 
 **Voiceover:**
 

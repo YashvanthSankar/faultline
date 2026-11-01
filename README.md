@@ -23,12 +23,12 @@ Faultline treats this as a diagnosis problem rather than an alerting problem:
 
 | Measure | Result | How to reproduce |
 |---|---|---|
-| Labelled benchmark: expected problems detected | 32 of 32, across 37 captures | `faultline bench` |
-| Labelled benchmark: correct fault / misconfiguration / attack verdict | 32 of 32 | `faultline bench` |
+| Labelled benchmark: expected problems detected | 34 of 34, across 39 captures | `faultline bench` |
+| Labelled benchmark: correct fault / misconfiguration / attack verdict | 34 of 34 | `faultline bench` |
 | False alarms on the benchmark | 0 (including a 5,900-packet busy office capture with benign look-alikes) | `faultline bench` |
-| Public real-world captures (wiki.wireshark.org) diagnosed correctly | 20 of 22, no false alarms; the two misses are stealth scans, listed under [Limitations](#limitations) | `python scripts/validate_public.py` |
+| Public real-world captures (wiki.wireshark.org) diagnosed correctly | 22 of 22, no false alarms, including an idle (zombie) scan and a two-packet ACK probe | `python scripts/validate_public.py` |
 | Hostile or corrupted input | 6 of 6 malformed sample files handled; 0 crashes in 3,000 fuzzed captures | `python scripts/fuzz.py -n 3000 --seed 42` |
-| Automated tests | 360 passing on Python 3.10 and 3.12 | `pytest -q` |
+| Automated tests | 368 passing on Python 3.10 and 3.12 | `pytest -q` |
 
 The labelled benchmark uses captures produced by our own scenario lab, so it shows that the detectors behave as designed. The public captures are the independent check.
 
@@ -121,7 +121,7 @@ The trade-off is that new kinds of problem need new rules. A local, optional mod
 | Decoding | ARP, IPv4 with fragments, IPv6 with extension headers, TCP with options (MSS, window scale, SACK, timestamps), UDP, ICMP and ICMPv6 including the quoted original packet, DNS with safe name decompression, DHCP, TLS handshakes (SNI, versions, alerts), HTTP/1.x, and clear-text logins (FTP, Telnet, POP3, IMAP, SMTP AUTH, HTTP Basic). Roughly 320,000 packets per second on a laptop |
 | Faults | Packet loss with location relative to the capture point, connection resets, refused connections, unanswered connection attempts, receive-window stalls, high latency, slow servers, DNS timeouts, errors and slowness, unanswered ARP, missing DHCP server, routing loops, unreachable hosts, broadcast storms, TLS failures, HTTP server errors |
 | Misconfigurations | IP address conflicts, a second DHCP server, DHCP NAKs, path-MTU black holes, fragmentation-needed, expired or untrusted certificates, outdated TLS versions, passwords sent in clear text |
-| Attacks (mapped to MITRE ATT&CK) | ARP spoofing, rogue DHCP, DHCP starvation, DNS hijacking, DNS tunnelling, algorithmically generated domains, port scans (SYN, connect, FIN/NULL/Xmas, UDP), host, ping and ARP sweeps, SYN and ICMP floods, Smurf, ping of death, ICMP redirects, Teardrop and tiny-fragment evasion, shells on the DNS port, password guessing, web content scans, TCP reset injection |
+| Attacks (mapped to MITRE ATT&CK) | ARP spoofing, rogue DHCP, DHCP starvation, DNS hijacking, DNS tunnelling, algorithmically generated domains, port scans (SYN, connect, FIN/NULL/Xmas, UDP, ACK), idle (zombie) scans that hide the real scanner, host, ping and ARP sweeps, SYN and ICMP floods, Smurf, ping of death, ICMP redirects, Teardrop and tiny-fragment evasion, shells on the DNS port, password guessing, web content scans, TCP reset injection |
 | Reasoning | Per-finding classification with confidence and "why not" text, incident chains linking root causes to symptoms, health score, overall verdict |
 | Explanations | Summary, beginner explanation with an analogy, likely cause, ordered fix steps with commands, and an expert paragraph for every finding |
 | Evidence | Frame numbers (Wireshark numbering), a ready-made Wireshark filter, an evidence table, a small evidence capture per finding, host roles (gateway, DNS, DHCP), top talkers, conversations, timeline |
@@ -129,7 +129,7 @@ The trade-off is that new kinds of problem need new rules. A local, optional mod
 | Automation | Exit codes and `--fail-on` for scheduled checks or CI; `faultline diff` to compare captures before and after a fix |
 | Privacy and security | Address pseudonymisation (`--redact`), credentials detected but never extracted, no payload storage, owner-only report files, hardened report and dashboard (see [Security](#security)) |
 
-The full list of 38 finding types, with signals, thresholds and the evidence used to separate faults from attacks, is in [`docs/DETECTORS.md`](docs/DETECTORS.md).
+The full list of 40 finding types, with signals, thresholds and the evidence used to separate faults from attacks, is in [`docs/DETECTORS.md`](docs/DETECTORS.md).
 
 ## How it works
 
@@ -138,7 +138,7 @@ flowchart LR
     F[".pcap / .pcapng / .pcap.gz"] --> R["capture/reader.py<br/>streaming reader with hard limits"]
     R --> D["capture/decode.py<br/>L2 to L7 decoders"]
     D --> H["context.py<br/>host table and roles"]
-    D --> DET["detectors/<br/>11 modules, 38 finding types"]
+    D --> DET["detectors/<br/>12 modules, 40 finding types"]
     H --> DET
     DET --> V["verdict.py<br/>fault / misconfiguration / attack"]
     V --> C["correlate.py<br/>incidents, health score, verdict"]
@@ -187,7 +187,7 @@ The health score is 100 minus a penalty for each finding, weighted by severity a
 | Duplicate IPs and ARP conflicts | Every ARP claim per address, probes, who answered when asked, flip-flops | `arp.duplicate_ip`, `arp.unanswered`, `arp.storm` |
 | MTU mismatches | Fragmentation-needed and packet-too-big messages, whether senders adapted, and black holes where large packets vanish without any ICMP message | `mtu.frag_needed`, `mtu.blackhole` |
 | Unusual delays | Round-trip time split at the capture point, server processing time, client delay | `latency.high_rtt`, `latency.slow_server` |
-| Port scans | SYN, connect, FIN/NULL/Xmas and UDP scans; host, ping and ARP sweeps | `scan.port`, `scan.host_sweep`, `arp.scan` |
+| Port scans | SYN, connect, FIN/NULL/Xmas, UDP and ACK scans; idle (zombie) scans; host, ping and ARP sweeps | `scan.port`, `scan.ack_probe`, `scan.idle`, `scan.host_sweep`, `arp.scan` |
 | ARP spoofing | Router impersonation, unsolicited replies at a fixed rate, one MAC claiming several addresses, traffic redirected to the impostor | `arp.duplicate_ip` (attack) |
 | DNS hijacking | Conflicting answers to one query, answers faster than the network allows, answers from servers that were never asked, public names resolved to a rogue local host | `dns.hijack`, `dns.tunneling` |
 | Rogue DHCP servers | A rogue server (same subnet, names itself router and DNS, answers first) versus a misplugged home router (different subnet, public DNS); missing server; NAKs; starvation | `dhcp.*` |
@@ -236,14 +236,14 @@ Exit status: 0 analysed, 1 `--fail-on` condition met, 2 unusable input (with a o
 
 ## Sample captures
 
-The 37 samples in [`samples/`](samples) were generated by our scenario lab ([`faultline/lab/`](faultline/lab)): synthetic office traffic written byte by byte with correct checksums (checked with `tcpdump`). Each problem sits inside ordinary background traffic (DNS, HTTPS, ARP, NTP, DHCP). They contain no real user data, and `faultline lab` regenerates identical files. Expected results are in [`samples/labels.json`](samples/labels.json).
+The 39 samples in [`samples/`](samples) were generated by our scenario lab ([`faultline/lab/`](faultline/lab)): synthetic office traffic written byte by byte with correct checksums (checked with `tcpdump`). Each problem sits inside ordinary background traffic (DNS, HTTPS, ARP, NTP, DHCP). They contain no real user data, and `faultline lab` regenerates identical files. Expected results are in [`samples/labels.json`](samples/labels.json).
 
 | Group | Captures |
 |---|---|
 | Healthy | `clean_office`, `busy_but_healthy`, `pcapng_office`, `xss_payload` (packet text fields contain HTML and JavaScript) |
 | Faults | `lossy_link`, `server_down_timeouts`, `zero_window`, `slow_server`, `high_latency`, `dns_failure`, `dhcp_no_server`, `routing_loop` |
 | Misconfigurations | `connection_refused`, `mtu_blackhole`, `mtu_frag_needed`, `ip_conflict`, `dhcp_misconfig_two_routers`, `cleartext_creds`, `tls_failures` |
-| Attacks | `arp_spoofing`, `port_scan`, `host_sweep`, `dns_hijack`, `rogue_dhcp`, `syn_flood`, `dns_tunnel`, `web_bruteforce`, `dns_backdoor`, `teardrop`, `mitm_chain` |
+| Attacks | `arp_spoofing`, `port_scan`, `idle_scan`, `ack_scan`, `host_sweep`, `dns_hijack`, `rogue_dhcp`, `syn_flood`, `dns_tunnel`, `web_bruteforce`, `dns_backdoor`, `teardrop`, `mitm_chain` |
 | Fault and attack together | `outage_vs_attack_mixed` |
 | Malformed files | `malformed/truncated`, `bad_magic`, `huge_caplen`, `zero_length`, `corrupt_packets`, `compressed_padding.pcap.gz` |
 
@@ -260,6 +260,7 @@ The table is the command's output in Markdown form.
 
 | Capture | Expected | Detected | Correct classification | False alarms | Result |
 |---|---|---|---|---|---|
+| `ack_scan.pcap` | `scan.ack_probe` (attack) | 1/1 | 1/1 | 0 | pass |
 | `arp_spoofing.pcap` | `arp.duplicate_ip` (attack) | 1/1 | 1/1 | 0 | pass |
 | `busy_but_healthy.pcap` | nothing | - | - | 0 | pass |
 | `clean_office.pcap` | nothing | - | - | 0 | pass |
@@ -273,6 +274,7 @@ The table is the command's output in Markdown form.
 | `dns_tunnel.pcap` | `dns.tunneling` (attack) | 1/1 | 1/1 | 0 | pass |
 | `high_latency.pcap` | `latency.high_rtt` (fault) | 1/1 | 1/1 | 0 | pass |
 | `host_sweep.pcap` | `arp.scan` (attack) | 1/1 | 1/1 | 0 | pass |
+| `idle_scan.pcap` | `scan.idle` (attack) | 1/1 | 1/1 | 0 | pass |
 | `ip_conflict.pcap` | `arp.duplicate_ip` (misconfig) | 1/1 | 1/1 | 0 | pass |
 | `lossy_link.pcap` | `tcp.retransmissions` (fault) | 1/1 | 1/1 | 0 | pass |
 | `malformed/bad_magic.pcap` | handled without crash | handled | - | 0 | pass |
@@ -298,7 +300,7 @@ The table is the command's output in Markdown form.
 | `xss_payload.pcap` | nothing | - | - | 0 | pass |
 | `zero_window.pcap` | `tcp.zero_window` (fault) | 1/1 | 1/1 | 0 | pass |
 
-Summary: 32 of 32 detected, 32 of 32 correctly classified, 0 false alarms, 4 of 4 healthy captures quiet, 6 of 6 malformed files handled; 52,478 packets in about 1.5 seconds.
+Summary: 34 of 34 detected, 34 of 34 correctly classified, 0 false alarms, 4 of 4 healthy captures quiet, 6 of 6 malformed files handled; 54,300 packets in about 1.8 seconds.
 
 ### Public captures
 
@@ -314,10 +316,10 @@ To check behaviour on traffic we did not generate, [`scripts/validate_public.py`
 | `arp-storm.pcap` | ISP routers resolving many customers | no attack reported | correct |
 | `dns.cap`, `http.cap`, `dhcp.pcap`, `dhcp-and-dyndns.pcap.gz`, `v6.pcap`, `ipv4frags.pcap`, `nfs_bad_stalls.cap` | Ordinary traffic | healthy | correct |
 | `zlip-1.pcap`, `zlip-2.pcap`, `zlip-3.pcap` | DNS decompression exploits | parsed without error | correct |
-| `nmap_ACK_scan_on_port_80` | A six-packet ACK probe of one port | not detected | missed |
-| `nmap_zombie_scan` | Idle (zombie) scan | not detected | missed |
+| `nmap_ACK_scan_on_port_80` | An ACK probe of one port (two probe packets) | `scan.ack_probe`, attack | correct |
+| `nmap_zombie_scan` | Idle (zombie) scan | `scan.idle`, attack; names the real scanner `.103`, not the zombie | correct |
 
-20 of 22 correct, no false alarms, no crashes. The first run of this validation found one false alarm (the ISP routers had been reported as an ARP scan) and two gaps (Teardrop, and a shell on the DNS port). All three were fixed and added to the lab and the test suite.
+22 of 22 correct, no false alarms, no crashes. The first run of this validation found one false alarm (the ISP routers had been reported as an ARP scan) and two gaps (Teardrop, and a shell on the DNS port). A later run still missed two stealth scans: a two-packet ACK probe and an idle (zombie) scan. All were fixed, and each fix was added to the lab and the test suite together with the harmless look-alikes it must ignore (connections that began before the capture started, SYN-flood backscatter).
 
 ### Recorded runs
 
@@ -325,7 +327,7 @@ The images in [`docs/proof/`](docs/proof) show the verification commands being r
 
 | Analysis of an attack capture | Test suite and benchmark (339 tests at the time of this screenshot) |
 |---|---|
-| <img src="docs/proof/real-terminal-mitm.png" alt="faultline analyze samples/mitm_chain.pcap in a Terminal window" width="440"> | <img src="docs/proof/real-terminal-tests.png" alt="Test suite and benchmark in a Terminal window (taken when the suite had 339 tests; it now has 360, see tests.svg)" width="440"> |
+| <img src="docs/proof/real-terminal-mitm.png" alt="faultline analyze samples/mitm_chain.pcap in a Terminal window" width="440"> | <img src="docs/proof/real-terminal-tests.png" alt="Test suite and benchmark in a Terminal window (taken when the suite had 339 tests; it now has 368, see tests.svg)" width="440"> |
 | **Fuzzing and secret scan** | **Public captures** |
 | <img src="docs/proof/real-terminal-fuzz.png" alt="Fuzzer and secret scanner in a Terminal window" width="440"> | <img src="docs/proof/public-captures.svg" alt="Validation on public Wireshark captures" width="440"> |
 
@@ -347,7 +349,7 @@ The images in [`docs/proof/`](docs/proof) show the verification commands being r
 
 ```bash
 pip install -e ".[dev]"
-pytest -q                                   # 360 tests
+pytest -q                                   # 368 tests
 faultline bench                             # labelled benchmark
 python scripts/validate_public.py           # public captures (downloads about 1.5 MB once, cached in ~/.cache/faultline)
 python scripts/fuzz.py -n 3000 --seed 42    # fuzzing
@@ -382,7 +384,7 @@ Capture files and everything inside them are treated as untrusted. The threat mo
 ```
 faultline/
   capture/      reader.py (pcap, pcapng, gzip), decode.py (L2 to L7), writer.py
-  detectors/    tcp, latency, mtu, arp, dhcp, dns, scan, flood, icmp, app, protocol
+  detectors/    tcp, latency, mtu, arp, dhcp, dns, scan, stealth, flood, icmp, app, protocol
   model.py      packet, finding, indicator and incident types
   context.py    host table, roles, sensitivity
   verdict.py    fault / misconfiguration / attack scoring
@@ -392,8 +394,8 @@ faultline/
   web/          local dashboard
   lab/          packet builder and labelled scenarios
   bench.py, diff.py, cli.py
-samples/        37 labelled captures and labels.json
-tests/          360 tests
+samples/        39 labelled captures and labels.json
+tests/          368 tests
 scripts/        fuzz.py, check_secrets.py, validate_public.py, make_assets.py, make_proof.py, make_web_shots.py
 docs/           THINKING.md, DETECTORS.md, demo-script.md, images/, examples/, proof/
 ```
@@ -428,7 +430,7 @@ Faultline is a defensive tool. Analyse only captures from networks you own or ar
 ## Limitations
 
 - **Encrypted traffic.** Only TLS handshake metadata is examined. Anything inside an encrypted session is invisible to Faultline.
-- **Stealth scans.** A single-port ACK probe and an idle (zombie) scan, both in the public Nmap captures, are not detected. The first is indistinguishable from mid-connection traffic; the second hides the scanner behind a third host.
+- **Stealth scans from outside the LAN.** The idle-scan finding names the real scanner by its network card when it is on the same segment. If the scanner sits behind a router, Faultline still reports the scan and the zombie, but attribution rests on the IP ID sampling alone.
 - **Single capture point.** Loss location and delay attribution assume one vantage point. Captures merged from several points will mislead them.
 - **Heuristic thresholds.** They are tuned for precision on our lab and on the public captures above. `--sensitivity` adjusts them, but unusual networks may need tuning.
 - **Files only.** There is no live-capture mode.

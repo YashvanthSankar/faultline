@@ -553,6 +553,79 @@ def sc_teardrop(o: Office) -> dict:
     )
 
 
+def sc_idle_scan(o: Office) -> dict:
+    """Idle (zombie) scan: the intruder reads an idle printer's IP ID counter while forging its address."""
+    lan, rng, t0 = o.lan, o.rng, o.t0
+    intr = _intruder(o)
+    zombie = lan.add_host(Host("old-printer", "00:80:92:41:0c:2d", "192.168.1.24"), client=False)
+    target = lan.clients[4]  # .20 file server
+    o.background(t0 + 0.5, 90, rate=0.4, exclude={target.ip})
+    o.arp_exchange(t0 + 29.0, intr, zombie)
+    o.arp_exchange(t0 + 29.1, intr, target)
+    zport, sport = 80, 52000
+
+    def sample(t: float, src: str = INTRUDER_IP, dst_back: str = INTRUDER_IP) -> float:
+        nonlocal sport
+        sport += 1 + rng.randrange(3)
+        seq = rng.getrandbits(32)
+        _tcp(o, t, src, zombie.ip, sport, zport, "SA", seq=seq, ack=rng.getrandbits(32), win=1024, src_mac=intr.mac)
+        rst = ipv4(zombie.ip, dst_back, PROTO_TCP, tcp_seg(zombie.ip, dst_back, zport, sport, seq + 1, 0, "R", win=0),
+                   ip_id=o.cap.next_ip_id(zombie.ip))
+        o.cap.ip(t + 0.0004, rst, zombie.ip, dst_back)
+        return t + rng.uniform(0.03, 0.06)
+
+    t = t0 + 30.0
+    for _ in range(6):  # is the printer's counter predictable?
+        t = sample(t)
+    for _ in range(4):  # does it also count packets sent to other hosts? (forged as the file server)
+        t = sample(t, src=target.ip, dst_back=target.ip)
+    open_ports = {22, 80, 443, 445}
+    for p in (21, 22, 23, 25, 80, 110, 139, 443, 445, 3389, 5900, 8080):
+        # a SYN that claims to come from the printer, sent by the intruder's network card
+        isn = rng.getrandbits(32)
+        _tcp(o, t, zombie.ip, target.ip, zport, p, "S", seq=isn, win=1024, src_mac=intr.mac, mss=1460)
+        if p in open_ports:  # the file server answers the printer; the printer resets, its counter grows by one
+            _tcp(o, t + 0.0005, target.ip, zombie.ip, p, zport, "SA", seq=rng.getrandbits(32), ack=isn + 1, mss=1460)
+            rst = ipv4(zombie.ip, target.ip, PROTO_TCP, tcp_seg(zombie.ip, target.ip, zport, p, isn + 1, 0, "R", win=0),
+                       ip_id=o.cap.next_ip_id(zombie.ip))
+            o.cap.ip(t + 0.0009, rst, zombie.ip, target.ip)
+        else:
+            _tcp(o, t + 0.0005, target.ip, zombie.ip, p, zport, "RA", seq=0, ack=isn + 1, win=0)
+        t = sample(t + 0.05)
+    return label(
+        "Idle (zombie) scan hiding behind the printer",
+        "An unknown device scans the file server without ever using its own address: it forges the old printer's "
+        "address and reads the printer's packet counter to learn which ports are open.",
+        expected=[("scan.idle", "attack")],
+        must_not=["scan.port", "tcp.refused"],
+    )
+
+
+def sc_ack_scan(o: Office) -> dict:
+    """ACK scan (nmap -sA): acknowledgements for connections that never existed, to map the firewall."""
+    lan, rng, t0 = o.lan, o.rng, o.t0
+    intr = _intruder(o)
+    target = lan.clients[4]
+    o.background(t0 + 0.5, 90, rate=0.4, exclude={target.ip})
+    o.arp_exchange(t0 + 29.9, intr, target)
+    t = t0 + 30.0
+    sport = 45100
+    ports = [21, 22, 23, 25, 53, 80, 110, 135, 139, 143, 443, 445, 993, 1433, 3306, 3389, 5900, 8080]
+    for p in ports:
+        sport += 1
+        ack = rng.getrandbits(32)
+        _tcp(o, t, intr.ip, target.ip, sport, p, "A", seq=0, ack=ack, win=1024)
+        _tcp(o, t + 0.0004, target.ip, intr.ip, p, sport, "R", seq=ack, win=0)  # unfiltered: the host resets
+        t += rng.uniform(0.002, 0.01)
+    return label(
+        "ACK scan mapping the file server's firewall",
+        "An unknown device sends acknowledgements for connections that never existed to 18 ports of the file server, "
+        "to learn which ports a firewall would let through.",
+        expected=[("scan.ack_probe", "attack")],
+        must_not=["tcp.resets", "scan.port"],
+    )
+
+
 SCENARIOS = {
     "arp_spoofing.pcap": (sc_arp_spoofing, 101),
     "port_scan.pcap": (sc_port_scan, 102),
@@ -569,6 +642,8 @@ SCENARIOS = {
     "xss_payload.pcap": (sc_xss_payload, 113),
     "dns_backdoor.pcap": (sc_dns_backdoor, 114),
     "teardrop.pcap": (sc_teardrop, 115),
+    "idle_scan.pcap": (sc_idle_scan, 116),
+    "ack_scan.pcap": (sc_ack_scan, 117),
 }
 
 

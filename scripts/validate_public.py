@@ -83,10 +83,8 @@ CASES = [
     ("zlip-1.pcap", "DNS decompression exploit (hostile input)", set(), True, None),
     ("zlip-2.pcap", "DNS decompression exploit (hostile input)", set(), True, None),
     ("zlip-3.pcap", "DNS decompression exploit (hostile input)", set(), True, None),
-    ("nmap/nmap_ACK_scan_on_port_80", "Nmap ACK scan of ONE port (6 packets)", set(), True,
-     "known limitation: a 1-port ACK probe is indistinguishable from mid-connection traffic"),
-    ("nmap/nmap_zombie_scan", "Nmap idle/zombie scan (stealth by design)", set(), True,
-     "known limitation: idle scans hide the real scanner; would need IP-ID side-channel tracking"),
+    ("nmap/nmap_ACK_scan_on_port_80", "Nmap ACK scan of ONE port (6 packets)", {"scan.ack_probe"}, False, None),
+    ("nmap/nmap_zombie_scan", "Nmap idle/zombie scan (real scanner hidden behind a zombie)", {"scan.idle"}, False, None),
 ]
 
 
