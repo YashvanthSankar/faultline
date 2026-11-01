@@ -4,7 +4,7 @@ Faultline is an offline tool that reads a packet capture and answers one questio
 
 Built for the IIITDM Kancheepuram Cybersecurity Club 24-hour hackathon, Network track ("Diagnosing Network Problems from Packet Captures"), by team **Moorthy Gang**: Yashvanth S (CS24I1029).
 
-**Try it in the browser: https://faultline-pi.vercel.app** (public demo; see the [note on the hosted demo](#hosted-demo))
+**Try it in the browser: https://faultline-pi.vercel.app** (mirror with a 25 MB upload limit: https://faultline.129-225-83-250.sslip.io). Both are public demos; see the [note on the hosted demo](#hosted-demo).
 
 [Quick start](#quick-start) · [Example output](#example-output) · [Demo video](#demo-video) · [Design](#design) · [Why no AI](#why-faultline-does-not-use-ai-or-machine-learning) · [How it works](#how-it-works) · [Evaluation](#evaluation) · [Security](#security) · [Limitations](#limitations)
 
@@ -54,8 +54,18 @@ faultline web                                           # local dashboard at htt
 The same dashboard runs at **https://faultline-pi.vercel.app**, so you can try it without installing anything: open any of the 39 bundled samples, compare two of them, or upload a capture of up to 4 MB. It is the code in this repository ([`api/index.py`](api/index.py)) in hosted mode, which differs from a local install in three ways, all stated on the page itself:
 
 - **Uploads go to the demo server.** Each upload is analysed in a temporary file that is deleted as soon as the report is ready; nothing is stored. For private captures, install Faultline and run it on your own computer, where nothing leaves the machine.
-- **4 MB upload limit**, Vercel's request size limit. The command line and the local dashboard handle large captures.
+- **Upload limit:** 4 MB on Vercel (its request size limit) and 25 MB on the mirror, a small virtual server of ours. The command line and the local dashboard handle large captures.
 - **Security settings.** The local dashboard accepts only requests addressed to 127.0.0.1. On the hosted demo that check is left to Vercel, and the form token is derived from a secret stored in the Vercel project settings, so every server instance accepts it. Requests from other websites, missing or wrong tokens, and files that are not captures are still refused.
+
+To host it yourself, run the same entry point under any WSGI server with a secret of at least 32 characters in the environment, behind an HTTPS proxy:
+
+```bash
+pip install -e . gunicorn
+export FAULTLINE_SECRET="$(openssl rand -hex 32)" FAULTLINE_MAX_UPLOAD_MB=25
+gunicorn --workers 1 --threads 4 --bind 127.0.0.1:8090 api.index:app
+```
+
+The mirror runs exactly this as a systemd service with a 300 MB memory cap, behind Caddy for HTTPS.
 
 ## Example output
 
@@ -434,6 +444,7 @@ Tools and services used only for the documentation, the demo video and the hoste
 | [VHS](https://github.com/charmbracelet/vhs) | MIT | Records the terminal scenes of the demo video from scripted real commands |
 | [FFmpeg](https://ffmpeg.org) | LGPL/GPL | Joins the video scenes and adds the narration |
 | [Vercel](https://vercel.com) | Hosting service | Runs the public demo at faultline-pi.vercel.app; not needed to run Faultline |
+| [Gunicorn](https://gunicorn.org) and [Caddy](https://caddyserver.com) | MIT / Apache-2.0 | Serve the demo mirror on our own server (WSGI server and HTTPS proxy); not needed to run Faultline |
 | [Sarvam AI text-to-speech API](https://www.sarvam.ai) (bulbul:v3, speaker "aditya") | Commercial API | Narration voice of the demo video; the key is read from the `SARVAM_API_KEY` environment variable and is not stored in the repository |
 
 Not used by Faultline: Wireshark, tshark, pyshark, Scapy, dpkt, Zeek, Suricata, or any external API or network service. Faultline itself never connects to the network. Capture parsing, protocol decoding, detection and diagnosis are our own code.
