@@ -2,157 +2,435 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src &#x27;none&#x27;; script-src &#x27;sha256-Ub1UspVg+7uc9LhL+zpJb9n59yRHZGDKRxDRvNhsLoA=&#x27;; style-src &#x27;sha256-fxV7W/wAtL2oG6H2obTinhROTp5ZNwbIUmgr560z+Qk=&#x27;; img-src data:; font-src &#x27;none&#x27;; connect-src &#x27;none&#x27;; object-src &#x27;none&#x27;; media-src &#x27;none&#x27;; frame-src &#x27;none&#x27;; worker-src &#x27;none&#x27;; manifest-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;">
+<meta http-equiv="Content-Security-Policy" content="default-src &#x27;none&#x27;; script-src &#x27;sha256-qjW1DOJd7FUbb4Ae1MaEC4soel+pBbjhgLdWqMRyf/w=&#x27;; style-src &#x27;sha256-8ZL1HhOX4mK3O0ajT1dtf+nxtz8anHG6JlFjmfH65T8=&#x27;; img-src data:; font-src &#x27;none&#x27;; connect-src &#x27;none&#x27;; object-src &#x27;none&#x27;; media-src &#x27;none&#x27;; frame-src &#x27;none&#x27;; worker-src &#x27;none&#x27;; manifest-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;">
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark light">
 <meta name="generator" content="Faultline">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Crect%20x%3D%221%22%20y%3D%221%22%20width%3D%2222%22%20height%3D%2222%22%20rx%3D%226%22%20fill%3D%22%23131c2a%22%20stroke%3D%22%23ece7dc%22%20stroke-width%3D%221.4%22%2F%3E%3Cpath%20d%3D%22M3.5%2013h4l2-6%203%2010%202.4-7%201.6%203h4%22%20fill%3D%22none%22%20stroke%3D%22%23ff6a5c%22%20stroke-width%3D%221.9%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E">
 <title>Healthy: clean_office.pcap | Faultline</title>
-<style>/* Faultline report: one stylesheet for the exported report and the dashboard. */
+<style>/* Faultline console: one stylesheet for the exported report and the dashboard.
+   App shell (sidebar + top bar + views), dark by default, system fonts only. */
 :root {
-  --bg: #131c2a;
-  --bg-deep: #0f1723;
-  --surface: #1a2433;
-  --surface-2: #212d3f;
-  --line: #2e3c52;
-  --line-soft: #253246;
-  --text: #ece7dc;
-  --muted: #a6b0bf;
-  --faint: #76839a;
-  --attack: #ff6a5c;
-  --fault: #f4b43e;
-  --misconfig: #78aeff;
-  --ok: #4fd19a;
-  --info: #a9b4c4;
+  --bg: #0e1218;
+  --bg-deep: #0a0d12;
+  --surface: #141a22;
+  --surface-2: #1a2230;
+  --line: #273243;
+  --line-soft: #1f2836;
+  --text: #e7eaef;
+  --muted: #9aa5b5;
+  --faint: #6b7788;
+  --attack: #f26b5b;
+  --fault: #e8a93a;
+  --misconfig: #5fa5f5;
+  --ok: #3fc98f;
+  --info: #9aa5b5;
   --focus: #ffd98a;
   --status: var(--info);
+  --c: var(--info);
+  --r: 8px;
+  --side-w: 232px;
+  --top-h: 56px;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --display: "Avenir Next", "Avenir", "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --display: var(--sans);
   --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
   color-scheme: dark;
 }
-[data-status="under_attack"] { --status: var(--attack); }
-[data-status="faulty"] { --status: var(--fault); }
-[data-status="minor_issues"] { --status: var(--misconfig); }
-[data-status="healthy"] { --status: var(--ok); }
-
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 72px; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font: 16px/1.55 var(--sans);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-a { color: inherit; }
-button { font: inherit; color: inherit; }
-:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
-code, .mono { font-family: var(--mono); font-size: .88em; }
-code {
-  background: var(--bg-deep);
-  border: 1px solid var(--line-soft);
-  border-radius: 5px;
-  padding: .05em .4em;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
-noscript p { padding: 24px; }
-
-/* ---------- top bar ---------- */
-.topbar {
-  position: sticky; top: 0; z-index: 20;
-  background: rgba(19, 28, 42, .92);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--line-soft);
-}
-.topbar .wrap { display: flex; align-items: center; gap: 22px; height: 56px; }
-.brand { display: flex; align-items: center; gap: 9px; font: 700 17px/1 var(--display); letter-spacing: -.01em; text-decoration: none; }
-.brand svg { display: block; }
-.navlinks { display: flex; gap: 2px; margin-right: auto; }
-.navlinks a { white-space: nowrap; text-decoration: none; color: var(--muted); font-size: 14px; padding: 6px 10px; border-radius: 6px; }
-.navlinks a:hover { color: var(--text); background: var(--surface); }
-.tools { display: flex; align-items: center; gap: 8px; }
-.btn {
-  display: inline-flex; align-items: center; gap: 7px;
-  border: 1px solid var(--line); background: var(--surface);
-  border-radius: 8px; padding: 7px 12px; font-size: 14px; cursor: pointer;
-  text-decoration: none; white-space: nowrap; line-height: 1.2;
-}
-.btn:hover { background: var(--surface-2); border-color: #3c4d68; }
-.btn.primary { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 600; }
-.btn.primary:hover { background: #fff; }
-.btn svg { flex: none; }
-.segmented { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; padding: 2px; background: var(--bg-deep); }
-.segmented button { border: 0; background: none; border-radius: 6px; padding: 5px 11px; font-size: 13.5px; color: var(--muted); cursor: pointer; }
-.segmented button[aria-pressed="true"] { background: var(--surface-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--line); }
-
-/* ---------- verdict hero ---------- */
-.hero { padding: 34px 0 10px; position: relative; }
-.hero::before {
-  content: ""; position: absolute; inset: 0 0 auto 0; height: 420px; pointer-events: none;
-  background: radial-gradient(900px 340px at 12% -10%, color-mix(in srgb, var(--status) 16%, transparent), transparent 70%);
-}
-.hero-grid { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 264px; gap: 40px; align-items: start; }
-.status-word {
-  margin: 0;
-  font: 800 clamp(52px, 7.4vw, 92px)/.95 var(--display);
-  letter-spacing: -.035em;
-  color: var(--status);
-  display: flex; align-items: center; gap: .22em;
-}
-.status-word .glyph { flex: none; width: .62em; height: .62em; }
-.headline { margin: 16px 0 0; font: 600 clamp(20px, 2.1vw, 26px)/1.3 var(--display); letter-spacing: -.01em; max-width: 34ch; }
-.summary { margin: 10px 0 0; color: var(--muted); max-width: 68ch; font-size: 16.5px; }
-.counts { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 0; padding: 0; list-style: none; }
-.count {
-  display: flex; align-items: baseline; gap: 8px;
-  padding: 8px 14px 8px 12px; border-radius: 10px;
-  background: var(--surface); border: 1px solid var(--line-soft);
-  text-decoration: none;
-}
-button.count { cursor: pointer; }
-button.count:hover { border-color: var(--line); background: var(--surface-2); }
-.count b { font: 700 24px/1 var(--display); }
-.count span { color: var(--muted); font-size: 14px; }
-.count::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--c); align-self: center; }
-.count.zero { opacity: .55; }
+[data-status="under_attack"], .s-under_attack { --status: var(--attack); }
+[data-status="faulty"], .s-faulty { --status: var(--fault); }
+[data-status="minor_issues"], .s-minor_issues { --status: var(--misconfig); }
+[data-status="healthy"], .s-healthy { --status: var(--ok); }
 .c-attack { --c: var(--attack); }
 .c-fault { --c: var(--fault); }
 .c-misconfig { --c: var(--misconfig); }
-.c-info { --c: var(--info); }
-.c-ok { --c: var(--ok); }
+.c-info, .c-sample { --c: var(--info); }
+.c-ok, .c-clean { --c: var(--ok); }
+.c-corrupt, .c-hostile { --c: #b98cf6; }
 
-.hero-side { display: flex; flex-direction: column; align-items: stretch; gap: 14px; }
-.gauge { width: 100%; max-width: 264px; display: block; }
+* { box-sizing: border-box; }
+html { height: 100%; }
+body {
+  margin: 0; height: 100%; overflow: hidden;
+  background: var(--bg); color: var(--text);
+  font: 14px/1.5 var(--sans);
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  font-variant-numeric: tabular-nums;
+}
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+h1, h2, h3, h4, h5 { margin: 0; font-weight: 600; letter-spacing: -.01em; }
+p { margin: 0; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+code, .mono { font-family: var(--mono); font-size: .92em; }
+code { background: var(--bg-deep); border: 1px solid var(--line-soft); border-radius: 5px; padding: .05em .4em; white-space: pre-wrap; word-break: break-word; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+noscript p { padding: 24px; }
+#app { height: 100%; }
+
+/* ---------- shell ---------- */
+.shell { display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr); height: 100%; }
+.side { display: flex; flex-direction: column; background: var(--bg-deep); border-right: 1px solid var(--line-soft); padding: 14px 12px; gap: 12px; min-height: 0; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; padding: 4px 8px; font-weight: 700; font-size: 15px; letter-spacing: -.01em; color: var(--text); border-radius: var(--r); }
+.brand svg { color: var(--attack); flex: none; }
+.brand .brand-box { stroke: var(--text); }
+.nav { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--r); text-decoration: none; color: var(--muted); font-weight: 500; font-size: 13.5px; border: 1px solid transparent; }
+.nav-item svg { flex: none; color: var(--faint); }
+.nav-item:hover { color: var(--text); background: var(--surface); }
+.nav-item[aria-current="page"] { color: var(--text); background: var(--surface-2); border-color: var(--line-soft); }
+.nav-item[aria-current="page"] svg { color: var(--status); }
+.nav-count { margin-left: auto; font: 600 11.5px var(--mono); color: var(--faint); background: var(--surface); border: 1px solid var(--line-soft); border-radius: 999px; padding: 1px 7px; min-width: 22px; text-align: center; }
+.nav-item[aria-current="page"] .nav-count { color: var(--text); }
+.nav-count.warn { color: var(--fault); border-color: color-mix(in srgb, var(--fault) 40%, transparent); }
+.side-foot { margin-top: auto; padding: 8px 10px 0; font-size: 12px; color: var(--faint); border-top: 1px solid var(--line-soft); }
+.side-foot p + p { margin-top: 2px; }
+.stage { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.topbar { display: flex; align-items: center; gap: 14px; height: var(--top-h); padding: 0 20px; border-bottom: 1px solid var(--line-soft); background: var(--bg); flex: none; }
+.topbar .menu { display: none; }
+.crumb { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.crumb-label { color: var(--faint); font-size: 12.5px; }
+.crumb-name { font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 34ch; }
+.mini-verdict { display: inline-flex; align-items: center; gap: 8px; padding: 4px 11px 4px 8px; border-radius: 999px; text-decoration: none; font-size: 12.5px; color: var(--status); background: color-mix(in srgb, var(--status) 12%, transparent); border: 1px solid color-mix(in srgb, var(--status) 40%, transparent); white-space: nowrap; }
+.mini-verdict .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--status); box-shadow: 0 0 0 3px color-mix(in srgb, var(--status) 25%, transparent); }
+.mini-verdict b { font-weight: 600; }
+.health { display: inline-flex; align-items: baseline; gap: 4px; color: var(--faint); font-size: 12px; white-space: nowrap; }
+.health b { color: var(--text); font-size: 15px; font-weight: 700; }
+.tools { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.views { flex: 1; min-height: 0; overflow: auto; padding: 22px 24px 40px; scroll-behavior: smooth; }
+.view[hidden] { display: none; }
+.view { display: grid; gap: 16px; max-width: 1480px; margin: 0 auto; animation: fade .18s ease; }
+.view-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.view-head h2 { font-size: 20px; }
+.view-head p { color: var(--muted); margin-top: 2px; max-width: 70ch; }
+.view-head h2:focus { outline: none; }
+
+/* ---------- controls ---------- */
+.btn { display: inline-flex; align-items: center; gap: 7px; padding: 6px 11px; border-radius: var(--r); border: 1px solid var(--line); background: var(--surface); color: var(--text); font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; white-space: nowrap; line-height: 1.3; }
+.btn:hover { background: var(--surface-2); border-color: #34425a; }
+.btn.primary { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 600; }
+.btn.primary:hover { background: #fff; }
+.btn.big { padding: 10px 16px; font-size: 14px; }
+.btn.icon { padding: 6px; }
+.btn.small { padding: 5px 10px; font-size: 12.5px; color: var(--muted); }
+.btn.small:hover { color: var(--text); }
+.btn.small svg { transition: transform .2s ease; }
+.btn.small[aria-expanded="true"] svg { transform: rotate(180deg); }
+.segmented { display: inline-flex; padding: 2px; border-radius: var(--r); border: 1px solid var(--line); background: var(--bg-deep); }
+.segmented button { border: 0; background: transparent; color: var(--muted); padding: 4px 11px; border-radius: 6px; font-size: 12.5px; font-weight: 500; cursor: pointer; }
+.segmented button[aria-pressed="true"] { background: var(--surface-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--line); }
+.linkish { background: none; border: 0; padding: 0; color: var(--text); text-decoration: underline; text-decoration-color: var(--faint); text-underline-offset: 3px; cursor: pointer; font-size: inherit; text-align: left; }
+.linkish:hover { text-decoration-color: var(--text); }
+.linkish.arrow { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: var(--muted); font-size: 13px; font-weight: 500; }
+.linkish.arrow:hover { color: var(--text); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 4px 10px; font-size: 12.5px; color: var(--muted); cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+.chip:hover { color: var(--text); }
+.chip[aria-pressed="true"] { color: var(--bg); background: var(--text); border-color: var(--text); }
+.chip .n { font: 600 11px var(--mono); opacity: .8; }
+.chip[disabled] { opacity: .4; cursor: default; }
+.chip.host { color: var(--text); border-color: var(--focus); background: color-mix(in srgb, var(--focus) 12%, transparent); }
+.chip.host .x { font-size: 15px; line-height: 1; }
+.chip[hidden] { display: none; }
+.search-wrap { display: flex; align-items: center; gap: 8px; padding: 0 10px; border: 1px solid var(--line); border-radius: var(--r); background: var(--bg-deep); color: var(--faint); }
+.search-wrap:focus-within { border-color: var(--muted); }
+.search { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--text); font: 13px var(--sans); padding: 7px 0; outline: none; }
+.search::placeholder { color: var(--faint); }
+select, input[type=file] { font: 13px var(--sans); color: var(--text); background: var(--bg-deep); border: 1px solid var(--line); border-radius: var(--r); padding: 7px 10px; min-width: 0; width: 100%; }
+select { font-family: var(--mono); font-size: 12.5px; }
+
+/* ---------- panels and tags ---------- */
+.panel { background: var(--surface); border: 1px solid var(--line-soft); border-radius: 12px; padding: 16px 18px; min-width: 0; }
+.panel > h3 { font-size: 14px; margin-bottom: 12px; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.panel-head h3 { font-size: 14px; }
+.panel.calm { border-color: color-mix(in srgb, var(--ok) 35%, var(--line-soft)); }
+.panel.calm h3 { color: var(--ok); }
+.panel.calm p { color: var(--muted); }
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; line-height: 1; padding: 4px 8px; border-radius: 999px; color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); border: 1px solid color-mix(in srgb, var(--c) 35%, transparent); white-space: nowrap; }
+.sev { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+.pips { display: inline-flex; gap: 2px; }
+.pips i { width: 4px; height: 11px; border-radius: 1px; background: var(--line); }
+.pips i.on { background: var(--c, var(--text)); }
+.conf { font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+.fid-tag, .fid { font: 600 11.5px var(--mono); color: var(--faint); }
+.card-tags { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.badge { display: inline-block; font-family: var(--sans); white-space: nowrap; font-size: 11px; font-weight: 600; padding: 2px 7px; margin: 0 4px 3px 0; border-radius: 5px; background: var(--surface-2); border: 1px solid var(--line); color: var(--text); }
+.badge.r-gateway { border-color: color-mix(in srgb, var(--ok) 55%, transparent); color: var(--ok); }
+.badge.r-dns-server { border-color: color-mix(in srgb, var(--misconfig) 55%, transparent); color: var(--misconfig); }
+.badge.r-dhcp-server { border-color: color-mix(in srgb, var(--fault) 55%, transparent); color: var(--fault); }
+.badge.flag { border-color: color-mix(in srgb, var(--attack) 55%, transparent); color: var(--attack); }
+.more { color: var(--faint); font-size: 12.5px; }
+.empty { padding: 36px 28px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 12px; }
+.empty h3 { margin-bottom: 6px; font-size: 16px; }
+.empty.calm h3 { color: var(--ok); }
+.empty p { max-width: 60ch; margin: 0 auto; }
+.notices { display: grid; gap: 8px; margin-top: 12px; }
+.notice { display: flex; gap: 8px; flex-wrap: wrap; padding: 8px 12px; border-radius: var(--r); font-size: 13px; color: var(--text); background: color-mix(in srgb, var(--fault) 9%, transparent); border: 1px solid color-mix(in srgb, var(--fault) 35%, transparent); }
+.notice.privacy { background: color-mix(in srgb, var(--misconfig) 9%, transparent); border-color: color-mix(in srgb, var(--misconfig) 35%, transparent); }
+.toast { position: fixed; left: 50%; bottom: 26px; z-index: 50; transform: translate(-50%, 20px); opacity: 0; background: var(--text); color: var(--bg); font-weight: 600; font-size: 13.5px; padding: 10px 16px; border-radius: var(--r); transition: opacity .2s ease, transform .2s ease; pointer-events: none; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- overview ---------- */
+.verdict-card { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 24px; align-items: center; padding: 20px 26px; position: relative; overflow: hidden; }
+.verdict-card::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--status); }
+.status-word { display: inline-flex; align-items: center; gap: 8px; color: var(--status); font-weight: 600; font-size: 13px; }
+.status-word .glyph { width: 18px; height: 18px; }
+.headline { font-size: clamp(22px, 2.2vw, 30px); line-height: 1.15; letter-spacing: -.02em; margin-top: 8px; max-width: 30ch; }
+.headline:focus { outline: none; }
+.summary { color: var(--muted); margin-top: 10px; max-width: 72ch; font-size: 14.5px; }
+.verdict-gauge { justify-self: end; }
+.gauge { width: 100%; max-width: 190px; display: block; }
 .gauge .track { stroke: var(--line); }
 .gauge .tick { stroke: var(--faint); }
 .gauge .value { stroke: var(--status); }
-.gauge .num { fill: var(--text); font: 800 54px var(--display); letter-spacing: -.03em; }
+.gauge .num { fill: var(--text); font: 700 54px var(--sans); letter-spacing: -.03em; }
 .gauge .lbl { fill: var(--muted); font: 500 13px var(--sans); }
 .gauge .end { fill: var(--faint); font: 500 11px var(--mono); }
-.meta { display: grid; grid-template-columns: auto 1fr; gap: 3px 14px; margin: 0; font-size: 13.5px; }
-.meta dt { color: var(--faint); }
-.meta dd { margin: 0; color: var(--text); overflow-wrap: anywhere; }
-.notice {
-  position: relative; margin: 20px 0 0; padding: 10px 14px; border-radius: 10px;
-  border: 1px solid color-mix(in srgb, var(--fault) 45%, transparent);
-  background: color-mix(in srgb, var(--fault) 9%, transparent);
-  font-size: 14px; display: flex; gap: 10px; align-items: baseline;
-}
-.notice a { color: var(--fault); }
-.privacy { border-color: color-mix(in srgb, var(--ok) 45%, transparent); background: color-mix(in srgb, var(--ok) 8%, transparent); }
+.kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+.kpi { display: grid; gap: 4px; text-align: left; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line-soft); background: var(--surface); cursor: pointer; position: relative; }
+.kpi:hover { border-color: var(--line); background: var(--surface-2); }
+.kpi-label { color: var(--muted); font-size: 12.5px; }
+.kpi b { font-size: 24px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; }
+.kpi.c-attack b, .kpi.c-fault b, .kpi.c-misconfig b { color: var(--c); }
+.kpi.zero b { color: var(--faint); }
+.kpi.c-attack:not(.zero)::after, .kpi.c-fault:not(.zero)::after, .kpi.c-misconfig:not(.zero)::after { content: ""; position: absolute; top: 14px; right: 14px; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+.ov-bottom { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.mini-findings { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.mini-findings button { width: 100%; display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; align-items: center; text-align: left; padding: 8px 10px; border-radius: var(--r); border: 1px solid transparent; background: transparent; cursor: pointer; border-left: 2px solid var(--c); }
+.mini-findings button:hover { background: var(--surface-2); border-color: var(--line-soft); border-left-color: var(--c); }
+.mini-findings .mf-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13.5px; }
 
-/* ---------- seismogram timeline ---------- */
-.seismo { position: relative; margin: 26px 0 0; padding: 14px 16px 12px; background: var(--bg-deep); border: 1px solid var(--line-soft); border-radius: 14px; }
-.seismo-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 6px; }
-.seismo-head h2 { margin: 0; font: 600 15px/1.2 var(--display); }
-.seismo-head p { margin: 0; color: var(--faint); font-size: 13px; }
+/* ---------- timeline ---------- */
+.seismo { position: relative; margin: 0; padding: 14px 16px 12px; background: var(--surface); border: 1px solid var(--line-soft); border-radius: 12px; }
+.seismo-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 6px; flex-wrap: wrap; }
+.seismo-head h2 { font-size: 14px; }
+.seismo-head p { color: var(--faint); font-size: 12.5px; }
+.chart .trace { stroke: var(--text); }
+.chart stop.s0 { stop-color: var(--status); stop-opacity: .22; }
+
+/* ---------- incidents ---------- */
+.incidents { display: grid; gap: 14px; }
+.incident { position: relative; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); border-radius: 12px; overflow: hidden; background: var(--surface); border: 1px solid var(--line-soft); }
+.incident::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--c); }
+.incident-main { padding: 18px 22px 18px 24px; display: grid; gap: 10px; align-content: start; }
+.incident .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.incident h3 { font-size: 18px; letter-spacing: -.015em; }
+.incident .story { color: var(--muted); max-width: 70ch; }
+.incident-fix { padding: 18px 20px; background: var(--surface-2); border-left: 1px solid var(--line-soft); }
+.incident-fix h4 { font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
+.incident.compact { border: 0; background: transparent; grid-template-columns: 1fr; }
+.incident.compact::before { display: none; }
+.incident.compact .incident-main { padding: 0; }
+.incident.compact .incident-fix { border: 1px solid var(--line-soft); border-radius: var(--r); margin-top: 12px; padding: 14px 16px; }
+.incident.compact h3 { font-size: 16px; }
+.chain { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; margin: 4px 0 0; padding: 0; list-style: none; }
+.chain li { display: flex; align-items: center; }
+.chain li + li::before { content: ""; width: 26px; height: 2px; flex: none; margin: 0 2px; background: linear-gradient(90deg, color-mix(in srgb, var(--c) 70%, transparent), var(--line)); }
+.node { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; text-align: left; max-width: 230px; padding: 7px 11px; border-radius: var(--r); cursor: pointer; background: var(--bg-deep); border: 1px solid var(--line); }
+.node:hover { border-color: var(--c); }
+.node small { display: flex; gap: 6px; font-size: 11px; color: var(--faint); }
+.node small b { color: var(--c); font-weight: 600; }
+.node span { font-size: 13px; line-height: 1.3; }
+.node.root { border-color: color-mix(in srgb, var(--c) 60%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 12%, transparent); }
+.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 9px; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 24px 1fr; gap: 10px; align-items: start; font-size: 13.5px; }
+.steps li::before { content: counter(s); display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; font: 700 11.5px/1 var(--sans); color: var(--bg); background: var(--text); margin-top: 1px; }
+.steps.big li { font-size: 14.5px; gap: 12px; }
+.symlink { font-size: 13px; color: var(--muted); display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+
+/* ---------- findings: master-detail ---------- */
+.fl { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 16px; align-items: start; min-height: 0; }
+.fl-side { display: grid; gap: 10px; position: sticky; top: 0; }
+.fl-tools { display: grid; gap: 8px; }
+.fl-list { display: grid; gap: 4px; max-height: calc(100vh - var(--top-h) - 190px); overflow: auto; padding-right: 2px; }
+.fl-item { display: grid; gap: 5px; text-align: left; width: 100%; padding: 10px 12px 10px 14px; border-radius: 10px; border: 1px solid var(--line-soft); background: var(--surface); cursor: pointer; position: relative; }
+.fl-item::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 2px; background: var(--c); opacity: .7; }
+.fl-item:hover { background: var(--surface-2); border-color: var(--line); }
+.fl-item[aria-selected="true"] { background: var(--surface-2); border-color: color-mix(in srgb, var(--c) 55%, var(--line)); }
+.fl-item[aria-selected="true"]::before { opacity: 1; }
+.fl-item[hidden] { display: none; }
+.fl-top { display: flex; align-items: center; gap: 8px; }
+.fl-top .fid { margin-left: auto; }
+.fl-title { font-weight: 600; font-size: 13.5px; line-height: 1.35; }
+.fl-meta { display: flex; justify-content: space-between; gap: 8px; color: var(--faint); font-size: 12px; }
+.fl-detail { min-width: 0; }
+.finding { background: var(--surface); border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
+.fd-head { padding: 20px 24px 0; display: grid; gap: 8px; border-left: 3px solid var(--c); }
+.fd-head h3 { font-size: 22px; letter-spacing: -.02em; line-height: 1.2; }
+.fd-summary { color: var(--muted); font-size: 14.5px; max-width: 80ch; }
+.mitre { display: inline-flex; gap: 6px; align-items: center; color: var(--faint); font-size: 12px; }
+.mitre b { font: 600 12px var(--mono); color: var(--text); background: var(--bg-deep); border: 1px solid var(--line-soft); border-radius: 5px; padding: 1px 6px; }
+.tabs { display: flex; gap: 2px; padding: 14px 24px 0 27px; border-bottom: 1px solid var(--line-soft); overflow-x: auto; }
+.tab { border: 0; background: transparent; color: var(--muted); padding: 8px 12px; font-size: 13.5px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; border-radius: 6px 6px 0 0; }
+.tab:hover { color: var(--text); }
+.tab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--text); }
+.fd-panel { padding: 20px 24px 24px 27px; display: grid; gap: 20px; }
+.fd-panel[hidden] { display: none; }
+.block h4 { font-size: 12.5px; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+.block p { font-size: 14.5px; max-width: 80ch; }
+.block p + p { margin-top: 8px; }
+.analogy { color: var(--muted) !important; padding-left: 12px; border-left: 2px solid var(--line); }
+.hostlist { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.hostlist li { overflow-wrap: anywhere; }
+.host-btn { font-size: 12.5px; background: var(--bg-deep); border: 1px solid var(--line-soft); border-radius: 6px; padding: 3px 7px; cursor: pointer; color: var(--text); }
+.host-btn:hover { border-color: var(--line); }
+.tech { font: 12.5px/1.6 var(--mono); color: var(--muted); background: var(--bg-deep); border: 1px solid var(--line-soft); border-radius: var(--r); padding: 12px 14px; margin: 0 0 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px 16px; margin: 10px 0 0; font-size: 13px; }
+.metrics div { display: flex; flex-direction: column; }
+.metrics dt { color: var(--faint); font-size: 11.5px; }
+.metrics dd { margin: 0; overflow-wrap: anywhere; }
+.expert-only { display: none; }
+body.expert .expert-only { display: initial; }
+body.expert .tab.expert-only { display: inline-block; }
+body.expert .beginner-only { display: none; }
+
+/* ---------- why this verdict: the scoreboard ---------- */
+.reason { display: grid; gap: 18px; }
+.reason-head h4 { font-size: 12.5px; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
+.reason .lead { font-size: 17px; font-weight: 600; letter-spacing: -.01em; max-width: 70ch; line-height: 1.35; }
+.scoreboard { display: grid; gap: 10px; padding: 16px 18px; border-radius: 10px; background: var(--bg-deep); border: 1px solid var(--line-soft); }
+.scorebar { display: flex; height: 14px; border-radius: 4px; overflow: hidden; background: var(--line-soft); }
+.scorebar i { display: block; height: 100%; background: var(--c); min-width: 0; }
+.scorebar i + i { box-shadow: -2px 0 0 var(--bg-deep); }
+.scorekey { display: flex; gap: 18px; margin: 0; padding: 0; list-style: none; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+.scorekey li { display: inline-flex; align-items: center; gap: 7px; }
+.scorekey i { width: 10px; height: 10px; border-radius: 2px; background: var(--c); }
+.scorekey b { color: var(--text); font-size: 14px; }
+.scorekey li.win span { color: var(--text); font-weight: 600; }
+.hyps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.hyp { padding: 14px 16px; border-radius: 10px; border: 1px solid var(--line-soft); background: var(--surface-2); border-top: 2px solid var(--c); }
+.hyp.win { background: color-mix(in srgb, var(--c) 7%, var(--surface-2)); }
+.hyp h5 { margin: 0 0 10px; font-size: 13px; color: var(--c); display: flex; gap: 8px; align-items: baseline; justify-content: space-between; }
+.hyp h5 .n { color: var(--faint); font-weight: 500; font-size: 11.5px; white-space: nowrap; }
+.hyp ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.hyp li { display: grid; grid-template-columns: 34px 1fr; gap: 8px; font-size: 13.5px; align-items: baseline; line-height: 1.4; }
+.dots { display: inline-flex; gap: 3px; }
+.dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+.dots i.on { background: var(--c); }
+.dots i.half { background: linear-gradient(90deg, var(--c) 50%, var(--line) 50%); }
+.whynot-wrap h5 { font-size: 12.5px; color: var(--muted); margin-bottom: 10px; font-weight: 600; }
+.whynot { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.whynot li { padding: 12px 14px; border-radius: 10px; border: 1px dashed var(--line); }
+.wn-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.wn-head b { font-weight: 600; }
+.whynot p { color: var(--muted); font-size: 13.5px; }
+
+/* ---------- evidence ---------- */
+.evidence-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.filter { display: inline-flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; }
+.filter-label { color: var(--faint); font-size: 12px; }
+.filter code { max-width: 420px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: middle; font-size: 12px; }
+.evidence-foot { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
+.hosts-line { margin-top: 10px; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line-soft); border-radius: 10px; background: var(--bg-deep); }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; font-weight: 600; color: var(--faint); font-size: 11.5px; padding: 8px 12px; border-bottom: 1px solid var(--line-soft); white-space: nowrap; background: var(--surface); }
+td { padding: 7px 12px; border-bottom: 1px solid var(--line-soft); vertical-align: top; overflow-wrap: anywhere; }
+tr:last-child td { border-bottom: 0; }
+tbody tr:hover td { background: color-mix(in srgb, var(--text) 3%, transparent); }
+th.num, td.num { text-align: right; white-space: nowrap; }
+td.num { font-family: var(--mono); font-size: 12.5px; }
+td.mono { font-size: 12.5px; }
+.packets td.mono:last-child { white-space: pre-wrap; }
+.hosts .ext { color: var(--faint); font: 11px var(--sans); }
+.ev-groups { display: grid; gap: 14px; }
+.ev-group { border-left: 3px solid var(--c); }
+.ev-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+.ev-head h3 { font-size: 16px; margin-top: 6px; }
+.ev-head .linkish { text-decoration: none; }
+.ev-head .linkish:hover { text-decoration: underline; }
+.ev-head .evidence-tools { margin: 0; }
+
+/* ---------- network ---------- */
+.map-panel { padding: 16px 18px 14px; }
+.map-head { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-bottom: 10px; }
+.map-head h3 { font-size: 14px; }
+.map-head p { color: var(--muted); font-size: 12.5px; max-width: 70ch; }
+
+/* ---------- capture ---------- */
+.capture-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.capture-col { display: grid; gap: 16px; }
+.kv { display: grid; grid-template-columns: 130px 1fr; gap: 9px 16px; margin: 0; font-size: 13.5px; }
+.kv dt { color: var(--faint); }
+.kv dd { margin: 0; overflow-wrap: anywhere; }
+.warnlist { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: 13.5px; }
+.warnlist li { padding: 8px 12px; border-radius: var(--r); background: color-mix(in srgb, var(--fault) 8%, transparent); border: 1px solid color-mix(in srgb, var(--fault) 30%, transparent); overflow-wrap: anywhere; }
+.bars { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.bars li { display: grid; grid-template-columns: 120px minmax(0, 1fr) 76px; gap: 10px; align-items: center; font-size: 13px; }
+.bars .lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bars .lbl.mono { font-size: 12px; }
+.bars .bar { height: 6px; border-radius: 999px; background: var(--line-soft); overflow: hidden; }
+.bars .bar i { display: block; height: 100%; border-radius: 999px; background: var(--muted); }
+.bars .val { text-align: right; color: var(--muted); font-size: 12.5px; }
+.foot-note { color: var(--faint); font-size: 12.5px; }
+.foot-note strong { color: var(--muted); }
+
+/* ---------- motion ---------- */
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes sweep { from { stroke-dashoffset: var(--arc); } }
+@media (prefers-reduced-motion: no-preference) {
+  .chart .trace.draw { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); animation: draw 1.4s cubic-bezier(.3, .6, .2, 1) .1s forwards; }
+  .chart .fill.draw { opacity: 0; animation: fade .8s ease 1s forwards; }
+  .gauge .value.draw { animation: sweep 1.1s cubic-bezier(.3, .6, .2, 1) .1s backwards; }
+}
+@media (prefers-reduced-motion: reduce) { .view { animation: none; } .views { scroll-behavior: auto; } * { transition-duration: 0s !important; } }
+
+/* ---------- responsive ---------- */
+.scrim { display: none; }
+@media (max-width: 1180px) {
+  :root { --side-w: 60px; }
+  .side { padding: 14px 8px; align-items: center; }
+  .brand .brand-name, .nav-label, .nav-count, .side-foot { display: none; }
+  .nav-item { justify-content: center; padding: 10px; }
+  .brand { padding: 4px; }
+  .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ov-bottom, .capture-grid { grid-template-columns: 1fr; }
+  .fl { grid-template-columns: minmax(260px, 320px) minmax(0, 1fr); }
+  .tools .label { display: none; }
+}
+@media (max-width: 1280px) {
+  .btn .label { display: none; }
+  .crumb-name { max-width: 20ch; }
+}
+@media (max-width: 860px) {
+  .shell { grid-template-columns: 1fr; }
+  .side { position: fixed; inset: 0 auto 0 0; width: 232px; z-index: 40; transform: translateX(-100%); transition: transform .2s ease; align-items: stretch; padding: 14px 12px; }
+  .brand .brand-name, .nav-label, .nav-count, .side-foot { display: initial; }
+  .nav-item { justify-content: flex-start; padding: 8px 10px; }
+  .nav-count { display: inline-block; }
+  body.nav-open .side { transform: none; }
+  body.nav-open .scrim { display: block; position: fixed; inset: 0; z-index: 30; background: rgba(0, 0, 0, .5); }
+  .topbar .menu { display: inline-flex; }
+  .topbar { padding: 0 14px; gap: 10px; }
+  .health, .crumb-label { display: none; }
+  .views { padding: 16px 14px 32px; }
+  .verdict-card, .incident, .fl { grid-template-columns: 1fr; }
+  .verdict-gauge { justify-self: start; }
+  .fl-side { position: static; }
+  .fl-list { max-height: 300px; }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ---------- print ---------- */
+@media print {
+  :root { --bg: #fff; --bg-deep: #f5f6f8; --surface: #fff; --surface-2: #f3f4f6; --line: #c9ced6; --line-soft: #dde1e7; --text: #111; --muted: #444; --faint: #666; color-scheme: light; }
+  html, body { height: auto; overflow: visible; }
+  .shell { display: block; }
+  .side, .topbar .tools, .topbar .menu, .toast, .scrim, .tabs, .fl-tools, .chart .cursor { display: none !important; }
+  .stage { display: block; }
+  .views { overflow: visible; padding: 0; }
+  .view, .view[hidden] { display: grid; margin-bottom: 28px; page-break-inside: avoid; animation: none; opacity: 1; }
+  .fd-panel[hidden], .fl-item[hidden] { display: grid; }
+  .fl { grid-template-columns: 1fr; }
+  .fl-list { max-height: none; overflow: visible; }
+  .btn, .kpi, .fl-item { border-color: #c9ced6; }
+  .map-box .tooltip, .term .tip { display: none !important; }
+  .netmap .node .body { fill: #fff; }
+}
+
+/* ---------- timeline chart (SVG) ---------- */
 .chart { position: relative; min-height: 150px; }
 .chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .chart .grid { stroke: var(--line-soft); stroke-width: 1; }
@@ -197,252 +475,6 @@ button.count:hover { border-color: var(--line); background: var(--surface-2); }
 .legend .fid { font: 600 11px/1 var(--mono); color: var(--bg); background: var(--c); border-radius: 999px; padding: 4px 6px; }
 .legend .ltxt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-@media (prefers-reduced-motion: no-preference) {
-  .chart .trace.draw { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); animation: draw 1.6s cubic-bezier(.3, .6, .2, 1) .15s forwards; }
-  .chart .fill.draw { opacity: 0; animation: fade .8s ease 1.1s forwards; }
-  .gauge .value.draw { animation: sweep 1.3s cubic-bezier(.3, .6, .2, 1) .2s backwards; }
-  .card-body { animation: fade .22s ease; }
-}
-@keyframes draw { to { stroke-dashoffset: 0; } }
-@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-@keyframes sweep { from { stroke-dashoffset: var(--arc); } }
-
-/* ---------- sections ---------- */
-.section { padding: 46px 0 6px; }
-.section-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 18px; }
-.section-head h2, .h2 { margin: 0; font: 700 28px/1.15 var(--display); letter-spacing: -.02em; }
-.section-head p { margin: 4px 0 0; color: var(--muted); max-width: 70ch; }
-h3 { font: 600 19px/1.3 var(--display); letter-spacing: -.01em; margin: 0; }
-h4 { margin: 0 0 6px; font: 600 14.5px/1.3 var(--display); color: var(--text); }
-
-/* pills */
-.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; line-height: 1; padding: 5px 9px; border-radius: 999px; color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); border: 1px solid color-mix(in srgb, var(--c) 35%, transparent); white-space: nowrap; }
-.sev { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); white-space: nowrap; }
-.pips { display: inline-flex; gap: 2px; }
-.pips i { width: 4px; height: 11px; border-radius: 1px; background: var(--line); }
-.pips i.on { background: var(--c, var(--text)); }
-.conf { font-size: 13px; color: var(--muted); white-space: nowrap; }
-.fid-tag { font: 600 12px var(--mono); color: var(--faint); }
-
-/* ---------- fix this first ---------- */
-.incidents { display: grid; gap: 16px; }
-.incident {
-  position: relative; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 0;
-  border-radius: 16px; overflow: hidden;
-  background: var(--surface); border: 1px solid var(--line-soft);
-}
-.incident::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--c); }
-.incident-main { padding: 22px 24px 22px 28px; }
-.incident-main .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
-.incident-main p.story { color: var(--muted); margin: 10px 0 16px; max-width: 64ch; }
-.chain { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; margin: 0; padding: 0; list-style: none; }
-.chain li { display: flex; align-items: center; }
-.chain li + li::before {
-  content: ""; width: 34px; height: 2px; flex: none; margin: 0 2px;
-  background: linear-gradient(90deg, color-mix(in srgb, var(--c) 70%, transparent), var(--line));
-}
-.node {
-  display: flex; flex-direction: column; gap: 2px; align-items: flex-start; text-align: left;
-  max-width: 250px; padding: 8px 12px; border-radius: 10px; cursor: pointer;
-  background: var(--bg-deep); border: 1px solid var(--line);
-}
-.node:hover { border-color: var(--c); }
-.node small { font-size: 11.5px; color: var(--faint); }
-.node small b { color: var(--c); font-weight: 600; }
-.node span { font-size: 13.5px; line-height: 1.3; }
-.node.root { border-color: color-mix(in srgb, var(--c) 60%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 12%, transparent); }
-.incident-fix { padding: 22px 24px; background: var(--surface-2); border-left: 1px solid var(--line-soft); }
-.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 10px; }
-.steps li { counter-increment: s; display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; }
-.steps li::before {
-  content: counter(s); display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
-  font: 700 12.5px/1 var(--display); color: var(--bg); background: var(--text); margin-top: 1px;
-}
-
-/* ---------- findings ---------- */
-.chips { display: flex; gap: 6px; flex-wrap: wrap; }
-.chip { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 6px 13px; font-size: 14px; color: var(--muted); cursor: pointer; display: inline-flex; gap: 7px; align-items: center; }
-.chip:hover { color: var(--text); }
-.chip[aria-pressed="true"] { color: var(--bg); background: var(--text); border-color: var(--text); }
-.chip .n { font: 600 12px var(--mono); opacity: .8; }
-.chip[disabled] { opacity: .4; cursor: default; }
-.finding-list { display: grid; gap: 12px; }
-.card {
-  position: relative; border-radius: 12px; background: var(--surface); border: 1px solid var(--line-soft);
-  scroll-margin-top: 76px;
-}
-.card::before { content: ""; position: absolute; left: -1px; top: 14px; bottom: 14px; width: 3px; border-radius: 2px; background: var(--c); }
-.card.flash { animation: flash 1.4s ease; }
-@keyframes flash { 0%, 40% { box-shadow: 0 0 0 2px var(--c); } 100% { box-shadow: 0 0 0 0 transparent; } }
-.card-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 18px; padding: 18px 22px; }
-.card-tags { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
-.card-head p { margin: 5px 0 0; color: var(--muted); max-width: 78ch; }
-.toggle {
-  align-self: start; border: 1px solid var(--line); background: var(--bg-deep); border-radius: 8px;
-  padding: 7px 12px; font-size: 13.5px; cursor: pointer; display: inline-flex; gap: 7px; align-items: center; color: var(--muted);
-}
-.toggle:hover { color: var(--text); }
-.toggle svg { transition: transform .2s ease; }
-.toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
-.symlink { display: inline-flex; gap: 6px; align-items: center; margin-top: 8px; font-size: 13.5px; color: var(--muted); }
-.linkish { background: none; border: 0; padding: 0; color: var(--text); text-decoration: underline; text-decoration-color: var(--faint); text-underline-offset: 3px; cursor: pointer; font-size: inherit; }
-.linkish:hover { text-decoration-color: var(--text); }
-.card-body { border-top: 1px solid var(--line-soft); padding: 20px 22px 22px; display: grid; gap: 22px; }
-.card-body[hidden] { display: none; }
-.cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px 28px; }
-.cols-right { display: grid; gap: 20px; align-content: start; }
-.block p { margin: 0; color: var(--text); }
-.block p + p { margin-top: 8px; }
-.analogy { color: var(--muted) !important; padding-left: 12px; border-left: 2px solid var(--line); font-style: italic; }
-.ordered { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 8px; }
-.ordered li { counter-increment: s; display: grid; grid-template-columns: 22px 1fr; gap: 8px; }
-.ordered li::before { content: counter(s) "."; font: 600 14px var(--display); color: var(--faint); text-align: right; }
-
-/* reasoning */
-.reason { background: var(--bg-deep); border: 1px solid var(--line-soft); border-radius: 12px; padding: 16px 18px; }
-.reason > p.lead { margin: 0 0 12px; color: var(--muted); font-size: 14.5px; }
-.scorebar { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: var(--line-soft); }
-.scorebar i { display: block; height: 100%; background: var(--c); min-width: 0; }
-.scorebar i + i { box-shadow: -2px 0 0 var(--bg-deep); }
-.scorekey { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 8px 0 14px; padding: 0; list-style: none; font-size: 13px; color: var(--muted); }
-.scorekey li { display: flex; align-items: center; gap: 6px; }
-.scorekey li::before { content: ""; width: 9px; height: 9px; border-radius: 2px; background: var(--c); }
-.scorekey li.win { color: var(--text); font-weight: 600; }
-.hyps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
-.hyp h5 { margin: 0 0 6px; font: 600 13px var(--sans); color: var(--c); display: flex; gap: 8px; align-items: center; }
-.hyp ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
-.hyp li { display: grid; grid-template-columns: 34px 1fr; gap: 8px; font-size: 14px; align-items: baseline; }
-.dots { display: inline-flex; gap: 3px; }
-.dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
-.dots i.on { background: var(--c); }
-.dots i.half { background: linear-gradient(90deg, var(--c) 50%, var(--line) 50%); }
-.whynot { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
-.whynot li { border-top: 1px dashed var(--line); padding-top: 10px; font-size: 14px; }
-.whynot b { font-weight: 600; }
-.whynot p { margin: 3px 0 0; color: var(--muted); }
-
-/* evidence */
-.evidence-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
-.filter { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
-.filter code { font-size: 12.5px; max-width: 520px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: bottom; }
-.table-scroll { overflow-x: auto; border: 1px solid var(--line-soft); border-radius: 10px; }
-table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
-th { text-align: left; font-weight: 600; color: var(--muted); font-size: 12.5px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--bg-deep); white-space: nowrap; }
-td { padding: 7px 12px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
-tr:last-child td { border-bottom: 0; }
-td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-td.mono { font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; }
-.evidence td.mono { white-space: pre-wrap; }
-.more { margin: 8px 0 0; font-size: 13px; color: var(--faint); }
-.hostlist { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
-.hostlist li { font: 12.5px var(--mono); background: var(--bg-deep); border: 1px solid var(--line-soft); border-radius: 6px; padding: 3px 7px; overflow-wrap: anywhere; }
-.mitre { display: inline-flex; gap: 8px; align-items: center; font-size: 13.5px; padding: 6px 10px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--attack) 35%, transparent); background: color-mix(in srgb, var(--attack) 7%, transparent); }
-.mitre b { font-family: var(--mono); font-weight: 600; color: var(--attack); }
-.tech { font: 13px/1.6 var(--mono); color: var(--muted); background: var(--bg-deep); border: 1px solid var(--line-soft); border-radius: 10px; padding: 12px 14px; margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
-.metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 6px 16px; margin: 10px 0 0; font-size: 13px; }
-.metrics div { display: flex; flex-direction: column; }
-.metrics dt { color: var(--faint); font-family: var(--mono); font-size: 11.5px; }
-.metrics dd { margin: 0; overflow-wrap: anywhere; }
-body:not(.expert) .expert-only { display: none !important; }
-body.expert .beginner-only { display: none !important; }
-.empty { padding: 34px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 14px; }
-.empty h3 { color: var(--ok); margin-bottom: 6px; }
-
-/* ---------- network ---------- */
-.net-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; margin-top: 18px; }
-.panel { background: var(--surface); border: 1px solid var(--line-soft); border-radius: 12px; padding: 18px 20px; }
-.panel h3 { font-size: 16px; margin-bottom: 12px; }
-.hosts td:first-child { white-space: nowrap; }
-.badge { display: inline-block; font-family: var(--sans); white-space: nowrap; font-size: 11.5px; font-weight: 600; padding: 2px 7px; margin: 0 4px 3px 0; border-radius: 5px; background: var(--surface-2); border: 1px solid var(--line); color: var(--text); }
-.badge.r-gateway { border-color: color-mix(in srgb, var(--ok) 55%, transparent); color: var(--ok); }
-.badge.r-dns-server { border-color: color-mix(in srgb, var(--misconfig) 55%, transparent); color: var(--misconfig); }
-.badge.r-dhcp-server { border-color: color-mix(in srgb, var(--fault) 55%, transparent); color: var(--fault); }
-.badge.flag { border-color: color-mix(in srgb, var(--attack) 55%, transparent); color: var(--attack); }
-.ext { color: var(--faint); font-size: 12px; }
-.bars { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
-.bars li { display: grid; grid-template-columns: 120px minmax(0, 1fr) 84px; gap: 10px; align-items: center; font-size: 13.5px; }
-.bars .lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.bars .lbl.mono { font-size: 12.5px; }
-.bars .bar { height: 8px; border-radius: 999px; background: var(--line-soft); overflow: hidden; }
-.bars .bar i { display: block; height: 100%; border-radius: 999px; background: var(--text); opacity: .75; }
-.bars .val { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; font-size: 12.5px; }
-
-/* ---------- capture ---------- */
-.capture-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 18px; }
-.kv { display: grid; grid-template-columns: 150px 1fr; gap: 7px 16px; margin: 0; font-size: 14px; }
-.kv dt { color: var(--faint); }
-.kv dd { margin: 0; overflow-wrap: anywhere; }
-.warnlist { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: 14px; }
-.warnlist li { padding: 9px 12px; border-radius: 8px; background: color-mix(in srgb, var(--fault) 8%, transparent); border: 1px solid color-mix(in srgb, var(--fault) 30%, transparent); overflow-wrap: anywhere; }
-
-/* ---------- footer, toast ---------- */
-.footer { margin-top: 56px; padding: 26px 0 40px; border-top: 1px solid var(--line-soft); color: var(--faint); font-size: 13.5px; }
-.footer .wrap { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
-.footer strong { color: var(--muted); font-weight: 600; }
-.toast {
-  position: fixed; left: 50%; bottom: 26px; z-index: 50; transform: translate(-50%, 20px); opacity: 0;
-  background: var(--text); color: var(--bg); font-weight: 600; font-size: 14px;
-  padding: 10px 16px; border-radius: 10px; transition: opacity .2s ease, transform .2s ease; pointer-events: none;
-}
-.toast.show { opacity: 1; transform: translate(-50%, 0); }
-
-/* ---------- responsive ---------- */
-@media (max-width: 1380px) { [data-embedded="1"] .navlinks { display: none; } [data-embedded="1"] .tools { margin-left: auto; } }
-@media (max-width: 980px) {
-  .navlinks { display: none; }
-  .hero-grid { grid-template-columns: 1fr; gap: 20px; }
-  .hero-side { flex-direction: row; align-items: center; }
-  .gauge { max-width: 200px; }
-  .incident { grid-template-columns: 1fr; }
-  .incident-fix { border-left: 0; border-top: 1px solid var(--line-soft); }
-  .cols, .net-grid, .capture-grid { grid-template-columns: 1fr; }
-}
-@media (max-width: 640px) {
-  .wrap { padding: 0 16px; }
-  .tools .label { display: none; }
-  .card-head { grid-template-columns: 1fr; }
-  .hero-side { flex-direction: column; }
-  .bars li { grid-template-columns: 90px minmax(0, 1fr) 70px; }
-  .kv { grid-template-columns: 1fr; }
-}
-
-/* ---------- print (light) ---------- */
-@media print {
-  :root {
-    --bg: #fff; --bg-deep: #f5f6f8; --surface: #fff; --surface-2: #f7f7f9; --line: #c9ced8; --line-soft: #dde1e8;
-    --text: #141a24; --muted: #3e4756; --faint: #5d6778;
-    --attack: #c62f22; --fault: #a8650a; --misconfig: #1f5fc4; --ok: #137a4c; --info: #5d6778;
-    color-scheme: light;
-  }
-  body { font-size: 11.5pt; background: #fff; }
-  .topbar, .toggle, .chips, .btn, .legend, .toast, .tooltip, .no-print { display: none !important; }
-  .hero::before { display: none; }
-  .card-body[hidden] { display: grid !important; }
-  .expert-only { display: revert !important; }
-  .incident, .reason, .block, tr { break-inside: avoid; box-shadow: none; }
-  .section { padding-top: 22px; }
-  .chart .trace { stroke: #141a24; }
-  .gauge .value, .chart .trace, .chart .fill { animation: none !important; stroke-dashoffset: 0 !important; opacity: 1 !important; }
-  .chart .trace { stroke-dasharray: none !important; }
-  .chart .pin-label { fill: #fff; }
-  .section-head, h2, h3, h4 { break-after: avoid; page-break-after: avoid; }
-  .steps li::before { color: #fff; background: #141a24; }
-  a { text-decoration: none; }
-}
-
-/* ---------- sticky mini verdict ---------- */
-.mini-verdict {
-  display: none; align-items: center; gap: 9px; min-width: 0; max-width: 460px;
-  text-decoration: none; font-size: 14px; color: var(--muted);
-  padding: 5px 12px 5px 9px; border-radius: 999px; border: 1px solid var(--line-soft); background: var(--surface);
-}
-.mini-verdict .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--status); box-shadow: 0 0 0 3px color-mix(in srgb, var(--status) 22%, transparent); flex: none; }
-.mini-verdict b { color: var(--status); font: 700 14px var(--display); white-space: nowrap; }
-.mini-verdict .mini-head { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-body.scrolled .mini-verdict { display: flex; animation: fade .25s ease; }
-body.scrolled .brand .brand-name { display: none; }
-@media (max-width: 1600px) { body.scrolled[data-embedded] .navlinks, [data-embedded="1"] body.scrolled .navlinks { display: none; } body.scrolled .tools { margin-left: auto; } }
-@media (max-width: 1180px) { body.scrolled .navlinks { display: none; } }
 
 /* ---------- glossary tooltips ---------- */
 .term { position: relative; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, var(--misconfig) 70%, transparent); text-underline-offset: 3px; text-decoration-thickness: 1.5px; cursor: help; border-radius: 3px; }
@@ -461,24 +493,9 @@ body.scrolled .brand .brand-name { display: none; }
 body.expert .term { text-decoration: none; cursor: inherit; }
 body.expert .term .tip { display: none; }
 
-/* ---------- evidence table toggle ---------- */
-.evidence-foot { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
-.evidence-foot .more { margin: 0; }
-.btn.small { padding: 5px 10px; font-size: 13px; color: var(--muted); }
-.btn.small:hover { color: var(--text); }
-.btn.small svg { transition: transform .2s ease; }
-.btn.small[aria-expanded="true"] svg { transform: rotate(180deg); }
-.chip.host { color: var(--text); border-color: var(--focus); background: color-mix(in srgb, var(--focus) 12%, transparent); }
-.chip.host .x { font-size: 15px; line-height: 1; }
-.chip[hidden] { display: none; }
-
-/* ---------- network map ---------- */
-.map-panel { padding: 18px 20px 14px; margin-bottom: 18px; }
-.map-head { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-bottom: 8px; }
-.map-head h3 { margin: 0; }
-.map-head p { margin: 0; color: var(--muted); font-size: 13.5px; max-width: 70ch; }
+/* ---------- network map (SVG) ---------- */
 .map-box { position: relative; background: var(--bg-deep); border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
-.netmap { display: block; width: 100%; height: auto; font-family: var(--sans); }
+.netmap { display: block; width: 100%; height: auto; max-height: 520px; margin: 0 auto; font-family: var(--sans); }
 .netmap .cloud { fill: url(#fl-cloud); stroke: var(--line-soft); stroke-dasharray: 4 5; }
 .netmap stop.c0 { stop-color: var(--misconfig); stop-opacity: .14; }
 .netmap stop.c1 { stop-color: var(--misconfig); stop-opacity: .02; }
@@ -540,13 +557,12 @@ body.expert .term .tip { display: none; }
 .map-text { margin-top: 10px; font-size: 13px; color: var(--muted); }
 .map-text summary { cursor: pointer; color: var(--faint); }
 .map-text ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 3px; font-family: var(--mono); font-size: 12px; }
-@media print { .map-box .tooltip, .term .tip { display: none !important; } .netmap .node .body { fill: #fff; } }
 </style>
 </head>
 <body>
 <div id="app"></div>
 <noscript><p>This report needs JavaScript to display. The raw data is embedded in this file as JSON.</p></noscript>
-<script type="application/json" id="faultline-data">{"tool":{"name":"Faultline","version":"1.0.0"},"generated_at":"2026-11-01T14:40:56+05:30","capture":{"name":"clean_office.pcap","format":"pcap","compressed":false,"file_bytes":507237,"packets":1043,"bytes_captured":490525,"linktypes":[1],"first_ts":1793462400.5,"last_ts":1793462551.867157,"duration":151.36715698242188,"truncated":false,"limited":false,"warnings":[],"sha256":"dfdbe41912b04ff6413adbdb8001c46a2e7a526dc6bc5adfe3addebf2c9013d5","malformed_packets":0},"verdict":{"status":"healthy","headline":"No faults or attacks found.","summary":"We checked 1,043 packets over 2.5 minutes and found nothing wrong.","score":100,"counts":{"attack":0,"fault":0,"misconfig":0,"info":0}},"findings":[],"incidents":[],"hosts":[{"ip":"192.168.1.15","macs":["dc:a6:32:13:af:16"],"first_ts":1793462441.18718,"last_ts":1793462538.353548,"packets_sent":107,"packets_recv":126,"bytes_sent":14303,"roles":[],"names":[],"local":true},{"ip":"192.168.1.12","macs":["a4:83:e7:12:ac:0f"],"first_ts":1793462422.424209,"last_ts":1793462551.867157,"packets_sent":51,"packets_recv":64,"bytes_sent":5975,"roles":[],"names":[],"local":true},{"ip":"192.168.1.55","macs":["c8:e2:65:1a:d7:47"],"first_ts":1793462417.72902,"last_ts":1793462460.78799,"packets_sent":47,"packets_recv":65,"bytes_sent":5538,"roles":[],"names":[],"local":true},{"ip":"192.168.1.11","macs":["3c:22:fb:11:ab:08"],"first_ts":1793462421.546896,"last_ts":1793462525.970384,"packets_sent":49,"packets_recv":50,"bytes_sent":6893,"roles":[],"names":[],"local":true},{"ip":"192.168.1.1","macs":["3c:84:6a:12:34:01"],"first_ts":1793462400.509733,"last_ts":1793462547.078476,"packets_sent":44,"packets_recv":42,"bytes_sent":4767,"roles":["dhcp-server","dns-server","gateway"],"names":[],"local":true},{"ip":"192.168.1.10","macs":["f4:5c:89:10:aa:01"],"first_ts":1793462432.331751,"last_ts":1793462465.59432,"packets_sent":38,"packets_recv":38,"bytes_sent":6158,"roles":[],"names":[],"local":true},{"ip":"192.168.1.40","macs":["8c:85:90:18:c8:39"],"first_ts":1793462402.695044,"last_ts":1793462535.653986,"packets_sent":36,"packets_recv":39,"bytes_sent":4600,"roles":[],"names":[],"local":true},{"ip":"192.168.1.21","macs":["00:1a:a0:15:b5:24"],"first_ts":1793462472.189163,"last_ts":1793462543.676327,"packets_sent":33,"packets_recv":42,"bytes_sent":4691,"roles":[],"names":[],"local":true},{"ip":"192.168.1.31","macs":["f0:18:98:17:bf:32"],"first_ts":1793462402.992871,"last_ts":1793462528.906241,"packets_sent":32,"packets_recv":36,"bytes_sent":4196,"roles":[],"names":[],"local":true},{"ip":"192.168.1.60","macs":["9c:b6:d0:1b:dc:4e"],"first_ts":1793462420.828512,"last_ts":1793462506.03837,"packets_sent":34,"packets_recv":33,"bytes_sent":4448,"roles":[],"names":[],"local":true},{"ip":"192.168.1.30","macs":["28:d2:44:16:be:2b"],"first_ts":1793462441.971228,"last_ts":1793462547.375787,"packets_sent":25,"packets_recv":26,"bytes_sent":3981,"roles":[],"names":[],"local":true},{"ip":"192.168.1.45","macs":["e4:5f:01:19:cd:40"],"first_ts":1793462431.937092,"last_ts":1793462493.099263,"packets_sent":15,"packets_recv":15,"bytes_sent":1798,"roles":[],"names":[],"local":true},{"ip":"192.168.1.20","macs":["b8:27:eb:14:b4:1d"],"first_ts":1793462496.367657,"last_ts":1793462496.387027,"packets_sent":1,"packets_recv":1,"bytes_sent":81,"roles":[],"names":[],"local":true},{"ip":"198.51.100.60","macs":[],"first_ts":1793462417.740452,"last_ts":1793462543.676327,"packets_sent":116,"packets_recv":88,"bytes_sent":126656,"roles":[],"names":[],"local":false},{"ip":"198.51.100.20","macs":[],"first_ts":1793462448.873944,"last_ts":1793462540.020402,"packets_sent":82,"packets_recv":66,"bytes_sent":82778,"roles":[],"names":[],"local":false},{"ip":"198.51.100.5","macs":[],"first_ts":1793462431.74689,"last_ts":1793462538.353548,"packets_sent":67,"packets_recv":60,"bytes_sent":51804,"roles":[],"names":[],"local":false},{"ip":"198.51.100.44","macs":[],"first_ts":1793462413.472582,"last_ts":1793462522.072041,"packets_sent":54,"packets_recv":55,"bytes_sent":29858,"roles":[],"names":[],"local":false},{"ip":"203.0.113.25","macs":[],"first_ts":1793462439.503027,"last_ts":1793462446.704951,"packets_sent":43,"packets_recv":34,"bytes_sent":43736,"roles":[],"names":[],"local":false},{"ip":"203.0.113.10","macs":[],"first_ts":1793462431.96709,"last_ts":1793462523.241364,"packets_sent":39,"packets_recv":37,"bytes_sent":27445,"roles":[],"names":[],"local":false},{"ip":"203.0.113.200","macs":[],"first_ts":1793462449.957357,"last_ts":1793462525.970384,"packets_sent":26,"packets_recv":25,"bytes_sent":16667,"roles":[],"names":[],"local":false},{"ip":"203.0.113.81","macs":[],"first_ts":1793462500.666498,"last_ts":1793462547.375787,"packets_sent":25,"packets_recv":24,"bytes_sent":16812,"roles":[],"names":[],"local":false},{"ip":"203.0.113.80","macs":[],"first_ts":1793462455.835918,"last_ts":1793462456.260046,"packets_sent":19,"packets_recv":15,"bytes_sent":19036,"roles":[],"names":[],"local":false},{"ip":"203.0.113.123","macs":[],"first_ts":1793462403.0,"last_ts":1793462551.867157,"packets_sent":12,"packets_recv":12,"bytes_sent":1080,"roles":[],"names":[],"local":false},{"ip":"93.184.216.34","macs":[],"first_ts":1793462510.846946,"last_ts":1793462511.603496,"packets_sent":10,"packets_recv":10,"bytes_sent":5028,"roles":[],"names":[],"local":false}],"stats":{"protocols":{"TCP":703,"TLS":184,"DNS":84,"ARP":36,"UDP":24,"HTTP":8,"DHCP":4},"top_talkers":[{"ip":"198.51.100.60","packets":116,"bytes":126656,"local":false},{"ip":"198.51.100.20","packets":82,"bytes":82778,"local":false},{"ip":"198.51.100.5","packets":67,"bytes":51804,"local":false},{"ip":"203.0.113.25","packets":43,"bytes":43736,"local":false},{"ip":"198.51.100.44","packets":54,"bytes":29858,"local":false},{"ip":"203.0.113.10","packets":39,"bytes":27445,"local":false},{"ip":"203.0.113.80","packets":19,"bytes":19036,"local":false},{"ip":"203.0.113.81","packets":25,"bytes":16812,"local":false},{"ip":"203.0.113.200","packets":26,"bytes":16667,"local":false},{"ip":"192.168.1.15","packets":107,"bytes":14303,"local":true}],"conversations":[{"a":"192.168.1.40","b":"198.51.100.20","proto":"TCP","packets":47,"bytes":20839},{"a":"192.168.1.55","b":"198.51.100.60","proto":"TCP","packets":45,"bytes":33096},{"a":"192.168.1.55","b":"203.0.113.25","proto":"TCP","packets":45,"bytes":33066},{"a":"192.168.1.12","b":"198.51.100.60","proto":"TCP","packets":45,"bytes":33994},{"a":"192.168.1.15","b":"198.51.100.20","proto":"TCP","packets":43,"bytes":32066},{"a":"192.168.1.21","b":"198.51.100.60","proto":"TCP","packets":43,"bytes":32186},{"a":"192.168.1.15","b":"198.51.100.5","proto":"TCP","packets":39,"bytes":15419},{"a":"192.168.1.11","b":"203.0.113.200","proto":"TCP","packets":37,"bytes":9642},{"a":"192.168.1.60","b":"198.51.100.44","proto":"TCP","packets":31,"bytes":5779},{"a":"192.168.1.31","b":"198.51.100.5","proto":"TCP","packets":30,"bytes":17769},{"a":"192.168.1.12","b":"198.51.100.20","proto":"TCP","packets":30,"bytes":17068},{"a":"192.168.1.15","b":"203.0.113.80","proto":"TCP","packets":28,"bytes":16419},{"a":"192.168.1.15","b":"203.0.113.10","proto":"TCP","packets":24,"bytes":10578},{"a":"192.168.1.15","b":"198.51.100.60","proto":"TCP","packets":21,"bytes":8218},{"a":"192.168.1.10","b":"203.0.113.25","proto":"TCP","packets":18,"bytes":4271}],"timeline":{"start":1793462400.5,"bucket_seconds":1,"series":[{"t":1793462400,"packets":5,"bytes":1410},{"t":1793462401,"packets":0,"bytes":0},{"t":1793462402,"packets":5,"bytes":210},{"t":1793462403,"packets":4,"bytes":360},{"t":1793462404,"packets":0,"bytes":0},{"t":1793462405,"packets":0,"bytes":0},{"t":1793462406,"packets":0,"bytes":0},{"t":1793462407,"packets":0,"bytes":0},{"t":1793462408,"packets":0,"bytes":0},{"t":1793462409,"packets":0,"bytes":0},{"t":1793462410,"packets":0,"bytes":0},{"t":1793462411,"packets":0,"bytes":0},{"t":1793462412,"packets":0,"bytes":0},{"t":1793462413,"packets":20,"bytes":8001},{"t":1793462414,"packets":4,"bytes":264},{"t":1793462415,"packets":0,"bytes":0},{"t":1793462416,"packets":0,"bytes":0},{"t":1793462417,"packets":49,"bytes":37026},{"t":1793462418,"packets":8,"bytes":2811},{"t":1793462419,"packets":0,"bytes":0},{"t":1793462420,"packets":19,"bytes":5094},{"t":1793462421,"packets":11,"bytes":2912},{"t":1793462422,"packets":4,"bytes":264},{"t":1793462423,"packets":0,"bytes":0},{"t":1793462424,"packets":0,"bytes":0},{"t":1793462425,"packets":0,"bytes":0},{"t":1793462426,"packets":0,"bytes":0},{"t":1793462427,"packets":0,"bytes":0},{"t":1793462428,"packets":0,"bytes":0},{"t":1793462429,"packets":0,"bytes":0},{"t":1793462430,"packets":0,"bytes":0},{"t":1793462431,"packets":46,"bytes":23460},{"t":1793462432,"packets":38,"bytes":13001},{"t":1793462433,"packets":8,"bytes":618},{"t":1793462434,"packets":16,"bytes":4456},{"t":1793462435,"packets":0,"bytes":0},{"t":1793462436,"packets":0,"bytes":0},{"t":1793462437,"packets":0,"bytes":0},{"t":1793462438,"packets":12,"bytes":4194},{"t":1793462439,"packets":22,"bytes":6967},{"t":1793462440,"packets":10,"bytes":4338},{"t":1793462441,"packets":33,"bytes":14831},{"t":1793462442,"packets":12,"bytes":5223},{"t":1793462443,"packets":0,"bytes":0},{"t":1793462444,"packets":0,"bytes":0},{"t":1793462445,"packets":6,"bytes":714},{"t":1793462446,"packets":49,"bytes":37294},{"t":1793462447,"packets":0,"bytes":0},{"t":1793462448,"packets":8,"bytes":792},{"t":1793462449,"packets":24,"bytes":11013},{"t":1793462450,"packets":25,"bytes":10465},{"t":1793462451,"packets":0,"bytes":0},{"t":1793462452,"packets":0,"bytes":0},{"t":1793462453,"packets":0,"bytes":0},{"t":1793462454,"packets":0,"bytes":0},{"t":1793462455,"packets":32,"bytes":20803},{"t":1793462456,"packets":4,"bytes":264},{"t":1793462457,"packets":6,"bytes":714},{"t":1793462458,"packets":28,"bytes":16252},{"t":1793462459,"packets":0,"bytes":0},{"t":1793462460,"packets":2,"bytes":180},{"t":1793462461,"packets":0,"bytes":0},{"t":1793462462,"packets":20,"bytes":7184},{"t":1793462463,"packets":9,"bytes":1967},{"t":1793462464,"packets":17,"bytes":5237},{"t":1793462465,"packets":7,"bytes":1962},{"t":1793462466,"packets":2,"bytes":84},{"t":1793462467,"packets":0,"bytes":0},{"t":1793462468,"packets":0,"bytes":0},{"t":1793462469,"packets":0,"bytes":0},{"t":1793462470,"packets":51,"bytes":36831},{"t":1793462471,"packets":0,"bytes":0},{"t":1793462472,"packets":4,"bytes":168},{"t":1793462473,"packets":0,"bytes":0},{"t":1793462474,"packets":33,"bytes":20431},{"t":1793462475,"packets":6,"bytes":1660},{"t":1793462476,"packets":0,"bytes":0},{"t":1793462477,"packets":0,"bytes":0},{"t":1793462478,"packets":0,"bytes":0},{"t":1793462479,"packets":2,"bytes":192},{"t":1793462480,"packets":0,"bytes":0},{"t":1793462481,"packets":0,"bytes":0},{"t":1793462482,"packets":0,"bytes":0},{"t":1793462483,"packets":0,"bytes":0},{"t":1793462484,"packets":2,"bytes":84},{"t":1793462485,"packets":0,"bytes":0},{"t":1793462486,"packets":0,"bytes":0},{"t":1793462487,"packets":0,"bytes":0},{"t":1793462488,"packets":0,"bytes":0},{"t":1793462489,"packets":0,"bytes":0},{"t":1793462490,"packets":0,"bytes":0},{"t":1793462491,"packets":0,"bytes":0},{"t":1793462492,"packets":0,"bytes":0},{"t":1793462493,"packets":2,"bytes":180},{"t":1793462494,"packets":0,"bytes":0},{"t":1793462495,"packets":0,"bytes":0},{"t":1793462496,"packets":6,"bytes":440},{"t":1793462497,"packets":0,"bytes":0},{"t":1793462498,"packets":0,"bytes":0},{"t":1793462499,"packets":0,"bytes":0},{"t":1793462500,"packets":18,"bytes":6554},{"t":1793462501,"packets":10,"bytes":3970},{"t":1793462502,"packets":0,"bytes":0},{"t":1793462503,"packets":20,"bytes":8381},{"t":1793462504,"packets":11,"bytes":6484},{"t":1793462505,"packets":0,"bytes":0},{"t":1793462506,"packets":2,"bytes":180},{"t":1793462507,"packets":2,"bytes":180},{"t":1793462508,"packets":0,"bytes":0},{"t":1793462509,"packets":0,"bytes":0},{"t":1793462510,"packets":9,"bytes":2867},{"t":1793462511,"packets":15,"bytes":4316},{"t":1793462512,"packets":0,"bytes":0},{"t":1793462513,"packets":6,"bytes":626},{"t":1793462514,"packets":65,"bytes":44342},{"t":1793462515,"packets":0,"bytes":0},{"t":1793462516,"packets":0,"bytes":0},{"t":1793462517,"packets":0,"bytes":0},{"t":1793462518,"packets":2,"bytes":180},{"t":1793462519,"packets":0,"bytes":0},{"t":1793462520,"packets":0,"bytes":0},{"t":1793462521,"packets":20,"bytes":8137},{"t":1793462522,"packets":24,"bytes":8939},{"t":1793462523,"packets":4,"bytes":264},{"t":1793462524,"packets":0,"bytes":0},{"t":1793462525,"packets":28,"bytes":9932},{"t":1793462526,"packets":0,"bytes":0},{"t":1793462527,"packets":0,"bytes":0},{"t":1793462528,"packets":2,"bytes":84},{"t":1793462529,"packets":0,"bytes":0},{"t":1793462530,"packets":0,"bytes":0},{"t":1793462531,"packets":0,"bytes":0},{"t":1793462532,"packets":0,"bytes":0},{"t":1793462533,"packets":0,"bytes":0},{"t":1793462534,"packets":0,"bytes":0},{"t":1793462535,"packets":2,"bytes":180},{"t":1793462536,"packets":0,"bytes":0},{"t":1793462537,"packets":0,"bytes":0},{"t":1793462538,"packets":16,"bytes":4458},{"t":1793462539,"packets":35,"bytes":21779},{"t":1793462540,"packets":3,"bytes":198},{"t":1793462541,"packets":0,"bytes":0},{"t":1793462542,"packets":0,"bytes":0},{"t":1793462543,"packets":51,"bytes":37200},{"t":1793462544,"packets":0,"bytes":0},{"t":1793462545,"packets":0,"bytes":0},{"t":1793462546,"packets":0,"bytes":0},{"t":1793462547,"packets":25,"bytes":10743},{"t":1793462548,"packets":0,"bytes":0},{"t":1793462549,"packets":0,"bytes":0},{"t":1793462550,"packets":0,"bytes":0},{"t":1793462551,"packets":2,"bytes":180}],"markers":[]}},"redacted":false,"warnings":[],"analysis_seconds":0.026}</script>
+<script type="application/json" id="faultline-data">{"tool":{"name":"Faultline","version":"1.0.0"},"generated_at":"2026-11-01T15:52:31+05:30","capture":{"name":"clean_office.pcap","format":"pcap","compressed":false,"file_bytes":507237,"packets":1043,"bytes_captured":490525,"linktypes":[1],"first_ts":1793462400.5,"last_ts":1793462551.867157,"duration":151.36715698242188,"truncated":false,"limited":false,"warnings":[],"sha256":"dfdbe41912b04ff6413adbdb8001c46a2e7a526dc6bc5adfe3addebf2c9013d5","malformed_packets":0},"verdict":{"status":"healthy","headline":"No faults or attacks found.","summary":"We checked 1,043 packets over 2.5 minutes and found nothing wrong.","score":100,"counts":{"attack":0,"fault":0,"misconfig":0,"info":0}},"findings":[],"incidents":[],"hosts":[{"ip":"192.168.1.15","macs":["dc:a6:32:13:af:16"],"first_ts":1793462441.18718,"last_ts":1793462538.353548,"packets_sent":107,"packets_recv":126,"bytes_sent":14303,"roles":[],"names":[],"local":true},{"ip":"192.168.1.12","macs":["a4:83:e7:12:ac:0f"],"first_ts":1793462422.424209,"last_ts":1793462551.867157,"packets_sent":51,"packets_recv":64,"bytes_sent":5975,"roles":[],"names":[],"local":true},{"ip":"192.168.1.55","macs":["c8:e2:65:1a:d7:47"],"first_ts":1793462417.72902,"last_ts":1793462460.78799,"packets_sent":47,"packets_recv":65,"bytes_sent":5538,"roles":[],"names":[],"local":true},{"ip":"192.168.1.11","macs":["3c:22:fb:11:ab:08"],"first_ts":1793462421.546896,"last_ts":1793462525.970384,"packets_sent":49,"packets_recv":50,"bytes_sent":6893,"roles":[],"names":[],"local":true},{"ip":"192.168.1.1","macs":["3c:84:6a:12:34:01"],"first_ts":1793462400.509733,"last_ts":1793462547.078476,"packets_sent":44,"packets_recv":42,"bytes_sent":4767,"roles":["dhcp-server","dns-server","gateway"],"names":[],"local":true},{"ip":"192.168.1.10","macs":["f4:5c:89:10:aa:01"],"first_ts":1793462432.331751,"last_ts":1793462465.59432,"packets_sent":38,"packets_recv":38,"bytes_sent":6158,"roles":[],"names":[],"local":true},{"ip":"192.168.1.40","macs":["8c:85:90:18:c8:39"],"first_ts":1793462402.695044,"last_ts":1793462535.653986,"packets_sent":36,"packets_recv":39,"bytes_sent":4600,"roles":[],"names":[],"local":true},{"ip":"192.168.1.21","macs":["00:1a:a0:15:b5:24"],"first_ts":1793462472.189163,"last_ts":1793462543.676327,"packets_sent":33,"packets_recv":42,"bytes_sent":4691,"roles":[],"names":[],"local":true},{"ip":"192.168.1.31","macs":["f0:18:98:17:bf:32"],"first_ts":1793462402.992871,"last_ts":1793462528.906241,"packets_sent":32,"packets_recv":36,"bytes_sent":4196,"roles":[],"names":[],"local":true},{"ip":"192.168.1.60","macs":["9c:b6:d0:1b:dc:4e"],"first_ts":1793462420.828512,"last_ts":1793462506.03837,"packets_sent":34,"packets_recv":33,"bytes_sent":4448,"roles":[],"names":[],"local":true},{"ip":"192.168.1.30","macs":["28:d2:44:16:be:2b"],"first_ts":1793462441.971228,"last_ts":1793462547.375787,"packets_sent":25,"packets_recv":26,"bytes_sent":3981,"roles":[],"names":[],"local":true},{"ip":"192.168.1.45","macs":["e4:5f:01:19:cd:40"],"first_ts":1793462431.937092,"last_ts":1793462493.099263,"packets_sent":15,"packets_recv":15,"bytes_sent":1798,"roles":[],"names":[],"local":true},{"ip":"192.168.1.20","macs":["b8:27:eb:14:b4:1d"],"first_ts":1793462496.367657,"last_ts":1793462496.387027,"packets_sent":1,"packets_recv":1,"bytes_sent":81,"roles":[],"names":[],"local":true},{"ip":"198.51.100.60","macs":[],"first_ts":1793462417.740452,"last_ts":1793462543.676327,"packets_sent":116,"packets_recv":88,"bytes_sent":126656,"roles":[],"names":[],"local":false},{"ip":"198.51.100.20","macs":[],"first_ts":1793462448.873944,"last_ts":1793462540.020402,"packets_sent":82,"packets_recv":66,"bytes_sent":82778,"roles":[],"names":[],"local":false},{"ip":"198.51.100.5","macs":[],"first_ts":1793462431.74689,"last_ts":1793462538.353548,"packets_sent":67,"packets_recv":60,"bytes_sent":51804,"roles":[],"names":[],"local":false},{"ip":"198.51.100.44","macs":[],"first_ts":1793462413.472582,"last_ts":1793462522.072041,"packets_sent":54,"packets_recv":55,"bytes_sent":29858,"roles":[],"names":[],"local":false},{"ip":"203.0.113.25","macs":[],"first_ts":1793462439.503027,"last_ts":1793462446.704951,"packets_sent":43,"packets_recv":34,"bytes_sent":43736,"roles":[],"names":[],"local":false},{"ip":"203.0.113.10","macs":[],"first_ts":1793462431.96709,"last_ts":1793462523.241364,"packets_sent":39,"packets_recv":37,"bytes_sent":27445,"roles":[],"names":[],"local":false},{"ip":"203.0.113.200","macs":[],"first_ts":1793462449.957357,"last_ts":1793462525.970384,"packets_sent":26,"packets_recv":25,"bytes_sent":16667,"roles":[],"names":[],"local":false},{"ip":"203.0.113.81","macs":[],"first_ts":1793462500.666498,"last_ts":1793462547.375787,"packets_sent":25,"packets_recv":24,"bytes_sent":16812,"roles":[],"names":[],"local":false},{"ip":"203.0.113.80","macs":[],"first_ts":1793462455.835918,"last_ts":1793462456.260046,"packets_sent":19,"packets_recv":15,"bytes_sent":19036,"roles":[],"names":[],"local":false},{"ip":"203.0.113.123","macs":[],"first_ts":1793462403.0,"last_ts":1793462551.867157,"packets_sent":12,"packets_recv":12,"bytes_sent":1080,"roles":[],"names":[],"local":false},{"ip":"93.184.216.34","macs":[],"first_ts":1793462510.846946,"last_ts":1793462511.603496,"packets_sent":10,"packets_recv":10,"bytes_sent":5028,"roles":[],"names":[],"local":false}],"stats":{"protocols":{"TCP":703,"TLS":184,"DNS":84,"ARP":36,"UDP":24,"HTTP":8,"DHCP":4},"top_talkers":[{"ip":"198.51.100.60","packets":116,"bytes":126656,"local":false},{"ip":"198.51.100.20","packets":82,"bytes":82778,"local":false},{"ip":"198.51.100.5","packets":67,"bytes":51804,"local":false},{"ip":"203.0.113.25","packets":43,"bytes":43736,"local":false},{"ip":"198.51.100.44","packets":54,"bytes":29858,"local":false},{"ip":"203.0.113.10","packets":39,"bytes":27445,"local":false},{"ip":"203.0.113.80","packets":19,"bytes":19036,"local":false},{"ip":"203.0.113.81","packets":25,"bytes":16812,"local":false},{"ip":"203.0.113.200","packets":26,"bytes":16667,"local":false},{"ip":"192.168.1.15","packets":107,"bytes":14303,"local":true}],"conversations":[{"a":"192.168.1.40","b":"198.51.100.20","proto":"TCP","packets":47,"bytes":20839},{"a":"192.168.1.55","b":"198.51.100.60","proto":"TCP","packets":45,"bytes":33096},{"a":"192.168.1.55","b":"203.0.113.25","proto":"TCP","packets":45,"bytes":33066},{"a":"192.168.1.12","b":"198.51.100.60","proto":"TCP","packets":45,"bytes":33994},{"a":"192.168.1.15","b":"198.51.100.20","proto":"TCP","packets":43,"bytes":32066},{"a":"192.168.1.21","b":"198.51.100.60","proto":"TCP","packets":43,"bytes":32186},{"a":"192.168.1.15","b":"198.51.100.5","proto":"TCP","packets":39,"bytes":15419},{"a":"192.168.1.11","b":"203.0.113.200","proto":"TCP","packets":37,"bytes":9642},{"a":"192.168.1.60","b":"198.51.100.44","proto":"TCP","packets":31,"bytes":5779},{"a":"192.168.1.31","b":"198.51.100.5","proto":"TCP","packets":30,"bytes":17769},{"a":"192.168.1.12","b":"198.51.100.20","proto":"TCP","packets":30,"bytes":17068},{"a":"192.168.1.15","b":"203.0.113.80","proto":"TCP","packets":28,"bytes":16419},{"a":"192.168.1.15","b":"203.0.113.10","proto":"TCP","packets":24,"bytes":10578},{"a":"192.168.1.15","b":"198.51.100.60","proto":"TCP","packets":21,"bytes":8218},{"a":"192.168.1.10","b":"203.0.113.25","proto":"TCP","packets":18,"bytes":4271}],"timeline":{"start":1793462400.5,"bucket_seconds":1,"series":[{"t":1793462400,"packets":5,"bytes":1410},{"t":1793462401,"packets":0,"bytes":0},{"t":1793462402,"packets":5,"bytes":210},{"t":1793462403,"packets":4,"bytes":360},{"t":1793462404,"packets":0,"bytes":0},{"t":1793462405,"packets":0,"bytes":0},{"t":1793462406,"packets":0,"bytes":0},{"t":1793462407,"packets":0,"bytes":0},{"t":1793462408,"packets":0,"bytes":0},{"t":1793462409,"packets":0,"bytes":0},{"t":1793462410,"packets":0,"bytes":0},{"t":1793462411,"packets":0,"bytes":0},{"t":1793462412,"packets":0,"bytes":0},{"t":1793462413,"packets":20,"bytes":8001},{"t":1793462414,"packets":4,"bytes":264},{"t":1793462415,"packets":0,"bytes":0},{"t":1793462416,"packets":0,"bytes":0},{"t":1793462417,"packets":49,"bytes":37026},{"t":1793462418,"packets":8,"bytes":2811},{"t":1793462419,"packets":0,"bytes":0},{"t":1793462420,"packets":19,"bytes":5094},{"t":1793462421,"packets":11,"bytes":2912},{"t":1793462422,"packets":4,"bytes":264},{"t":1793462423,"packets":0,"bytes":0},{"t":1793462424,"packets":0,"bytes":0},{"t":1793462425,"packets":0,"bytes":0},{"t":1793462426,"packets":0,"bytes":0},{"t":1793462427,"packets":0,"bytes":0},{"t":1793462428,"packets":0,"bytes":0},{"t":1793462429,"packets":0,"bytes":0},{"t":1793462430,"packets":0,"bytes":0},{"t":1793462431,"packets":46,"bytes":23460},{"t":1793462432,"packets":38,"bytes":13001},{"t":1793462433,"packets":8,"bytes":618},{"t":1793462434,"packets":16,"bytes":4456},{"t":1793462435,"packets":0,"bytes":0},{"t":1793462436,"packets":0,"bytes":0},{"t":1793462437,"packets":0,"bytes":0},{"t":1793462438,"packets":12,"bytes":4194},{"t":1793462439,"packets":22,"bytes":6967},{"t":1793462440,"packets":10,"bytes":4338},{"t":1793462441,"packets":33,"bytes":14831},{"t":1793462442,"packets":12,"bytes":5223},{"t":1793462443,"packets":0,"bytes":0},{"t":1793462444,"packets":0,"bytes":0},{"t":1793462445,"packets":6,"bytes":714},{"t":1793462446,"packets":49,"bytes":37294},{"t":1793462447,"packets":0,"bytes":0},{"t":1793462448,"packets":8,"bytes":792},{"t":1793462449,"packets":24,"bytes":11013},{"t":1793462450,"packets":25,"bytes":10465},{"t":1793462451,"packets":0,"bytes":0},{"t":1793462452,"packets":0,"bytes":0},{"t":1793462453,"packets":0,"bytes":0},{"t":1793462454,"packets":0,"bytes":0},{"t":1793462455,"packets":32,"bytes":20803},{"t":1793462456,"packets":4,"bytes":264},{"t":1793462457,"packets":6,"bytes":714},{"t":1793462458,"packets":28,"bytes":16252},{"t":1793462459,"packets":0,"bytes":0},{"t":1793462460,"packets":2,"bytes":180},{"t":1793462461,"packets":0,"bytes":0},{"t":1793462462,"packets":20,"bytes":7184},{"t":1793462463,"packets":9,"bytes":1967},{"t":1793462464,"packets":17,"bytes":5237},{"t":1793462465,"packets":7,"bytes":1962},{"t":1793462466,"packets":2,"bytes":84},{"t":1793462467,"packets":0,"bytes":0},{"t":1793462468,"packets":0,"bytes":0},{"t":1793462469,"packets":0,"bytes":0},{"t":1793462470,"packets":51,"bytes":36831},{"t":1793462471,"packets":0,"bytes":0},{"t":1793462472,"packets":4,"bytes":168},{"t":1793462473,"packets":0,"bytes":0},{"t":1793462474,"packets":33,"bytes":20431},{"t":1793462475,"packets":6,"bytes":1660},{"t":1793462476,"packets":0,"bytes":0},{"t":1793462477,"packets":0,"bytes":0},{"t":1793462478,"packets":0,"bytes":0},{"t":1793462479,"packets":2,"bytes":192},{"t":1793462480,"packets":0,"bytes":0},{"t":1793462481,"packets":0,"bytes":0},{"t":1793462482,"packets":0,"bytes":0},{"t":1793462483,"packets":0,"bytes":0},{"t":1793462484,"packets":2,"bytes":84},{"t":1793462485,"packets":0,"bytes":0},{"t":1793462486,"packets":0,"bytes":0},{"t":1793462487,"packets":0,"bytes":0},{"t":1793462488,"packets":0,"bytes":0},{"t":1793462489,"packets":0,"bytes":0},{"t":1793462490,"packets":0,"bytes":0},{"t":1793462491,"packets":0,"bytes":0},{"t":1793462492,"packets":0,"bytes":0},{"t":1793462493,"packets":2,"bytes":180},{"t":1793462494,"packets":0,"bytes":0},{"t":1793462495,"packets":0,"bytes":0},{"t":1793462496,"packets":6,"bytes":440},{"t":1793462497,"packets":0,"bytes":0},{"t":1793462498,"packets":0,"bytes":0},{"t":1793462499,"packets":0,"bytes":0},{"t":1793462500,"packets":18,"bytes":6554},{"t":1793462501,"packets":10,"bytes":3970},{"t":1793462502,"packets":0,"bytes":0},{"t":1793462503,"packets":20,"bytes":8381},{"t":1793462504,"packets":11,"bytes":6484},{"t":1793462505,"packets":0,"bytes":0},{"t":1793462506,"packets":2,"bytes":180},{"t":1793462507,"packets":2,"bytes":180},{"t":1793462508,"packets":0,"bytes":0},{"t":1793462509,"packets":0,"bytes":0},{"t":1793462510,"packets":9,"bytes":2867},{"t":1793462511,"packets":15,"bytes":4316},{"t":1793462512,"packets":0,"bytes":0},{"t":1793462513,"packets":6,"bytes":626},{"t":1793462514,"packets":65,"bytes":44342},{"t":1793462515,"packets":0,"bytes":0},{"t":1793462516,"packets":0,"bytes":0},{"t":1793462517,"packets":0,"bytes":0},{"t":1793462518,"packets":2,"bytes":180},{"t":1793462519,"packets":0,"bytes":0},{"t":1793462520,"packets":0,"bytes":0},{"t":1793462521,"packets":20,"bytes":8137},{"t":1793462522,"packets":24,"bytes":8939},{"t":1793462523,"packets":4,"bytes":264},{"t":1793462524,"packets":0,"bytes":0},{"t":1793462525,"packets":28,"bytes":9932},{"t":1793462526,"packets":0,"bytes":0},{"t":1793462527,"packets":0,"bytes":0},{"t":1793462528,"packets":2,"bytes":84},{"t":1793462529,"packets":0,"bytes":0},{"t":1793462530,"packets":0,"bytes":0},{"t":1793462531,"packets":0,"bytes":0},{"t":1793462532,"packets":0,"bytes":0},{"t":1793462533,"packets":0,"bytes":0},{"t":1793462534,"packets":0,"bytes":0},{"t":1793462535,"packets":2,"bytes":180},{"t":1793462536,"packets":0,"bytes":0},{"t":1793462537,"packets":0,"bytes":0},{"t":1793462538,"packets":16,"bytes":4458},{"t":1793462539,"packets":35,"bytes":21779},{"t":1793462540,"packets":3,"bytes":198},{"t":1793462541,"packets":0,"bytes":0},{"t":1793462542,"packets":0,"bytes":0},{"t":1793462543,"packets":51,"bytes":37200},{"t":1793462544,"packets":0,"bytes":0},{"t":1793462545,"packets":0,"bytes":0},{"t":1793462546,"packets":0,"bytes":0},{"t":1793462547,"packets":25,"bytes":10743},{"t":1793462548,"packets":0,"bytes":0},{"t":1793462549,"packets":0,"bytes":0},{"t":1793462550,"packets":0,"bytes":0},{"t":1793462551,"packets":2,"bytes":180}],"markers":[]}},"redacted":false,"warnings":[],"analysis_seconds":0.025}</script>
 <script>/* Faultline report renderer.
  * Security model: every value in the report is untrusted (it comes from packets).
  * Data is read from the embedded JSON data block and turned into DOM nodes with
@@ -895,7 +911,102 @@ body.expert .term .tip { display: none; }
     return L.join("\n");
   }
 
-  // ------------------------------------------------------------ top bar
+  // ------------------------------------------------------------- icons (nav)
+  var NAV_ICON = {
+    overview: "M2.5 2.5h4.5v4.5H2.5zM9 2.5h4.5v4.5H9zM2.5 9h4.5v4.5H2.5zM9 9h4.5v4.5H9z",
+    incidents: "M8 2.5 14 13H2zM8 7v2.6M8 11.2v.2",
+    findings: "M3 3.5h10M3 8h10M3 12.5h6",
+    network: "M8 3a1.6 1.6 0 1 0 0 .1M3.5 13a1.6 1.6 0 1 0 0 .1M12.5 13a1.6 1.6 0 1 0 0 .1M8 4.6v3.2M8 7.8 3.9 11.6M8 7.8l4.1 3.8",
+    evidence: "M3 2.5h7l3 3v8H3zM10 2.5v3h3M5.5 9h5M5.5 11.5h5",
+    capture: "M2.5 5.5 8 2.5l5.5 3v5L8 13.5l-5.5-3zM8 8l5.5-2.5M8 8 2.5 5.5M8 8v5.5"
+  };
+  var I_MENU = "M2.5 4h11M2.5 8h11M2.5 12h11";
+  var I_SEARCH = "M7 11.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zM10.3 10.3 13.5 13.5";
+  var I_ARROW = "M3 8h10M9 4l4 4-4 4";
+
+  // ------------------------------------------------------------ app state
+  var SECTIONS = [
+    ["overview", "Overview"], ["incidents", "Incidents"], ["findings", "Findings"],
+    ["network", "Network"], ["evidence", "Evidence"], ["capture", "Capture details"]
+  ];
+  var views = {}, navEls = {}, currentSection = null;
+  var mainEl = null;
+  var selectFinding = null;   // set by findingsSection(): selectFinding(id, tab)
+  var currentTab = "explain";
+
+  function parseHash() {
+    var hsh = str(location.hash).replace(/^#/, "");
+    var legacy = /^finding-([A-Za-z0-9_-]+)$/.exec(hsh);
+    if (legacy) { return { section: "findings", id: legacy[1], tab: null }; }
+    var parts = hsh.split("/");
+    var sec = parts[0];
+    if (!views[sec]) { sec = "overview"; }
+    return { section: sec, id: parts[1] && byId[parts[1]] ? parts[1] : null, tab: parts[2] || null };
+  }
+  function setHash(section, id, tab) {
+    var hsh = "#" + section + (id ? "/" + id + (tab ? "/" + tab : "") : "");
+    if (location.hash !== hsh) {
+      try { history.pushState(null, "", hsh); } catch (e) { location.hash = hsh; }
+    }
+  }
+  function showSection(name, keepScroll) {
+    if (!views[name]) { name = "overview"; }
+    var changed = currentSection !== name;
+    currentSection = name;
+    Object.keys(views).forEach(function (k) { views[k].hidden = k !== name; });
+    Object.keys(navEls).forEach(function (k) {
+      if (k === name) { navEls[k].setAttribute("aria-current", "page"); } else { navEls[k].removeAttribute("aria-current"); }
+    });
+    doc.body.classList.remove("nav-open");
+    if (changed && !keepScroll && mainEl) { mainEl.scrollTop = 0; }
+    if (name === "overview" && chartRedraw) { chartRedraw(); }
+    var hd = views[name].querySelector("h1, h2");
+    if (hd && changed) { try { hd.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
+  }
+  function route() {
+    var r = parseHash();
+    showSection(r.section, !!r.id);
+    if (r.section === "findings" && selectFinding) { selectFinding(r.id, r.tab, true); }
+  }
+  function nav(section, id, tab) {
+    setHash(section, id, tab);
+    route();
+  }
+  // Used by rich text, the timeline, the incident chain and the network map.
+  function goto(id, tab) {
+    if (!byId[id]) { return; }
+    if (hostFilter || currentFilter !== "all" || searchText) {
+      // make sure the finding is visible in the list
+      hostFilter = null; searchText = ""; if (searchEl) { searchEl.value = ""; }
+      setFilter("all");
+    }
+    nav("findings", id, tab || null);
+  }
+
+  // ------------------------------------------------------------- sidebar
+  function sidebar() {
+    var counts = { incidents: incidents.length, findings: findings.length, network: hosts.length,
+      evidence: findings.filter(function (f) { return arr(f.evidence_lines).length || arr(f.packets).length; }).length,
+      capture: arr(capture.warnings).length + arr(R.warnings).length };
+    var items = SECTIONS.map(function (sdef) {
+      var key = sdef[0], n = counts[key];
+      var a = h("a", { "class": "nav-item", href: "#" + key, "data-section": key, onclick: function (e) { e.preventDefault(); nav(key); } },
+        icon(NAV_ICON[key]), h("span", { "class": "nav-label" }, sdef[1]),
+        typeof n === "number" && n > 0 ? h("span", { "class": "nav-count" + (key === "capture" ? " warn" : "") }, String(n)) : null);
+      navEls[key] = a;
+      return h("li", null, a);
+    });
+    var foot = h("div", { "class": "side-foot" },
+      h("p", null, "Faultline " + str(tool.version || "")),
+      h("p", null, redacted ? "Addresses redacted" : "Analysed offline"));
+    return h("aside", { "class": "side", "aria-label": "Report sections" },
+      h("a", { "class": "brand", href: "#overview", onclick: function (e) { e.preventDefault(); nav("overview"); } },
+        brandMark(), h("span", { "class": "brand-name" }, "Faultline")),
+      h("nav", null, h("ul", { "class": "nav" }, items)),
+      foot);
+  }
+
+  // -------------------------------------------------------------- top bar
   function topbar() {
     var modeBtns = [
       h("button", { type: "button", "aria-pressed": "true", "data-mode": "beginner" }, "Beginner"),
@@ -922,34 +1033,26 @@ body.expert .term .tip { display: none; }
       tools.push(h("button", { type: "button", "class": "btn", title: "Download this report as a single HTML file",
         onclick: function () { download("faultline-" + safeFileStem(capture.name) + ".html", "text/html", exportHtml()); } },
         icon(I_DOWN), h("span", { "class": "label" }, "HTML")));
-      tools.push(h("a", { "class": "btn primary", href: "/" }, "Analyze another capture"));
+      tools.push(h("a", { "class": "btn primary", href: "/" }, "New analysis"));
     }
-    var links = [["#verdict", "Verdict"], ["#fix-first", incidents.length ? "Fix first" : "Start here"], ["#findings", "Findings"], ["#network", "Network"], ["#capture", "Capture"]];
-    var mini = h("a", { "class": "mini-verdict", href: "#verdict", "aria-hidden": "true", tabindex: "-1" },
-      h("span", { "class": "dot" }), h("b", null, STATUS[status].word), h("span", { "class": "mini-head" }, headline()));
+    var sc = num(verdict.score);
+    var pillEl = h("a", { "class": "mini-verdict s-" + status, href: "#overview", onclick: function (e) { e.preventDefault(); nav("overview"); } },
+      h("span", { "class": "dot" }), h("b", null, STATUS[status].word));
+    var menu = h("button", { type: "button", "class": "btn icon menu", "aria-label": "Show sections",
+      onclick: function () { doc.body.classList.toggle("nav-open"); } }, icon(I_MENU));
     return h("header", { "class": "topbar" },
-      h("div", { "class": "wrap" },
-        h("a", { "class": "brand", href: "#verdict" }, brandMark(), h("span", { "class": "brand-name" }, "Faultline")),
-        mini,
-        h("nav", { "class": "navlinks", "aria-label": "Report sections" },
-          links.filter(function (l) { return l[0] !== "#fix-first" || hasFixFirst(); })
-            .map(function (l) { return h("a", { href: l[0] }, l[1]); })),
-        h("div", { "class": "tools" }, tools)));
+      menu,
+      h("div", { "class": "crumb" },
+        h("span", { "class": "crumb-label" }, "Capture"),
+        h("span", { "class": "crumb-name mono", title: str(capture.name) }, str(capture.name) || "unnamed")),
+      pillEl,
+      h("span", { "class": "health", title: "Health score out of 100" }, h("b", null, sc === null ? "?" : String(Math.round(sc))), h("span", null, "/100 health")),
+      h("div", { "class": "tools" }, tools));
   }
-  function watchScroll() {
-    var heroEl = doc.getElementById("verdict");
-    if (!heroEl) { return; }
-    function set(on) { doc.body.classList.toggle("scrolled", on); }
-    if (window.IntersectionObserver) {
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) { set(!e.isIntersecting); });
-      }, { rootMargin: "-120px 0px 0px 0px", threshold: 0 });
-      io.observe(heroEl);
-    } else {
-      window.addEventListener("scroll", function () { set(window.scrollY > heroEl.offsetHeight - 120); }, { passive: true });
-    }
+  function sectionHead(title, sub, extra) {
+    return h("div", { "class": "view-head" },
+      h("div", null, h("h2", { tabindex: "-1" }, title), sub ? h("p", null, sub) : null), extra || null);
   }
-
   // ------------------------------------------------------------- gauge
   function gauge(score) {
     var sc = clamp(num(score) === null ? 0 : num(score), 0, 100);
@@ -984,50 +1087,6 @@ body.expert .term .tip { display: none; }
     if (t.toLowerCase().indexOf(w.toLowerCase() + ":") === 0) { t = t.slice(w.length + 1).trim(); }
     return t ? t.charAt(0).toUpperCase() + t.slice(1) : "Analysis complete.";
   }
-  function hero() {
-    var counts = obj(verdict.counts);
-    var countEls = ["attack", "fault", "misconfig", "info"].map(function (k) {
-      var n = num(counts[k]);
-      if (n === null) { n = findings.filter(function (f) { return cat(f.category) === k; }).length; }
-      if (k === "info" && n === 0) { return null; }
-      var label = n === 1 ? CAT[k].one.toLowerCase() : CAT[k].many;
-      if (k === "misconfig") { label = n === 1 ? "misconfig" : "misconfigs"; }
-      return h("li", null, h("button", {
-        type: "button", "class": "count c-" + k + (n === 0 ? " zero" : ""), disabled: n === 0 ? true : null,
-        onclick: function () { setFilter(k); var el = doc.getElementById("findings"); if (el) { el.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" }); } }
-      }, h("b", null, String(n)), h("span", null, label)));
-    });
-    var meta = h("dl", { "class": "meta" },
-      h("dt", null, "Capture"), h("dd", null, str(capture.name) || "unnamed"),
-      h("dt", null, "Duration"), h("dd", null, fmtDur(capture.duration)),
-      h("dt", null, "Packets"), h("dd", null, fmtInt(capture.packets)),
-      h("dt", null, "Started"), h("dd", null, fmtDate(capture.first_ts)));
-    var notices = [];
-    var capWarn = arr(capture.warnings).concat(arr(R.warnings));
-    if (capture.truncated === true || capture.limited === true) {
-      notices.push(h("p", { "class": "notice" },
-        h("span", null, capture.truncated === true ? "This capture file is incomplete, so the results cover only the part that could be read." :
-          "This capture hit a safety limit, so only part of it was analysed."), " ",
-        h("a", { href: "#capture" }, "Capture details")));
-    } else if (capWarn.length) {
-      notices.push(h("p", { "class": "notice" }, h("span", null, capWarn.length + " " + plural(capWarn.length, "note", "notes") + " from reading the file."), " ", h("a", { href: "#capture" }, "Capture details")));
-    }
-    if (redacted) {
-      notices.push(h("p", { "class": "notice privacy" }, h("span", null, "Privacy mode: IP and MAC addresses are replaced with consistent pseudonyms, and evidence downloads are turned off, so this report is safe to share.")));
-    }
-    return h("section", { id: "verdict", "class": "hero", "aria-labelledby": "verdict-word" },
-      h("div", { "class": "wrap" },
-        h("div", { "class": "hero-grid" },
-          h("div", { "class": "hero-text" },
-            h("p", { "class": "status-word", id: "verdict-word" }, statusGlyph(), STATUS[status].word),
-            h("h1", { "class": "headline" }, headline()),
-            verdict.summary ? h("p", { "class": "summary" }, rich(verdict.summary)) : null,
-            h("ul", { "class": "counts", "aria-label": "Findings by type" }, countEls)),
-          h("div", { "class": "hero-side" }, gauge(verdict.score), meta)),
-        notices,
-        timeline()));
-  }
-
   // ---------------------------------------------------------- timeline
   var chartRedraw = null;
   function niceStep(raw) {
@@ -1191,78 +1250,178 @@ body.expert .term .tip { display: none; }
     return h("span", { "class": "conf" }, Math.round(clamp(v, 0, 1) * 100) + "% confident");
   }
 
-  // ---------------------------------------------------------- fix first
+  // ----------------------------------------------------------- incidents
   function hasFixFirst() {
     return incidents.length > 0 || findings.some(function (f) { return cat(f.category) !== "info"; });
   }
-  function fixFirst() {
-    if (!hasFixFirst()) { return null; }
-    var items = incidents.slice(), single = null;
-    if (!items.length) {
-      // No linked chain of problems: feature the most important finding instead of
-      // dressing it up as an "incident".
-      var top = findings.filter(function (f) { return cat(f.category) !== "info"; })[0];
-      single = { title: top.title, category: top.category, severity: top.severity, story: top.summary,
-        root_cause: top.id, findings: [top.id], first_fix: arr(top.fix).slice(0, 3), confidence: top.confidence };
-    }
-    var others = single ? findings.filter(function (f) { return cat(f.category) !== "info"; }).length - 1 : 0;
-    return h("section", { id: "fix-first", "class": "section" },
-      h("div", { "class": "wrap" },
-        h("div", { "class": "section-head" },
-          h("div", null,
-            h("h2", null, single ? "Start with this" : "Fix this first"),
-            h("p", null, single ?
-              "The most important finding, with the first things to try." + (others > 0 ? " " + others + " other " + plural(others, "finding is", "findings are") + " listed below." : "") :
-              "Related problems are grouped into one story. Fixing the root cause usually clears the symptoms that follow from it."))),
-        h("div", { "class": "incidents" }, single ? incidentEl(single, true) : items.map(function (i) { return incidentEl(i, false); }))));
+  function topIncident() {
+    // The incident (or, failing a linked chain, the most important finding) to show first.
+    if (incidents.length) { return { inc: incidents[0], single: false }; }
+    var top = findings.filter(function (f) { return cat(f.category) !== "info"; })[0];
+    if (!top) { return null; }
+    return { inc: { title: top.title, category: top.category, severity: top.severity, story: top.summary,
+      root_cause: top.id, findings: [top.id], first_fix: arr(top.fix).slice(0, 3), confidence: top.confidence }, single: true };
   }
-  function incidentEl(inc, single) {
-    var k = cat(inc.category);
+  function chainEl(inc) {
     var ids = arr(inc.findings).filter(function (id) { return byId[id]; });
     var rootId = byId[inc.root_cause] ? inc.root_cause : ids[0];
     var order = [rootId].concat(ids.filter(function (id) { return id !== rootId; })).filter(Boolean);
+    if (!order.length) { return null; }
+    return h("ol", { "class": "chain", "aria-label": "Root cause, then consequences" }, order.map(function (id, i) {
+      var f = byId[id], fk = cat(f.category);
+      return h("li", { "class": "c-" + fk }, h("button", { type: "button", "class": "node" + (i === 0 ? " root" : ""), onclick: function () { goto(id); } },
+        h("small", null, h("b", { "class": "mono" }, str(id)), i === 0 ? "Root cause" : "Consequence"),
+        h("span", null, str(f.title))));
+    }));
+  }
+  function incidentEl(inc, single, compact) {
+    var k = cat(inc.category);
+    var ids = arr(inc.findings).filter(function (id) { return byId[id]; });
+    var rootId = byId[inc.root_cause] ? inc.root_cause : ids[0];
     var steps = arr(inc.first_fix);
     if (!steps.length && byId[rootId]) { steps = arr(byId[rootId].fix).slice(0, 3); }
-    return h("article", { "class": "incident c-" + k },
+    return h("article", { "class": "incident c-" + k + (compact ? " compact" : "") },
       h("div", { "class": "incident-main" },
         h("div", { "class": "row" }, pill(k), sevEl(inc.severity), single ? confEl(inc.confidence) : null,
-          single ? h("span", { "class": "fid-tag" }, str(rootId)) : null,
           ids.length > 1 ? h("span", { "class": "conf" }, ids.length + " linked findings") : null),
         h("h3", null, str(inc.title)),
         inc.story ? h("p", { "class": "story" }, rich(inc.story)) : null,
-        single ? h("p", { "class": "symlink" }, jump(rootId, "Read the full finding"), " ", h("span", null, "for the evidence and reasoning.")) : null,
-        !single && order.length ? h("ol", { "class": "chain", "aria-label": "Root cause, then symptoms" }, order.map(function (id, i) {
-          var f = byId[id], fk = cat(f.category);
-          return h("li", { "class": "c-" + fk }, h("button", { type: "button", "class": "node" + (i === 0 ? " root" : ""), onclick: function () { goto(id); } },
-            h("small", null, h("b", null, str(id)), i === 0 ? " root cause" : " symptom"),
-            h("span", null, str(f.title))));
-        })) : null),
+        !single ? chainEl(inc) : null,
+        rootId ? h("p", { "class": "symlink" }, h("button", { type: "button", "class": "linkish arrow", onclick: function () { goto(rootId, "why"); } },
+          single ? "Open the finding and its evidence" : "Why this is an attack, not a fault", icon(I_ARROW))) : null),
       h("div", { "class": "incident-fix" },
         h("h4", null, "Do this first"),
         steps.length ? h("ol", { "class": "steps" }, steps.map(function (st) { return h("li", null, h("span", null, rich(st))); }))
           : h("p", null, "See the finding for details.")));
+  }
+  function incidentsSection() {
+    var body;
+    if (!hasFixFirst()) {
+      body = h("div", { "class": "empty calm" },
+        h("h3", null, "No incidents"),
+        h("p", null, "Nothing in this capture needs fixing. Related problems would be grouped here as one story, root cause first."));
+    } else if (incidents.length) {
+      body = h("div", { "class": "incidents" }, incidents.map(function (i) { return incidentEl(i, false, false); }));
+    } else {
+      var t = topIncident();
+      var others = findings.filter(function (f) { return cat(f.category) !== "info"; }).length - 1;
+      body = h("div", { "class": "incidents" }, incidentEl(t.inc, true, false),
+        others > 0 ? h("p", { "class": "more" }, others + " other " + plural(others, "finding is", "findings are") + " listed under Findings.") : null);
+    }
+    return h("section", { "class": "view", id: "incidents" },
+      sectionHead(incidents.length ? "Fix this first" : "Start with this",
+        incidents.length ? "Related problems grouped into one story. Fixing the root cause usually clears the symptoms that follow from it."
+          : "The most important finding, with the first things to try."),
+      body);
+  }
+
+  // ------------------------------------------------------------ overview
+  function kpiTiles() {
+    var counts = obj(verdict.counts);
+    function cnt(k) {
+      var n = num(counts[k]);
+      return n === null ? findings.filter(function (f) { return cat(f.category) === k; }).length : n;
+    }
+    var tiles = [
+      ["attack", "Attacks", cnt("attack"), function () { setFilter("attack"); nav("findings"); }],
+      ["fault", "Faults", cnt("fault"), function () { setFilter("fault"); nav("findings"); }],
+      ["misconfig", "Misconfigurations", cnt("misconfig"), function () { setFilter("misconfig"); nav("findings"); }],
+      [null, "Packets", fmtInt(capture.packets), function () { nav("capture"); }],
+      [null, "Duration", fmtDur(capture.duration), function () { nav("capture"); }],
+      [null, "Devices", fmtInt(hosts.length), function () { nav("network"); }]
+    ];
+    return h("div", { "class": "kpis" }, tiles.map(function (t) {
+      var zero = t[0] && t[2] === 0;
+      return h("button", { type: "button", "class": "kpi" + (t[0] ? " c-" + t[0] : "") + (zero ? " zero" : ""), onclick: t[3] },
+        h("span", { "class": "kpi-label" }, t[1]), h("b", null, String(t[2])));
+    }));
+  }
+  function notices() {
+    var out = [];
+    var capWarn = arr(capture.warnings).concat(arr(R.warnings));
+    if (capture.truncated === true || capture.limited === true) {
+      out.push(h("p", { "class": "notice" },
+        h("span", null, capture.truncated === true ? "This capture file is incomplete, so the results cover only the part that could be read." :
+          "This capture hit a safety limit, so only part of it was analysed."), " ",
+        h("button", { type: "button", "class": "linkish", onclick: function () { nav("capture"); } }, "Capture details")));
+    } else if (capWarn.length) {
+      out.push(h("p", { "class": "notice" }, h("span", null, capWarn.length + " " + plural(capWarn.length, "note", "notes") + " from reading the file."), " ",
+        h("button", { type: "button", "class": "linkish", onclick: function () { nav("capture"); } }, "Capture details")));
+    }
+    if (redacted) {
+      out.push(h("p", { "class": "notice privacy" }, h("span", null, "Privacy mode: IP and MAC addresses are replaced with consistent pseudonyms, and evidence downloads are turned off, so this report is safe to share.")));
+    }
+    return out.length ? h("div", { "class": "notices" }, out) : null;
+  }
+  function compactFindings() {
+    var list = findings.slice(0, 6);
+    if (!list.length) {
+      return h("div", { "class": "panel" }, h("h3", null, "Findings"),
+        h("p", { "class": "more" }, "No findings. Faultline checked TCP, DNS, DHCP, ARP, ICMP and TLS behaviour."));
+    }
+    return h("div", { "class": "panel" },
+      h("div", { "class": "panel-head" }, h("h3", null, "Findings"),
+        h("button", { type: "button", "class": "linkish arrow", onclick: function () { nav("findings"); } }, "All " + findings.length, icon(I_ARROW))),
+      h("ol", { "class": "mini-findings" }, list.map(function (f) {
+        var k = cat(f.category);
+        return h("li", { "class": "c-" + k }, h("button", { type: "button", onclick: function () { goto(f.id); } },
+          h("span", { "class": "fid mono" }, str(f.id)), h("span", { "class": "mf-title" }, str(f.title)), sevEl(f.severity)));
+      })));
+  }
+  function overview() {
+    var ti = topIncident();
+    var healthy = !hasFixFirst();
+    var verdictCard = h("div", { "class": "panel verdict-card s-" + status },
+      h("div", { "class": "verdict-text" },
+        h("p", { "class": "status-word", id: "verdict-word" }, statusGlyph(), STATUS[status].word),
+        h("h1", { "class": "headline", tabindex: "-1" }, healthy && status === "healthy" ? "No problems found" : headline()),
+        h("p", { "class": "summary" }, verdict.summary ? rich(verdict.summary) :
+          (healthy ? "Faultline checked TCP, DNS, DHCP, ARP, ICMP and TLS behaviour in this capture and found nothing that needs attention." : headline())),
+        notices()),
+      h("div", { "class": "verdict-gauge" }, gauge(verdict.score)));
+    var bottom = h("div", { "class": "ov-bottom" },
+      ti ? h("div", { "class": "panel top-incident" },
+        h("div", { "class": "panel-head" }, h("h3", null, incidents.length ? "Fix this first" : "Start with this"),
+          incidents.length > 1 ? h("button", { type: "button", "class": "linkish arrow", onclick: function () { nav("incidents"); } }, incidents.length + " incidents", icon(I_ARROW)) : null),
+        incidentEl(ti.inc, ti.single, true))
+        : h("div", { "class": "panel calm" },
+          h("h3", null, "Nothing to fix"),
+          h("p", null, "No attack, fault or misconfiguration was found. The timeline and network map are still here if you want to look around.")),
+      compactFindings());
+    return h("section", { "class": "view", id: "overview" },
+      verdictCard,
+      kpiTiles(),
+      timeline(),
+      bottom);
   }
 
   // ----------------------------------------------------------- findings
   var cards = [];
   var chipEls = {};
   var currentFilter = "all";
+  var searchText = "";
+  var searchEl = null;
   var hostFilter = null;          // an IP from the network map, or null
   var hostChip = null;            // "Involving 192.168.1.66  x" chip
   var onHostFilterChange = null;  // the map re-highlights its node
+  var listEmptyEl = null;
+  function matchesSearch(c) {
+    if (!searchText) { return true; }
+    return c.text.indexOf(searchText) !== -1;
+  }
   function applyFilters() {
+    var shown = 0;
     cards.forEach(function (c) {
       var okCat = currentFilter === "all" || c.cat === currentFilter;
       var okHost = !hostFilter || c.hosts.indexOf(hostFilter) !== -1;
-      c.el.hidden = !(okCat && okHost);
+      c.el.hidden = !(okCat && okHost && matchesSearch(c));
+      if (!c.el.hidden) { shown++; }
     });
     if (hostChip) {
       hostChip.hidden = !hostFilter;
-      if (hostFilter) {
-        var n = cards.filter(function (c) { return !c.el.hidden; }).length;
-        hostChip.firstChild.textContent = "Involving " + hostFilter + " (" + n + ")";
-      }
+      if (hostFilter) { hostChip.firstChild.textContent = "Involving " + hostFilter + " (" + shown + ")"; }
     }
+    if (listEmptyEl) { listEmptyEl.hidden = shown > 0 || !cards.length; }
     if (onHostFilterChange) { onHostFilterChange(hostFilter); }
   }
   function setFilter(k) {
@@ -1270,14 +1429,12 @@ body.expert .term .tip { display: none; }
     Object.keys(chipEls).forEach(function (c) { chipEls[c].setAttribute("aria-pressed", String(c === k)); });
     applyFilters();
   }
-  function setHostFilter(ip, scroll) {
+  function setHostFilter(ip, go) {
     hostFilter = ip || null;
     if (hostFilter) { setFilter("all"); } else { applyFilters(); }
-    if (scroll && hostFilter) {
-      var el = doc.getElementById("findings");
-      if (el) { el.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" }); }
-    }
+    if (go && hostFilter) { nav("findings"); }
   }
+  var TABS = [["explain", "Explanation"], ["fix", "Fix"], ["why", "Why this verdict"], ["evidence", "Evidence"], ["technical", "Technical"]];
   function findingsSection() {
     var counts = { all: findings.length, attack: 0, fault: 0, misconfig: 0, info: 0 };
     findings.forEach(function (f) { counts[cat(f.category)]++; });
@@ -1292,25 +1449,140 @@ body.expert .term .tip { display: none; }
     hostChip = h("button", { type: "button", "class": "chip host", hidden: true, title: "Clear the device filter",
       onclick: function () { setHostFilter(null); } }, h("span", null, ""), h("span", { "class": "x", "aria-hidden": "true" }, "×"), h("span", { "class": "sr-only" }, "clear device filter"));
     chips.appendChild(hostChip);
-    var list = h("div", { "class": "finding-list" });
-    if (!findings.length) {
-      list.appendChild(h("div", { "class": "empty" },
-        h("h3", null, "Nothing looks wrong"),
-        h("p", null, "Faultline checked TCP, DNS, DHCP, ARP, ICMP and TLS behaviour in this capture and found no faults, misconfigurations or attacks.")));
+    searchEl = h("input", { type: "search", "class": "search", "aria-label": "Search findings", "data-role": "search" });
+    searchEl.placeholder = "Search findings";
+    searchEl.addEventListener("input", function () { searchText = searchEl.value.trim().toLowerCase(); applyFilters(); });
+    var list = h("div", { "class": "fl-list", role: "listbox", "aria-label": "Findings" });
+    listEmptyEl = h("p", { "class": "more list-empty", hidden: true }, "No finding matches this filter.");
+    var detail = h("div", { "class": "fl-detail" });
+    var detailCache = {};
+    var selected = null;
+
+    function item(f) {
+      var k = cat(f.category), id = str(f.id);
+      var host = arr(f.hosts).map(str)[0] || "";
+      var el = h("button", { type: "button", "class": "fl-item c-" + k, role: "option", "aria-selected": "false", "data-id": id,
+        id: "finding-" + id.replace(/[^A-Za-z0-9_-]/g, ""),
+        onclick: function () { nav("findings", f.id, currentTab); } },
+        h("span", { "class": "fl-top" }, pill(k), sevEl(f.severity), h("span", { "class": "fid mono" }, id)),
+        h("span", { "class": "fl-title" }, str(f.title)),
+        h("span", { "class": "fl-meta" }, host ? h("span", { "class": "mono" }, host) : h("span", null, "No single device"), confEl(f.confidence)));
+      return el;
     }
-    findings.forEach(function (f, i) {
-      var c = card(f, i === 0);
-      cards.push({ el: c.el, cat: cat(f.category), id: f.id, open: c.open, hosts: arr(f.hosts).map(str) });
-      list.appendChild(c.el);
+    findings.forEach(function (f) {
+      var el = item(f);
+      var text = [f.id, f.title, f.summary, f.kind, f.mitre].concat(arr(f.hosts)).map(str).join(" ").toLowerCase();
+      cards.push({ el: el, cat: cat(f.category), id: f.id, hosts: arr(f.hosts).map(str), text: text });
+      list.appendChild(el);
     });
-    return h("section", { id: "findings", "class": "section" },
-      h("div", { "class": "wrap" },
-        h("div", { "class": "section-head" },
-          h("div", null,
-            h("h2", null, "What we found"),
-            h("p", null, "Most important first. Open a finding to see what it means, how to fix it, and the exact packets behind it.")),
-          findings.length ? chips : null),
-        list));
+    list.appendChild(listEmptyEl);
+    list.addEventListener("keydown", function (e) {
+      if (e.key !== "ArrowDown" && e.key !== "ArrowUp") { return; }
+      e.preventDefault();
+      var visible = cards.filter(function (c) { return !c.el.hidden; });
+      var idx = -1;
+      visible.forEach(function (c, i) { if (selected && c.id === selected.id) { idx = i; } });
+      var nxt = visible[clamp(idx + (e.key === "ArrowDown" ? 1 : -1), 0, visible.length - 1)];
+      if (nxt) { nav("findings", nxt.id, currentTab); nxt.el.focus(); }
+    });
+
+    function detailFor(f) {
+      var id = str(f.id);
+      if (detailCache[id]) { return detailCache[id]; }
+      var k = cat(f.category);
+      var mitre = str(f.mitre).trim();
+      var mm = /^(T\d{4}(?:\.\d{3})?)\s*(.*)$/.exec(mitre);
+      var causes = findings.filter(function (x) { return x.symptom_of === f.id; }).map(function (x) { return x.id; });
+      var panels = {
+        explain: h("div", { "class": "fd-panel", "data-panel": "explain", role: "tabpanel" },
+          block("What's happening", [h("p", null, rich(f.explanation || f.summary)),
+            f.analogy ? h("p", { "class": "analogy beginner-only" }, rich(f.analogy)) : null]),
+          f.cause ? block("Likely cause", h("p", null, rich(f.cause))) : null,
+          arr(f.hosts).length ? block("Devices involved", h("ul", { "class": "hostlist" }, arr(f.hosts).slice(0, 60).map(function (x) {
+            return h("li", null, h("button", { type: "button", "class": "host-btn mono", onclick: function () { nav("network"); } }, str(x)));
+          }))) : null),
+        fix: h("div", { "class": "fd-panel", "data-panel": "fix", role: "tabpanel" },
+          arr(f.fix).length ? h("div", { "class": "block" }, h("h4", null, "How to fix"),
+            h("ol", { "class": "steps big" }, arr(f.fix).map(function (st) { return h("li", null, h("span", null, rich(st))); }))) :
+            h("p", { "class": "more" }, "No fix is needed for this finding.")),
+        why: h("div", { "class": "fd-panel", "data-panel": "why", role: "tabpanel" },
+          reasoning(f) || h("p", { "class": "more" }, "No weighed evidence for this finding.")),
+        evidence: h("div", { "class": "fd-panel", "data-panel": "evidence", role: "tabpanel" },
+          evidenceBlock(f) || h("p", { "class": "more" }, "No packet evidence is attached to this finding.")),
+        technical: h("div", { "class": "fd-panel", "data-panel": "technical", role: "tabpanel" },
+          h("div", { "class": "block" },
+            h("h4", null, "Technical details"),
+            f.technical ? h("pre", { "class": "tech" }, str(f.technical)) : null,
+            h("dl", { "class": "metrics" },
+              h("div", null, h("dt", null, "detector"), h("dd", { "class": "mono" }, str(f.kind))),
+              h("div", null, h("dt", null, "time"), h("dd", { "class": "mono" }, (rel(f.first_ts) === null ? "?" : "+" + fmtClock(rel(f.first_ts), true)) + " to " + (rel(f.last_ts) === null ? "?" : "+" + fmtClock(rel(f.last_ts), true))))),
+            metricsEl(f.metrics)))
+      };
+      var tabBtns = {};
+      var tablist = h("div", { "class": "tabs", role: "tablist", "aria-label": "Finding details" }, TABS.map(function (t) {
+        var b = h("button", { type: "button", role: "tab", "class": "tab" + (t[0] === "technical" ? " expert-only" : ""), "data-tab": t[0], "aria-selected": "false",
+          onclick: function () { nav("findings", f.id, t[0]); } }, t[1]);
+        tabBtns[t[0]] = b;
+        return b;
+      }));
+      var el = h("article", { "class": "finding c-" + k, "aria-labelledby": "fd-title" },
+        h("div", { "class": "fd-head" },
+          h("div", { "class": "card-tags" }, pill(k), sevEl(f.severity), confEl(f.confidence), h("span", { "class": "fid-tag mono" }, id),
+            mitre ? h("span", { "class": "mitre" }, "MITRE ATT&CK", mm ? h("b", null, mm[1]) : null, mm ? mm[2] : mitre) : null),
+          h("h3", { id: "fd-title" }, str(f.title)),
+          h("p", { "class": "fd-summary" }, rich(f.summary)),
+          f.symptom_of && byId[f.symptom_of] ? h("p", { "class": "symlink" }, "Symptom of ", jump(f.symptom_of, f.symptom_of + ": " + str(byId[f.symptom_of].title))) : null,
+          causes.length ? h("p", { "class": "symlink" }, "Leads to ", causes.map(function (c) { return jump(c, c + ": " + str(byId[c].title)); })) : null),
+        tablist,
+        panels.explain, panels.fix, panels.why, panels.evidence, panels.technical);
+      var rec = { el: el, panels: panels, tabBtns: tabBtns };
+      detailCache[id] = rec;
+      return rec;
+    }
+    function showTab(rec, tab) {
+      if (!rec.panels[tab]) { tab = "explain"; }
+      if (tab === "technical" && !doc.body.classList.contains("expert")) { tab = "explain"; }
+      currentTab = tab;
+      Object.keys(rec.panels).forEach(function (t) {
+        rec.panels[t].hidden = t !== tab;
+        rec.tabBtns[t].setAttribute("aria-selected", String(t === tab));
+      });
+    }
+    selectFinding = function (id, tab, fromRoute) {
+      var f = id ? byId[id] : null;
+      if (!f) {
+        var firstVisible = cards.filter(function (c) { return !c.el.hidden; })[0];
+        f = firstVisible ? byId[firstVisible.id] : findings[0];
+      }
+      selected = f || null;
+      cards.forEach(function (c) { c.el.setAttribute("aria-selected", String(!!f && c.id === f.id)); });
+      while (detail.firstChild) { detail.removeChild(detail.firstChild); }
+      if (!f) { return; }
+      var rec = detailFor(f);
+      showTab(rec, tab || currentTab);
+      detail.appendChild(rec.el);
+      detail.scrollTop = 0;
+      if (fromRoute) {
+        var c = cards.filter(function (x) { return x.id === f.id; })[0];
+        if (c && c.el.scrollIntoView) { c.el.scrollIntoView({ block: "nearest" }); }
+      }
+      if (!doc.body.classList.contains("expert")) {
+        Array.prototype.forEach.call(rec.el.querySelectorAll(".term"), function (t) { t.setAttribute("tabindex", "0"); });
+      }
+    };
+    var body;
+    if (!findings.length) {
+      body = h("div", { "class": "empty calm" },
+        h("h3", null, "Nothing looks wrong"),
+        h("p", null, "Faultline checked TCP, DNS, DHCP, ARP, ICMP and TLS behaviour in this capture and found no faults, misconfigurations or attacks."));
+    } else {
+      body = h("div", { "class": "fl" },
+        h("div", { "class": "fl-side" }, h("div", { "class": "fl-tools" }, h("label", { "class": "search-wrap" }, icon(I_SEARCH), searchEl), chips), list),
+        detail);
+    }
+    return h("section", { "class": "view", id: "findings" },
+      sectionHead("Findings", "Most important first. Use ↑ ↓ to move through the list.", null),
+      body);
   }
 
   function block(title, kids, extraClass) {
@@ -1347,47 +1619,62 @@ body.expert .term .tip { display: none; }
       var mine = inds.filter(function (i) { return cat(i.supports) === k; });
       if (!mine.length) { return null; }
       mine.sort(function (a, b) { return (num(b.weight) || 0) - (num(a.weight) || 0); });
-      return h("div", { "class": "hyp c-" + k },
-        h("h5", null, CAT[k].hyp),
+      return h("div", { "class": "hyp c-" + k + (k === win ? " win" : "") },
+        h("h5", null, CAT[k].hyp, h("span", { "class": "n" }, mine.length + " " + plural(mine.length, "indicator", "indicators"))),
         h("ul", null, mine.map(function (i) { return h("li", null, dots(i.weight, k), h("span", null, str(i.text))); })));
     });
     return h("div", { "class": "reason" },
-      h("h4", null, "Fault or attack? Why we think so"),
-      h("p", { "class": "lead" }, lead),
-      total ? bar : null,
-      total ? h("ul", { "class": "scorekey" }, hypKeys.map(function (k) {
-        return h("li", { "class": "c-" + k + (k === win ? " win" : "") }, CAT[k].one + " " + vals[k].toFixed(1));
-      })) : null,
+      h("div", { "class": "reason-head" },
+        h("h4", null, "Fault or attack? Why we think so"),
+        h("p", { "class": "lead" }, lead)),
+      total ? h("div", { "class": "scoreboard" }, bar,
+        h("ul", { "class": "scorekey" }, hypKeys.map(function (k) {
+          return h("li", { "class": "c-" + k + (k === win ? " win" : "") }, h("i", null), h("span", null, CAT[k].one), h("b", { "class": "num" }, vals[k].toFixed(1)));
+        }))) : null,
       h("div", { "class": "hyps" }, groups),
-      alts.length ? h("ul", { "class": "whynot" }, alts.map(function (a) {
-        return h("li", null, h("b", null, "Why not “" + str(a.title) + "”?"), " ", pill(a.category),
-          a.why_not ? h("p", null, rich(a.why_not)) : null);
-      })) : null);
+      alts.length ? h("div", { "class": "whynot-wrap" }, h("h5", null, "Alternatives we ruled out"),
+        h("ul", { "class": "whynot" }, alts.map(function (a) {
+          return h("li", null, h("div", { "class": "wn-head" }, pill(a.category), h("b", null, "Why not “" + str(a.title) + "”?")),
+            a.why_not ? h("p", null, rich(a.why_not)) : null);
+        }))) : null);
+  }
+  function evidenceTools(f, pk) {
+    var filter = pk.length ? "frame.number in {" + pk.join(" ") + "}" : "";
+    var tools = [];
+    if (!redacted && typeof evidence[f.id] === "string") {
+      tools.push(h("button", { type: "button", "class": "btn", onclick: function () { downloadEvidence(f); } },
+        icon(I_DOWN), "Download evidence .pcap"));
+    }
+    if (filter) {
+      tools.push(h("span", { "class": "filter" }, h("span", { "class": "filter-label" }, "Wireshark"), h("code", { title: filter }, filter),
+        h("button", { type: "button", "class": "btn", onclick: function () { copyText(filter, "Wireshark filter copied"); } }, icon(I_COPY), "Copy filter")));
+    }
+    return tools;
+  }
+  function evidenceRows(lines, cap) {
+    return lines.slice(0, cap).map(function (l) {
+      var r = rel(l.ts);
+      return h("tr", null,
+        h("td", { "class": "num" }, fmtInt(l.no)),
+        h("td", { "class": "num mono" }, r === null ? "" : "+" + fmtClock(r, true)),
+        h("td", { "class": "mono" }, str(l.summary)));
+    });
+  }
+  function evidenceTable(rows) {
+    return h("div", { "class": "table-scroll" }, h("table", { "class": "packets" },
+      h("thead", null, h("tr", null, h("th", { "class": "num", scope: "col" }, "No."), h("th", { "class": "num", scope: "col" }, "Time"), h("th", { scope: "col" }, "What happened"))),
+      h("tbody", null, rows)));
   }
   function evidenceBlock(f) {
     var lines = arr(f.evidence_lines).filter(function (l) { return l && typeof l === "object"; });
     var pk = arr(f.packets).filter(function (n) { return num(n) !== null; }).map(function (n) { return Math.round(n); });
     if (!pk.length) { pk = lines.map(function (l) { return Math.round(num(l.no) || 0); }).filter(Boolean); }
     if (!lines.length && !pk.length) { return null; }
-    var filter = pk.length ? "frame.number in {" + pk.join(" ") + "}" : "";
-    var tools = [];
-    if (!redacted && typeof evidence[f.id] === "string") {
-      tools.push(h("button", { type: "button", "class": "btn", onclick: function () { downloadEvidence(f); } },
-        icon(I_DOWN), "Download evidence .pcap (open in Wireshark)"));
-    }
-    if (filter) {
-      tools.push(h("span", { "class": "filter" }, "In Wireshark:", h("code", { title: filter }, filter),
-        h("button", { type: "button", "class": "btn", onclick: function () { copyText(filter, "Wireshark filter copied"); } }, icon(I_COPY), "Copy filter")));
-    }
+    var tools = evidenceTools(f, pk);
     var total = num(f.packet_total);
     var PREVIEW = 8, CAP = 200;
-    var rows = lines.slice(0, CAP).map(function (l, i) {
-      var r = rel(l.ts);
-      return h("tr", { hidden: i >= PREVIEW ? true : null, "class": i >= PREVIEW ? "extra" : null },
-        h("td", { "class": "num" }, fmtInt(l.no)),
-        h("td", { "class": "num mono" }, r === null ? "" : "+" + fmtClock(r, true)),
-        h("td", { "class": "mono" }, str(l.summary)));
-    });
+    var rows = evidenceRows(lines, CAP);
+    rows.forEach(function (r, i) { if (i >= PREVIEW) { r.hidden = true; r.classList.add("extra"); } });
     var shown = rows.length, expanded = false;
     var toggleBtn = null;
     if (shown > PREVIEW) {
@@ -1403,12 +1690,11 @@ body.expert .term .tip { display: none; }
       moreText = "The table lists " + fmtInt(shown) + " of " + fmtInt(total) + " matching packets." + (pk.length > shown ? " The filter and the evidence file include " + fmtInt(pk.length) + "." : "");
     }
     return h("div", { "class": "block evidence" },
-      h("h4", null, "Evidence: the exact packets"),
+      h("h4", null, "The exact packets"),
       tools.length ? h("div", { "class": "evidence-tools" }, tools) : null,
-      shown ? h("div", { "class": "table-scroll" }, h("table", null,
-        h("thead", null, h("tr", null, h("th", { "class": "num", scope: "col" }, "No."), h("th", { "class": "num", scope: "col" }, "Time"), h("th", { scope: "col" }, "What happened"))),
-        h("tbody", null, rows))) : null,
-      toggleBtn || moreText ? h("div", { "class": "evidence-foot" }, toggleBtn, moreText ? h("p", { "class": "more" }, moreText) : null) : null);
+      shown ? evidenceTable(rows) : null,
+      toggleBtn || moreText ? h("div", { "class": "evidence-foot" }, toggleBtn, moreText ? h("p", { "class": "more" }, moreText) : null) : null,
+      arr(f.hosts).length ? h("p", { "class": "more hosts-line" }, "Devices: ", arr(f.hosts).slice(0, 12).map(function (x, i) { return [i ? ", " : null, h("span", { "class": "mono" }, str(x))]; })) : null);
   }
   function metricsEl(m) {
     m = obj(m);
@@ -1417,82 +1703,32 @@ body.expert .term .tip { display: none; }
     return h("dl", { "class": "metrics" }, keys.map(function (k) {
       var v = m[k];
       var txt = Array.isArray(v) ? v.slice(0, 20).map(str).join(", ") : (v && typeof v === "object" ? JSON.stringify(v).slice(0, 300) : str(v));
-      return h("div", null, h("dt", null, k.replace(/_/g, " ")), h("dd", null, txt));
+      return h("div", null, h("dt", null, k.replace(/_/g, " ")), h("dd", { "class": "mono" }, txt));
     }));
   }
-  function card(f, openByDefault) {
-    var k = cat(f.category), id = str(f.id);
-    var bodyId = "fb-" + id.replace(/[^A-Za-z0-9_-]/g, "");
-    var causes = findings.filter(function (x) { return x.symptom_of === f.id; }).map(function (x) { return x.id; });
-    var toggle = h("button", { type: "button", "class": "toggle", "aria-expanded": "false", "aria-controls": bodyId },
-      h("span", null, "Details"), chevron());
-    var body = h("div", { "class": "card-body", id: bodyId, hidden: true });
-    var built = false;
-    function build() {
-      if (built) { return; }
-      built = true;
-      var mitre = str(f.mitre).trim();
-      var mm = /^(T\d{4}(?:\.\d{3})?)\s*(.*)$/.exec(mitre);
-      append(body, [
-        h("div", { "class": "cols" },
-          h("div", null,
-            block("What's happening", [
-              h("p", null, rich(f.explanation || f.summary)),
-              f.analogy ? h("p", { "class": "analogy beginner-only" }, rich(f.analogy)) : null
-            ])),
-          h("div", { "class": "cols-right" },
-            f.cause ? block("Likely cause", h("p", null, rich(f.cause))) : null,
-            arr(f.fix).length ? h("div", { "class": "block", id: null }, h("h4", null, "How to fix"),
-              h("ol", { "class": "ordered" }, arr(f.fix).map(function (st) { return h("li", null, h("span", null, rich(st))); }))) : null)),
-        reasoning(f),
-        mitre ? h("p", { "class": "mitre" }, "MITRE ATT&CK", mm ? h("b", null, mm[1]) : null, mm ? mm[2] : mitre) : null,
-        evidenceBlock(f),
-        arr(f.hosts).length ? block("Devices involved", h("ul", { "class": "hostlist" }, arr(f.hosts).slice(0, 60).map(function (x) { return h("li", null, str(x)); }))) : null,
-        h("div", { "class": "block expert-only" },
-          h("h4", null, "Technical details"),
-          f.technical ? h("pre", { "class": "tech" }, str(f.technical)) : null,
-          h("dl", { "class": "metrics" },
-            h("div", null, h("dt", null, "detector"), h("dd", null, str(f.kind))),
-            h("div", null, h("dt", null, "time"), h("dd", null, (rel(f.first_ts) === null ? "?" : "+" + fmtClock(rel(f.first_ts), true)) + " to " + (rel(f.last_ts) === null ? "?" : "+" + fmtClock(rel(f.last_ts), true))))),
-          metricsEl(f.metrics))
-      ]);
-    }
-    function open(state) {
-      var isOpen = toggle.getAttribute("aria-expanded") === "true";
-      var want = state === undefined ? !isOpen : state;
-      if (want) { build(); }
-      toggle.setAttribute("aria-expanded", String(want));
-      toggle.firstChild.textContent = want ? "Hide details" : "Details";
-      body.hidden = !want;
-    }
-    toggle.addEventListener("click", function () { open(); });
-    var el = h("article", { "class": "card c-" + k, id: "finding-" + id.replace(/[^A-Za-z0-9_-]/g, ""), "aria-labelledby": bodyId + "-t" },
-      h("div", { "class": "card-head" },
-        h("div", null,
-          h("div", { "class": "card-tags" }, pill(k), sevEl(f.severity), confEl(f.confidence), h("span", { "class": "fid-tag" }, id)),
-          h("h3", { id: bodyId + "-t", tabindex: "-1" }, str(f.title)),
-          h("p", null, rich(f.summary)),
-          f.symptom_of && byId[f.symptom_of] ? h("p", { "class": "symlink" }, "Symptom of", jump(f.symptom_of, f.symptom_of + ": " + str(byId[f.symptom_of].title))) : null,
-          causes.length ? h("p", { "class": "symlink" }, "Leads to", causes.map(function (c) { return jump(c, c); })) : null),
-        toggle),
-      body);
-    if (openByDefault) { open(true); }
-    return { el: el, open: open };
-  }
-  function goto(id) {
-    var c = null;
-    for (var i = 0; i < cards.length; i++) { if (cards[i].id === id) { c = cards[i]; } }
-    if (!c) { return; }
-    if (c.el.hidden) { hostFilter = null; setFilter("all"); }
-    c.open(true);
-    c.el.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "start" });
-    c.el.classList.remove("flash");
-    void c.el.offsetWidth;
-    c.el.classList.add("flash");
-    var t = c.el.querySelector("h3");
-    if (t) { try { t.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
-  }
 
+  // ------------------------------------------------------------ evidence
+  function evidenceSection() {
+    var groups = findings.map(function (f) {
+      var lines = arr(f.evidence_lines).filter(function (l) { return l && typeof l === "object"; });
+      var pk = arr(f.packets).filter(function (n) { return num(n) !== null; }).map(function (n) { return Math.round(n); });
+      if (!pk.length) { pk = lines.map(function (l) { return Math.round(num(l.no) || 0); }).filter(Boolean); }
+      if (!lines.length && !pk.length) { return null; }
+      var k = cat(f.category);
+      var total = num(f.packet_total);
+      return h("div", { "class": "panel ev-group c-" + k, "data-id": str(f.id) },
+        h("div", { "class": "ev-head" },
+          h("div", null, h("div", { "class": "card-tags" }, pill(k), h("span", { "class": "fid-tag mono" }, str(f.id)), sevEl(f.severity)),
+            h("h3", null, h("button", { type: "button", "class": "linkish", onclick: function () { goto(f.id, "evidence"); } }, str(f.title)))),
+          h("div", { "class": "evidence-tools" }, evidenceTools(f, pk))),
+        lines.length ? evidenceTable(evidenceRows(lines, 200)) : h("p", { "class": "more" }, "Packet list not included; the Wireshark filter above selects the packets."),
+        total !== null && total > Math.min(lines.length, 200) ? h("p", { "class": "more" }, "Showing " + fmtInt(Math.min(lines.length, 200)) + " of " + fmtInt(total) + " matching packets.") : null);
+    }).filter(Boolean);
+    return h("section", { "class": "view", id: "evidence" },
+      sectionHead("Evidence", "Every packet Faultline used, grouped by finding. Frame numbers match the original capture."),
+      groups.length ? h("div", { "class": "ev-groups" }, groups)
+        : h("div", { "class": "empty calm" }, h("h3", null, "No packet evidence"), h("p", null, "There are no findings, so nothing to prove.")));
+  }
   // ------------------------------------------------------------ network
   function barsList(rows, labelMono) {
     var max = Math.max.apply(null, rows.map(function (r) { return r.v; }).concat([1]));
@@ -1792,7 +2028,7 @@ body.expert .term .tip { display: none; }
       box, legend, textList);
   }
 
-  function networkSection() {
+  function devicesTable() {
     var attackHosts = {};
     findings.forEach(function (f) {
       if (cat(f.category) !== "attack") { return; }
@@ -1802,8 +2038,8 @@ body.expert .term .tip { display: none; }
       return ((num(b.packets_sent) || 0) + (num(b.packets_recv) || 0)) - ((num(a.packets_sent) || 0) + (num(a.packets_recv) || 0));
     });
     var shown = hs.slice(0, 60);
-    var hostTable = h("div", { "class": "panel", id: "devices" },
-      h("h3", null, "All devices"),
+    return h("div", { "class": "panel", id: "devices" },
+      h("div", { "class": "panel-head" }, h("h3", null, "Devices"), h("span", { "class": "more" }, fmtInt(hs.length) + " seen")),
       shown.length ? h("div", { "class": "table-scroll" }, h("table", { "class": "hosts" },
         h("thead", null, h("tr", null, ["Address", "Name", "Hardware (MAC)", "Role", "Sent", "Received", "Data"].map(function (t, i) {
           return h("th", { scope: "col", "class": i >= 4 ? "num" : null }, t);
@@ -1813,7 +2049,7 @@ body.expert .term .tip { display: none; }
           var macs = arr(x.macs).map(str);
           return h("tr", null,
             h("td", { "class": "mono" }, ip, x.local === false ? h("div", { "class": "ext" }, "outside network") : null),
-            h("td", null, arr(x.names).slice(0, 4).map(function (n, i) { return h("div", null, str(n)); })),
+            h("td", null, arr(x.names).slice(0, 4).map(function (n) { return h("div", null, str(n)); })),
             h("td", { "class": "mono" }, macs.slice(0, 4).map(function (m) { return h("div", null, m); }),
               macs.length > 1 ? h("span", { "class": "badge flag" }, macs.length + " MACs for one IP") : null),
             h("td", null, arr(x.roles).map(function (r) {
@@ -1825,7 +2061,45 @@ body.expert .term .tip { display: none; }
             h("td", { "class": "num" }, fmtBytes((num(x.bytes_sent) || 0) + (num(x.bytes_recv) || 0))));
         })))) : h("p", { "class": "more" }, "No devices were seen."),
       hs.length > shown.length ? h("p", { "class": "more" }, "Showing the " + shown.length + " busiest of " + fmtInt(hs.length) + " devices.") : null);
+  }
+  function networkSection() {
+    var convs = arr(stats.conversations).filter(function (c) { return c && typeof c === "object"; }).slice(0, 12);
+    return h("section", { "class": "view", id: "network" },
+      sectionHead("Network", "The network as seen in this capture. Hover a device for details; click one to filter the findings to it."),
+      networkMap() || h("div", { "class": "empty calm" }, h("h3", null, "No devices"), h("p", null, "No IP hosts were seen in this capture.")),
+      devicesTable(),
+      convs.length ? h("div", { "class": "panel", id: "conversations" },
+        h("div", { "class": "panel-head" }, h("h3", null, "Busiest conversations")),
+        h("div", { "class": "table-scroll" }, h("table", null,
+          h("thead", null, h("tr", null, h("th", { scope: "col" }, "Between"), h("th", { scope: "col" }, "And"), h("th", { scope: "col" }, "Protocol"),
+            h("th", { scope: "col", "class": "num" }, "Packets"), h("th", { scope: "col", "class": "num" }, "Data"))),
+          h("tbody", null, convs.map(function (c) {
+            return h("tr", null, h("td", { "class": "mono" }, str(c.a)), h("td", { "class": "mono" }, str(c.b)), h("td", null, str(c.proto)),
+              h("td", { "class": "num" }, fmtInt(c.packets)), h("td", { "class": "num" }, fmtBytes(c.bytes)));
+          }))))) : null);
+  }
 
+  // ------------------------------------------------------------ capture
+  function captureSection() {
+    var c = capture;
+    var lt = arr(c.linktypes).map(function (x) { return ({ 0: "Null/loopback", 1: "Ethernet", 101: "Raw IP", 105: "802.11", 113: "Linux cooked", 127: "802.11 radiotap", 228: "Raw IPv4", 229: "Raw IPv6", 276: "Linux cooked v2" })[x] || ("type " + str(x)); });
+    var rows = [
+      ["File", str(c.name) || "unnamed", "mono"],
+      ["Format", (str(c.format) || "?") + (c.compressed === true ? " (gzip compressed)" : "")],
+      ["File size", fmtBytes(c.file_bytes)],
+      ["Packets", fmtInt(c.packets) + (num(c.malformed_packets) ? " (" + fmtInt(c.malformed_packets) + " malformed)" : "")],
+      ["Data captured", fmtBytes(c.bytes_captured)],
+      ["Link type", lt.join(", ") || "?"],
+      ["Started", fmtDate(c.first_ts)],
+      ["Ended", fmtDate(c.last_ts)],
+      ["Duration", fmtDur(c.duration)],
+      ["SHA-256", str(c.sha256) || "?", "mono"],
+      ["Report created", str(R.generated_at), "mono"]
+    ];
+    var warns = [];
+    if (c.truncated === true) { warns.push("The file was truncated. Faultline analysed every complete packet before the cut."); }
+    if (c.limited === true) { warns.push("A safety limit was reached, so only part of the file was analysed."); }
+    warns = warns.concat(arr(c.warnings).map(str), arr(R.warnings).map(str));
     var protos = obj(stats.protocols);
     var pkeys = Object.keys(protos).filter(function (k) { return num(protos[k]) !== null; });
     var ptotal = pkeys.reduce(function (a, k) { return a + protos[k]; }, 0) || 1;
@@ -1835,82 +2109,38 @@ body.expert .term .tip { display: none; }
     var talk = arr(stats.top_talkers).filter(function (t) { return t && typeof t === "object"; }).slice(0, 10).map(function (t) {
       return { label: str(t.ip), v: num(t.bytes) || 0, text: fmtBytes(t.bytes) };
     });
-    var convs = arr(stats.conversations).filter(function (c) { return c && typeof c === "object"; }).slice(0, 12);
-    return h("section", { id: "network", "class": "section" },
-      h("div", { "class": "wrap" },
-        h("div", { "class": "section-head" }, h("div", null,
-          h("h2", null, "Who was talking"),
-          h("p", null, "A picture of the network as seen in this capture, then every device, what it does, and how much it sent."))),
-        networkMap(),
-        hostTable,
-        h("div", { "class": "net-grid" },
-          h("div", { "class": "panel" }, h("h3", null, "Protocols"), prow.length ? barsList(prow, false) : h("p", { "class": "more" }, "No protocol data.")),
-          h("div", { "class": "panel" }, h("h3", null, "Busiest devices by data"), talk.length ? barsList(talk, true) : h("p", { "class": "more" }, "No traffic data."))),
-        convs.length ? h("div", { "class": "panel", id: "conversations" },
-          h("h3", null, "Busiest conversations"),
-          h("div", { "class": "table-scroll" }, h("table", null,
-            h("thead", null, h("tr", null, h("th", { scope: "col" }, "Between"), h("th", { scope: "col" }, "And"), h("th", { scope: "col" }, "Protocol"),
-              h("th", { scope: "col", "class": "num" }, "Packets"), h("th", { scope: "col", "class": "num" }, "Data"))),
-            h("tbody", null, convs.map(function (c) {
-              return h("tr", null, h("td", { "class": "mono" }, str(c.a)), h("td", { "class": "mono" }, str(c.b)), h("td", null, str(c.proto)),
-                h("td", { "class": "num" }, fmtInt(c.packets)), h("td", { "class": "num" }, fmtBytes(c.bytes)));
-            }))))) : null));
-  }
-
-  // ------------------------------------------------------------ capture
-  function captureSection() {
-    var c = capture;
-    var lt = arr(c.linktypes).map(function (x) { return ({ 0: "Null/loopback", 1: "Ethernet", 101: "Raw IP", 105: "802.11", 113: "Linux cooked", 127: "802.11 radiotap", 228: "Raw IPv4", 229: "Raw IPv6", 276: "Linux cooked v2" })[x] || ("type " + str(x)); });
-    var rows = [
-      ["File", str(c.name) || "unnamed"],
-      ["Format", (str(c.format) || "?") + (c.compressed === true ? " (gzip compressed)" : "")],
-      ["File size", fmtBytes(c.file_bytes)],
-      ["Packets", fmtInt(c.packets) + (num(c.malformed_packets) ? " (" + fmtInt(c.malformed_packets) + " malformed)" : "")],
-      ["Data captured", fmtBytes(c.bytes_captured)],
-      ["Link type", lt.join(", ") || "?"],
-      ["Started", fmtDate(c.first_ts)],
-      ["Ended", fmtDate(c.last_ts)],
-      ["Duration", fmtDur(c.duration)],
-      ["SHA-256", str(c.sha256) || "?"],
-      ["Report created", str(R.generated_at)]
-    ];
-    var warns = [];
-    if (c.truncated === true) { warns.push("The file was truncated. Faultline analysed every complete packet before the cut."); }
-    if (c.limited === true) { warns.push("A safety limit was reached, so only part of the file was analysed."); }
-    warns = warns.concat(arr(c.warnings).map(str), arr(R.warnings).map(str));
-    return h("section", { id: "capture", "class": "section" },
-      h("div", { "class": "wrap" },
-        h("div", { "class": "section-head" }, h("div", null,
-          h("h2", null, "About this capture"),
-          h("p", null, "The file Faultline read, and anything unusual about reading it."))),
-        h("div", { "class": "capture-grid" },
-          h("div", { "class": "panel" }, h("dl", { "class": "kv" }, rows.map(function (r) {
-            return [h("dt", null, r[0]), h("dd", { "class": r[0] === "SHA-256" ? "mono" : null }, r[1])];
-          }))),
-          h("div", { "class": "panel" }, h("h3", null, "Reading notes"),
+    return h("section", { "class": "view", id: "capture" },
+      sectionHead("Capture details", "The file Faultline read, and anything unusual about reading it."),
+      h("div", { "class": "capture-grid" },
+        h("div", { "class": "panel" }, h("h3", null, "File"), h("dl", { "class": "kv" }, rows.map(function (r) {
+          return [h("dt", null, r[0]), h("dd", { "class": r[2] || null }, r[1])];
+        }))),
+        h("div", { "class": "capture-col" },
+          h("div", { "class": "panel" }, h("div", { "class": "panel-head" }, h("h3", null, "Reader notes"), warns.length ? h("span", { "class": "badge flag" }, String(warns.length)) : null),
             warns.length ? h("ul", { "class": "warnlist" }, warns.slice(0, 50).map(function (w) { return h("li", null, w); }))
-              : h("p", { "class": "more" }, "The file was read completely, with no problems.")))));
-  }
-
-  function footer() {
-    return h("footer", { "class": "footer" },
-      h("div", { "class": "wrap" },
-        h("p", null, h("strong", null, "Generated offline by Faultline " + str(tool.version) + "."), " No data left this machine."),
-        redacted ? h("p", null, "Privacy mode was on: addresses are pseudonymised and no raw packets are included.") :
-          h("p", null, "This report contains addresses from your network. Re-run with redaction before sharing it publicly.")));
+              : h("p", { "class": "more" }, "The file was read completely, with no problems.")),
+          h("div", { "class": "panel" }, h("h3", null, "Protocols"), prow.length ? barsList(prow, false) : h("p", { "class": "more" }, "No protocol data.")),
+          h("div", { "class": "panel" }, h("h3", null, "Busiest devices by data"), talk.length ? barsList(talk, true) : h("p", { "class": "more" }, "No traffic data.")))),
+      h("p", { "class": "foot-note" }, h("strong", null, "Generated offline by Faultline " + str(tool.version) + "."), " ",
+        redacted ? "Privacy mode was on: addresses are pseudonymised and no raw packets are included." :
+          "This report contains addresses from your network. Re-run with redaction before sharing it publicly."));
   }
 
   // -------------------------------------------------------------- mount
-  var frag = doc.createDocumentFragment();
-  append(frag, [topbar(), h("main", null, hero(), fixFirst(), findingsSection(), networkSection(), captureSection()), footer(), toastEl]);
-  root.appendChild(frag);
-  watchScroll();
+  var sections = [overview(), incidentsSection(), findingsSection(), networkSection(), evidenceSection(), captureSection()];
+  sections.forEach(function (sec) { views[sec.id] = sec; sec.hidden = true; });
+  mainEl = h("main", { "class": "views", id: "main" }, sections);
+  var scrim = h("div", { "class": "scrim", onclick: function () { doc.body.classList.remove("nav-open"); } });
+  append(root, [h("div", { "class": "shell" }, sidebar(), h("div", { "class": "stage" }, topbar(), mainEl)), scrim, toastEl]);
+  window.addEventListener("hashchange", route);
+  window.addEventListener("popstate", route);
+  route();
   if (chartRedraw) {
-    chartRedraw();
     var rt = null;
-    window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(chartRedraw, 120); });
+    window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(function () { if (currentSection === "overview") { chartRedraw(); } }, 120); });
   }
-  if (location.hash && /^#finding-[A-Za-z0-9_-]+$/.test(location.hash)) { goto(location.hash.slice(9)); }
+  window.addEventListener("beforeprint", function () { Object.keys(views).forEach(function (k) { views[k].hidden = false; }); if (chartRedraw) { chartRedraw(); } });
+  window.addEventListener("afterprint", function () { showSection(currentSection, true); });
 })();
 </script>
 </body>
