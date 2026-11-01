@@ -110,7 +110,7 @@ The diagnosis is made by explicit, hand-written rules and a weighted-evidence sc
 - **Deterministic and reproducible.** The same capture always gives the same answer. That is what makes the benchmark, the regression tests and a before/after `diff` meaningful.
 - **No training data problem.** Labelled captures of real attacks on small networks are scarce, and models trained on public datasets tend to learn the lab rather than the attack. Protocol rules, such as "a second DHCP server naming itself as the router", hold on any network.
 - **Harder to fool, and safer to run.** Text inside packets is attacker-controlled. Feeding it to a language model would invite prompt injection, while rules only ever treat it as data.
-- **Fast and light.** Analysis takes well under a second for typical captures on a laptop, with no GPU and no model download.
+- **Fast and light.** Each bundled capture is analysed in well under a second on a laptop (the decoder handles roughly 320,000 packets per second), with no GPU and no model download.
 
 The trade-off is that new kinds of problem need new rules. A local, optional model that only rephrases the already-computed findings could be added later without changing how verdicts are made.
 
