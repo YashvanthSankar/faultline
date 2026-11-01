@@ -436,7 +436,12 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
+    argv = list(sys.argv[1:] if argv is None else argv)
+    # global flags are accepted anywhere: `faultline analyze x.pcap --no-color` works too
+    no_color = "--no-color" in argv or bool(os.environ.get("NO_COLOR"))
+    argv = [a for a in argv if a != "--no-color"]
     args = parser.parse_args(argv)
+    args.no_color = no_color
     try:
         return args.func(args) or 0
     except KeyboardInterrupt:
