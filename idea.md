@@ -46,7 +46,7 @@ Faultline is an offline diagnostic engine with a **CLI** and a **local web dashb
 
 ## Demo story (video)
 
-1. "The Wi-Fi works, but every website is wrong." We load `mitm_rogue_dhcp.pcap`, and Faultline says **Under attack**: a rogue DHCP server led to DNS hijacking, with the evidence packets and the fix.
+1. "The Wi-Fi works, but every website is wrong." We load `mitm_chain.pcap`, and Faultline says **Under attack**: a rogue DHCP server led to DNS hijacking, with the evidence packets and the fix.
 2. "Video calls keep freezing." We load `lossy_link.pcap`, and Faultline says **Fault, not attack**: 6% loss downstream of the capture point, with the blame split and the fix.
 3. The side-by-side ARP case: *IP conflict* versus *ARP spoofing* look identical to a user, and Faultline tells them apart and explains why.
 4. Security: we feed it a malicious or corrupt capture and it handles it gracefully. Then the `--redact` report.
