@@ -19,7 +19,7 @@
 *IIITDM Kancheepuram Cybersecurity Club · 24-hour hackathon · Network track: "Diagnosing Network Problems from Packet Captures"*
 *Team **Moorthy Gang**: Yashvanth S (CS24I1029)*
 
-<img src="docs/images/report-mitm_chain.png" alt="Faultline report for a man-in-the-middle capture: big 'Under attack' verdict, health score 52, timeline and 'Fix this first' incident chain" width="900">
+<img src="docs/proof/real-terminal-mitm.png" alt="Real macOS Terminal running faultline analyze on a man-in-the-middle capture: Under attack verdict, root cause chain, fixes and evidence" width="900">
 
 </div>
 
@@ -127,13 +127,7 @@ Both captures contain "two MAC addresses claim one IP". Faultline calls one a ha
 |---|---|
 | <img src="docs/images/terminal-ip-conflict.svg" alt="IP conflict judged misconfiguration" width="440"> | <img src="docs/images/terminal-arp-spoofing.svg" alt="ARP spoofing judged attack" width="440"> |
 
-### The dashboard and HTML report
-
-| An outage *and* an attack in one capture, separated | A lossy link: timeline, blame, fix |
-|---|---|
-| <img src="docs/images/report-outage_vs_attack_mixed.png" alt="Report separating a DNS outage from a port scan" width="440"> | <img src="docs/images/report-lossy_link.png" alt="Report for lossy link" width="440"> |
-
-The full-page tour of the attack report, with the "Fault or attack? Why we think so" scoreboard, the MITRE ATT&CK mapping and the evidence table: [`docs/images/report-mitm_chain-full.png`](docs/images/report-mitm_chain-full.png).
+<!-- WEB_UI_SCREENSHOTS: regenerated from the new dashboard UI -->
 
 ## Demo video
 
