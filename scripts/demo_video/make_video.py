@@ -1,11 +1,11 @@
 """Produce the Faultline demo video from REAL runs of the tool.
 
 Scenes:
-  card  - a title card (HTML rendered by headless Chrome)
-  term  - a real macOS Terminal window running real commands, screen-recorded with ffmpeg
+  card  - a title card (HTML rendered by headless Chromium via Playwright)
+  term  - real commands in a headless terminal, recorded with VHS
   web   - the real local dashboard driven by Playwright, recorded by the browser
-Narration: macOS `say` (synthesized voice), one audio file per scene; each scene's
-footage is recorded for at least as long as its narration.
+Narration: Sarvam AI text-to-speech when SARVAM_API_KEY is set (macOS `say` otherwise),
+one audio file per scene; each scene's footage is recorded for at least as long as its narration.
 
     Requirements (macOS): ffmpeg, vhs (brew install vhs), playwright (pip install playwright && playwright install chromium).
     Start the dashboard first:  faultline web --port 8777 --no-browser

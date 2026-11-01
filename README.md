@@ -409,9 +409,17 @@ The analysis engine (reader, decoders, detectors, classification, correlation) u
 | [rich](https://github.com/Textualize/rich) | MIT | Terminal output |
 | [Flask](https://github.com/pallets/flask), with Werkzeug, Jinja2, MarkupSafe, itsdangerous, click, blinker | BSD-3-Clause / MIT | Local web dashboard |
 | [pytest](https://github.com/pytest-dev/pytest) | MIT | Tests (development only) |
-| [Playwright](https://github.com/microsoft/playwright-python) | Apache-2.0 | Optional: README screenshots of the dashboard (`scripts/make_web_shots.py`); not needed to run Faultline |
+| [Playwright](https://github.com/microsoft/playwright-python) | Apache-2.0 | Optional: README screenshots and the dashboard scenes of the demo video; not needed to run Faultline |
 
-Not used: Wireshark, tshark, pyshark, Scapy, dpkt, Zeek, Suricata, or any external API or network service. Capture parsing, protocol decoding, detection and diagnosis are our own code.
+Tools and services used only to produce the documentation and the demo video. None of them is needed to install, run or test Faultline:
+
+| Tool or service | License / terms | Purpose |
+|---|---|---|
+| [VHS](https://github.com/charmbracelet/vhs) | MIT | Records the terminal scenes of the demo video from scripted real commands |
+| [FFmpeg](https://ffmpeg.org) | LGPL/GPL | Joins the video scenes and adds the narration |
+| [Sarvam AI text-to-speech API](https://www.sarvam.ai) (bulbul:v3, speaker "aditya") | Commercial API | Narration voice of the demo video; the key is read from the `SARVAM_API_KEY` environment variable and is not stored in the repository |
+
+Not used by Faultline: Wireshark, tshark, pyshark, Scapy, dpkt, Zeek, Suricata, or any external API or network service. Faultline itself never connects to the network. Capture parsing, protocol decoding, detection and diagnosis are our own code.
 
 ## Responsible use
 
