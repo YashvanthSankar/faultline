@@ -425,3 +425,26 @@ Rules are tried in this order; a finding used as a root or consequence once is n
 - Hypothesis score = 0.5 prior for the detector's default + Σ indicator weights (each clamped to 3). Candidates are the default reading plus every category the detector supplied a variant for. Winner = highest; ties go to the default. Confidence = softmax over the candidate scores (temperature 1), or `1 − 0.5·e^(−score/2)` when there is only one candidate, clamped to [0.5, 0.99]. An attack reading with confidence < 0.6 is shown one severity step softer (never below low). The losing hypotheses are kept with their indicators and rendered as "Why not …?".
 - Health score = 100 − Σ penalty(severity) × max(0.5, confidence), with penalty 0 / 3 / 9 / 18 / 30 for info / low / medium / high / critical, and symptoms counted at 40 %. Clamped to 0..100.
 - Overall status: **under_attack** if any attack finding has severity ≥ medium and confidence ≥ 0.6; else **faulty** if any fault/misconfig has severity ≥ medium; else **minor_issues** if anything has severity ≥ low; else **healthy**.
+
+---
+
+## Protocol anomalies (`detectors/protocol.py`)
+
+Added after testing on public real-world captures (see the README, *Real-world validation*).
+
+### `dns.non_dns_traffic`: something other than DNS on port 53
+
+- **What it means:** port 53 is open on almost every firewall, so backdoors and tunnels hide there. Real DNS messages are binary. Readable text on port 53 is not DNS.
+- **Signal:** the decoder flags TCP/UDP port-53 payloads that fail DNS parsing and are ≥ 90% printable text (first 128 bytes). If the text contains shell markers ("Microsoft Windows", `C:\`, `uid=`, `/bin/sh`, `root@`, "Volume in drive"), the packet is marked `shell on DNS port`. Only marker matching is done; the payload is never stored.
+- **Fires when:** ≥ 3 such packets, or any shell-like packet.
+- **Attack indicators:** readable text on port 53 (1.5), command-shell text (3.0), text in both directions (1.0), the "server" never answered a real DNS query (1.0).
+- **Misconfiguration indicators:** the server also answers real DNS (1.0), text in one direction only (0.5).
+- **MITRE:** T1571 Non-Standard Port. Severity CRITICAL with a shell, otherwise HIGH.
+- **Sample:** `samples/dns_backdoor.pcap`; public: `dns-remoteshell.pcap`.
+
+### `ip.fragment_attack`: overlapping or tiny IP fragments
+
+- **Overlap (Teardrop):** per (src, dst, protocol, IP ID), a fragment whose byte range partially overlaps an earlier fragment. Exact duplicates are ignored, since they are harmless network duplication. Indicator: attack 3.0, MITRE T1499. A single overlap with nothing else adds a fault indicator (1.0, buggy stack).
+- **Tiny first fragment (evasion):** a first TCP fragment shorter than 16 bytes, so the TCP header is split, as with `nmap -f`. Indicator: attack 2.0.
+- **Samples:** `samples/teardrop.pcap` (next to a legitimately fragmented ping that must stay quiet); public: `teardrop.cap`, `nmap_ACK_scan_on_port_80_2`.
+- **Tests:** `tests/test_protocol.py`.
