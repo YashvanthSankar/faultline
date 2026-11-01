@@ -10,7 +10,7 @@ Deadline: **Sun 01/11/2026 21:00 IST**. Team **Moorthy Gang**: Yashvanth S (CS24
 - [x] `context.py` host table, `detectors/base.py`, `engine.py`, `cli.py`
 
 ## Phase 1: Parallel build
-- [x] Scenario lab: byte-level packet crafting, 35 labelled captures (faults, misconfigs, attacks, clean, hostile)
+- [x] Scenario lab: byte-level packet crafting, 37 labelled captures (faults, misconfigs, attacks, clean, hostile)
 - [x] TCP / latency / MTU detectors (loss localisation, blame split, PMTUD black hole)
 - [x] ARP / DHCP / DNS detectors (conflict vs spoofing, rogue vs misplugged DHCP, hijack vs captive portal, tunnelling)
 - [x] Scan / flood / ICMP / app detectors (SYN flood vs flash crowd, routing loop vs traceroute, TLS, HTTP, cleartext creds)
@@ -19,15 +19,15 @@ Deadline: **Sun 01/11/2026 21:00 IST**. Team **Moorthy Gang**: Yashvanth S (CS24
 - [x] Security: fuzzer, redaction, secret scanner, SECURITY.md
 
 ## Phase 2: Integrate and harden
-- [x] Benchmark: 30/30 detected, 30/30 correct verdicts, 0 false alarms, 4/4 clean quiet, 6/6 hostile handled
+- [x] Benchmark: 32/32 detected, 32/32 correct verdicts, 0 false alarms, 4/4 clean quiet, 6/6 hostile handled
 - [x] Fuzz: 3,000 mutated captures, 0 crashes
-- [x] Fresh clone + `pip install -e .` + full test suite on Python 3.10 (334 passed)
+- [x] Fresh clone + `pip install -e .` + full test suite on Python 3.10 (360 passed)
 - [x] Fixed in verification: IP/MAC redaction leaks at sentence boundaries, 413 on real-size web uploads, `--no-color` position, non-regular-file message, deterministic gzip sample
 
 ## Phase 3: Ship
 - [x] README with real outputs, screenshots, benchmark table
 - [x] Docs: THINKING.md, DETECTORS.md, demo-script.md (fact-checked against the code)
-- [ ] Real-world sanity check on a capture from our own home network (not committed)
-- [ ] Demo video (2–5 min) recorded from docs/demo-script.md, compressed < 100 MB, committed + linked in README
-- [ ] Repository set to public
+- [x] Real-world validation on 22 public Wireshark sample captures: 20/22 correct, 0 false alarms, 0 crashes
+- [x] Demo video (3:50) in docs/demo, linked in README
+- [x] Repository set to public
 - [ ] Google Form submitted by the team leader before 21:00
