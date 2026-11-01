@@ -236,7 +236,8 @@ def overall_verdict(findings: list[Finding], packets: int, duration: float) -> d
             "This is not an ordinary outage: restarting the router will not fix it."
         )
         if extra:
-            summary += f" Separately, {extra} genuine fault{'s' if extra != 1 else ''} or misconfiguration{'s' if extra != 1 else ''} also need attention."
+            summary += (f" Separately, {extra} genuine fault{'s' if extra != 1 else ''} or misconfiguration{'s' if extra != 1 else ''} "
+                        f"also need{'s' if extra == 1 else ''} attention.")
     elif problems:
         top = problems[0]
         status = "faulty"

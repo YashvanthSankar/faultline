@@ -7,9 +7,8 @@ field and every string inside them is attacker-controlled. This document states
 what we defend against, exactly how, where in the code, and how a judge can
 check it in two minutes.
 
-Claims marked `<!-- VERIFY: ... -->` describe parts that were being finished
-while this document was written; the lead confirms each against the code
-before submission. Everything else was checked against the code as it is.
+Every claim below was checked against the code as submitted; the commands in
+section 4 reproduce the checks.
 
 ---
 
@@ -82,8 +81,10 @@ deletion and insertion, and stacked combinations. Each case runs the **full
 pipeline**: reader → `decode` → `engine.analyze` → `redact_report`. The only
 exception allowed to escape is `CaptureError`; every case has a 3 s budget.
 `pytest` runs 300 cases by default; `FAULTLINE_FUZZ_CASES=5000` runs more.
-The last long run before submission: 3 000 cases, 0 crashes, slowest case
-16.9 ms, mean 1.05 ms.
+The last long run before submission (`scripts/fuzz.py -n 3000 --seed 42`):
+3 000 cases, 0 crashes, 538 rejected cleanly with `CaptureError`, 2 462
+accepted with warnings or truncation, slowest case 11.9 ms, mean 1.08 ms,
+0 cases over budget.
 
 ### T2: Hostile strings rendered in reports
 
@@ -108,11 +109,16 @@ All capture-derived strings are untrusted; the renderers never interpret them.
   `Cross-Origin-Opener-Policy` / `Cross-Origin-Resource-Policy: same-origin`
   and a restrictive `Permissions-Policy` (`_headers`).
   The only `|safe` in the templates is on the bundled static stylesheet
-  (`_base.html`), never on capture-derived values.
-  <!-- VERIFY: re-run `grep -rn "|safe\|Markup(" faultline/web/templates/` before submission; expected: only the base_css line -->
-* **Terminal** (`faultline/cli.py`): rich markup is escaped
-  (`rich.markup.escape`) before capture-derived text is printed.
-  <!-- VERIFY: every f-string passed to the rich console in print_report wraps capture-derived values in escape() -->
+  (`{{ base_css|safe }}` in `_base.html`); `grep -rn "|safe\|Markup("
+  faultline/web/templates/ faultline/web/*.py` returns that one line and
+  nothing else. The dashboard renders the analysis with the same
+  `build_page` renderer as the static report, so the rules above apply to it.
+* **Terminal** (`faultline/cli.py`): every capture-derived value that reaches
+  the rich console (titles, summaries, explanations, indicator texts,
+  evidence summaries, hosts, warnings, file names, error messages) is wrapped
+  in `_safe()`, which strips control characters and then applies
+  `rich.markup.escape`, so a hostname like `[red]x[/]` or an ANSI escape
+  sequence is printed literally.
 
 ### T3: Resource exhaustion
 
@@ -153,7 +159,7 @@ All capture-derived strings are untrusted; the renderers never interpret them.
   intact. Raw evidence pcaps are **removed** from redacted reports
   (`redact_report` pops `evidence`; `engine.Report.to_dict` never attaches
   them in redact mode). Optional `redact_names=True` also pseudonymises
-  hostnames in known fields. Tests: `tests/test_redact.py` (39 tests).
+  hostnames in known fields. Tests: `tests/test_redact.py` (41 tests).
 * **Reports are created owner-readable only**: `cli._write_private` opens
   `--html` / `--json` outputs with `os.open(..., 0o600)` because they
   describe a network.
@@ -178,7 +184,13 @@ All capture-derived strings are untrusted; the renderers never interpret them.
 | Session secret | `SECRET_KEY` is generated per process and never stored; no sessions or cookies carry data |
 | Error pages | generic, no tracebacks, no paths; `debug` forced off |
 
-<!-- VERIFY: evidence pcaps offered for download by the dashboard come only from the in-memory report (base64 in the report dict), never from a path, and are disabled when redact is on -->
+Evidence downloads in the dashboard never touch a path: the per-finding
+evidence pcaps are base64 strings inside the embedded report JSON
+(`report["evidence"]`), and the "Download evidence .pcap" button builds a
+`Blob` from them in the browser (`report/assets/report.js`,
+`downloadEvidence`). With the redact toggle on, the engine skips the evidence
+pass, `redact_report` drops the `evidence` key, and the button is not
+rendered.
 
 ### T6: Supply chain
 
@@ -230,15 +242,22 @@ All capture-derived strings are untrusted; the renderers never interpret them.
 
 # 4. No dangerous primitives or network clients in the runtime code
 grep -rnE '\b(eval|exec|pickle|marshal|shelve|subprocess|os\.system|urllib|requests|http\.client)\b' faultline/ --include='*.py'
-#   expected: only comments / prose matches (e.g. the word "requests" in detector text) and
-#   decode.py's `import socket` used for inet_ntop address formatting.
+#   expected: only prose matches (the word "requests" in detector and lab text) and two
+#   `from urllib.parse import ...` lines (web/app.py: urlsplit for the Origin check;
+#   report/html.py: quote for the data-URI favicon). Neither opens a connection.
 
 # 5. Hostile files by hand: everything below must end in a clear message, never a traceback
 head -c 10 /dev/urandom > /tmp/junk.pcap && .venv/bin/python -m faultline analyze /tmp/junk.pcap
 mkfifo /tmp/fifo.pcap && .venv/bin/python -m faultline analyze /tmp/fifo.pcap   # must not hang
 ```
 
-<!-- VERIFY: run step 5 once after the CLI is final; expected exit code 2 and a one-line "cannot open / not a capture" message -->
+Step 5 as run on the submitted code: both commands exit with code 2 after a
+single line (`Cannot analyse this file: not a pcap/pcapng capture (magic
+bytes …)` and `Cannot analyse this file: capture path is not a regular
+file`); the FIFO is refused by `_validate_path` before `open()`, so there is
+no hang. The six files under `samples/malformed/` give the same kind of
+one-line note (truncation offset, oversize record length, empty file) and
+`faultline bench` reports them as "Hostile files handled 6/6".
 
 ---
 

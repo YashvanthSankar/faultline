@@ -17,6 +17,7 @@ from .capture.reader import CaptureInfo
 from .model import Packet
 
 BROADCAST_MAC = "ff:ff:ff:ff:ff:ff"
+_PLAUSIBLE_TS = 315532800.0  # see capture.reader.PLAUSIBLE_TS
 
 
 @lru_cache(maxsize=65536)
@@ -232,10 +233,12 @@ class AnalysisContext:
 
     def observe(self, p: Packet) -> None:
         self.packet_count += 1
-        if self.start_ts is None or p.ts < self.start_ts:
-            self.start_ts = p.ts
-        if self.end_ts is None or p.ts > self.end_ts:
-            self.end_ts = p.ts
+        ts = p.ts
+        if ts is not None and (ts >= _PLAUSIBLE_TS or self.start_ts is None or self.start_ts < _PLAUSIBLE_TS):
+            if self.start_ts is None or ts < self.start_ts or self.start_ts < _PLAUSIBLE_TS <= ts:
+                self.start_ts = ts
+            if self.end_ts is None or ts > self.end_ts:
+                self.end_ts = ts
         if p.malformed:
             self.malformed += 1
         self.protocols[protocol_label(p)] += 1

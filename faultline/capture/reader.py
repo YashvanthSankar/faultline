@@ -41,6 +41,7 @@ PCAP_MAGICS = {
 }
 PCAPNG_SHB = b"\x0a\x0d\x0d\x0a"
 GZIP_MAGIC = b"\x1f\x8b"
+PLAUSIBLE_TS = 315532800.0  # 1980-01-01: earlier timestamps are treated as bogus for span purposes
 
 
 class CaptureError(Exception):
@@ -232,10 +233,13 @@ class CaptureReader:
         info.packets += 1
         info.bytes_captured += len(data)
         info.linktypes.add(linktype)
-        if info.first_ts is None or ts < info.first_ts:
-            info.first_ts = ts
-        if info.last_ts is None or ts > info.last_ts:
-            info.last_ts = ts
+        if ts >= PLAUSIBLE_TS or info.first_ts is None or info.first_ts < PLAUSIBLE_TS:
+            # an all-zero / 1970 timestamp next to real ones is padding or garbage:
+            # keep the frame, but don't let it stretch the capture's time span
+            if info.first_ts is None or ts < info.first_ts or info.first_ts < PLAUSIBLE_TS <= ts:
+                info.first_ts = ts
+            if info.last_ts is None or ts > info.last_ts:
+                info.last_ts = ts
         return Frame(info.packets, ts, max(wirelen, len(data)), linktype, data)
 
     def _read_pcap(self, fh: BinaryIO) -> Iterator[Frame]:

@@ -61,13 +61,14 @@ Both cases: users say "websites don't work".
 |---|---|
 | Queries to the configured resolver get **no response** or SERVFAIL, for all clients, for all names | fault |
 | The resolver also fails ICMP/TCP, or the gateway ARP is unanswered | fault (and makes DNS a symptom of that root cause) |
-| **Two responses** for one transaction ID, with different answers, the first arriving suspiciously fast | attack |
-| A response comes from an IP that was **never queried** | attack |
-| A **public** name resolves to a **private** address (or to the address of another LAN host) | attack |
-| TTLs that differ wildly from the second (legitimate) answer | attack |
-| The "wrong" answers appear only after a rogue DHCP offer that advertised a new DNS server | attack, and chain to that incident |
+| **Two responses** for one transaction, with different answers, the first arriving in under a millisecond (from inside the LAN) | attack |
+| A response comes from a server that was **never queried** | attack |
+| A **public** name resolves to a **private** address, and that address belongs to the very device that delivered the answer | attack |
+| The suspicious answers carry an odd, fixed TTL and claim to be authoritative, unlike the resolver's normal answers | attack |
+| The fake address is the DNS server advertised by a second (rogue) DHCP server | attack, and chain to that incident |
+| *Every* name resolves to the resolver or the gateway itself | misconfig (captive portal / DNS filtering) |
 
-An outage has no second answer to compare against; a hijack *always* leaves a race or an impostor. That asymmetry is the discriminator. <!-- VERIFY: detectors/dns.py -->
+An outage has no second answer to compare against; a hijack leaves a race, an impostor server, or a public name pointing at a LAN device. That asymmetry is the discriminator (`detectors/dns.py`, `_find_hijack`).
 
 ### Worked example C: a second router vs. a rogue DHCP server
 
@@ -75,13 +76,13 @@ Both cases: two DHCP servers send OFFERs.
 
 | Observation | Supports |
 |---|---|
-| Both servers hand out the **same** router and DNS, maybe overlapping pools, NAKs when a client renews with the "other" server | misconfig |
-| Second server's offers advertise a **different** router or DNS, especially one that is a regular LAN host | attack |
-| Second server appeared **mid-capture**, and its leases are shorter (to win renewals) | attack |
-| The host advertised as DNS by the second server then answers queries with hijacked results | attack, chain to `dns.hijack` → man-in-the-middle incident |
-| The second server is the known gateway's MAC vendor / replies only to its own subnet | misconfig |
+| Both servers hand out **identical** settings on the same subnet | neither: treated as a failover pair and not reported |
+| Second server offers a **different subnet**, names itself as the router and hands out public DNS, as a factory-default home router does | misconfig |
+| Second server hands out addresses in the **same subnet** as the real one, but names itself (or another LAN host) as the router and points DNS at a LAN host | attack |
+| Second server **answers first** in races, clients accept its leases, then use it as DNS and send internet traffic to its MAC | attack |
+| The host advertised as DNS by the second server then answers queries with its own address | attack, chain to `dns.hijack` → man-in-the-middle incident |
 
-Someone's home router plugged into the office LAN is annoying; its offers point at *itself* as the gateway and usually at a public DNS, and it does not coincide with hijacked answers. A rogue server points at a LAN host and the hijack follows. <!-- VERIFY: detectors/dhcp.py -->
+Someone's home router plugged into the office LAN is annoying; its offers point at *itself* as the gateway for *its own* subnet and usually at a public DNS, and it does not coincide with hijacked answers. A rogue server blends into the real subnet, points at a LAN host, and the hijack follows (`detectors/dhcp.py`, `_server_finding`).
 
 ### Worked example D: SYN flood vs. flash crowd
 
@@ -89,10 +90,10 @@ Someone's home router plugged into the office LAN is annoying; its offers point 
 |---|---|
 | Many SYNs, **handshakes complete**, data flows, sources are a realistic mix with repeat visitors | fault (overload) |
 | SYNs from a very large number of sources, **none complete**, sources are uniformly random, no retransmitted SYNs (real stacks retry) | attack |
-| Server replies SYN-ACK and retransmits them (SYN-ACK retries with no ACK) | attack |
-| Server's RST / backlog behaviour while real clients get stuck | symptom of either |
+| All the "different" senders arrive with the same TTL (one spoofing machine), or TTLs spread randomly; some come from impossible (bogon / LAND) addresses | attack |
+| The server answered only a small share of SYNs: it is overwhelmed | fault (overload) |
 
-Legitimate crowds finish handshakes. Floods don't. <!-- VERIFY: detectors/flood.py -->
+Legitimate crowds finish handshakes. Floods don't (`detectors/flood.py`, `_syn_finding`).
 
 ## 3. Where the capture point sits, and why it matters
 
@@ -114,7 +115,7 @@ A security tool that cries wolf gets uninstalled. The brief says so in its own w
 
 Decisions that follow from that:
 
-- **Clean captures are part of the benchmark.** `samples/clean_office.pcap`, `samples/busy_but_healthy.pcap` and `samples/pcapng_office.pcapng` must produce *zero* findings. The benchmark (`bench.py`) marks a case failed if any expected finding is missed, misclassified, or any unexpected finding of severity ≥ medium appears; clean captures must stay silent, and hostile files must end in nothing worse than a `CaptureError`.
+- **Clean captures are part of the benchmark.** `samples/clean_office.pcap`, `samples/busy_but_healthy.pcap`, `samples/pcapng_office.pcapng` and `samples/xss_payload.pcap` must produce *zero* findings. The benchmark (`bench.py`) marks a case failed if any expected finding is missed, misclassified, or any unexpected finding of severity ≥ medium appears; clean captures must stay silent, and hostile files must end in nothing worse than a `CaptureError`.
 - **Thresholds are rates and ratios, not raw counts, wherever possible.** 50 retransmissions in a 10-second capture of a busy server is normal; 50 in a 2-packet-per-second link is a disaster. We compare to the flow's own volume and duration.
 - **Thresholds scale with one knob.** `Config.sensitivity` (`faultline/context.py`) multiplies count thresholds by 1.6 (`low`), 1.0 (`normal`) or 0.6 (`high`). An admin on a noisy campus network can lower sensitivity without editing code.
 - **Roles make indicators specific.** The `HostTable` infers which hosts are the gateway, DNS and DHCP servers (`faultline/context.py`). "Two MACs for an IP" is a weak signal; "two MACs for *the gateway*" is a strong one. Role-aware indicators let us keep generic thresholds high and still catch the attacks that matter.
@@ -179,7 +180,6 @@ The cost is breadth: we decode the protocols the brief is about (ARP, IPv4/6, TC
 - IPv6 NDP spoofing and RA-guard style detection (the IPv6 twin of ARP spoofing and rogue DHCP).
 - Baseline learning from a known-good capture of the same network ("what changed since last week").
 - Live capture mode (the engine already streams; it needs an interface reader).
-- A Wireshark display filter string on every finding, so experts can jump straight to the evidence.
 - A plug-in API for third-party detectors using the same `Indicator`/`Variant` contract.
 
 ## Judging criterion → what we built → where to look
@@ -189,5 +189,5 @@ The cost is breadth: we decode the protocols the brief is about (ARP, IPv4/6, TC
 | **Novelty (20 %)** | Fault vs. attack hypothesis engine with "why not" reasoning; root cause vs. symptom incidents; loss localisation and blame split; before/after diff; labelled lab with false-alarm benchmark | `faultline/verdict.py`, `faultline/correlate.py`, `faultline/detectors/tcp.py`, `faultline/detectors/latency.py`, `faultline/cli.py` (diff), `faultline/lab/`, `faultline/bench.py` |
 | **Technical implementation (30 %)** | Own hardened pcap/pcapng/gzip reader; own L2–L7 decoders; ten detector modules of original logic; one streaming pass with bounded memory; typed data model; unit tests per detector via packet factories | `faultline/capture/`, `faultline/detectors/`, `faultline/model.py`, `tests/` |
 | **Security (20 %)** | Length caps, bomb guard, graceful corruption handling, bounded detector state, no payload retention, credentials never extracted, HMAC redaction, XSS-proof reports, loopback-only dashboard, no secrets, fuzz harness | `faultline/capture/reader.py`, `faultline/detectors/base.py` (`BoundedDict`, `Evidence`), `faultline/report/`, `faultline/web/`, `SECURITY.md`, `tests/test_fuzz.py`, `scripts/fuzz.py`, `scripts/check_secrets.py` |
-| **Feasibility (10 %)** | `pip install -e .` and one command; stdlib engine; runs offline; 30 ready-made samples; CLI, HTML, web and JSON outputs; CI exit codes | `README.md` Quick start, `pyproject.toml`, `samples/` |
+| **Feasibility (10 %)** | `pip install -e .` and one command; stdlib engine; runs offline; 36 labelled samples (30 scenarios, 6 hostile files); CLI, HTML, web and JSON outputs; CI exit codes | `README.md` Quick start, `pyproject.toml`, `samples/` |
 | **Video presentation (20 %)** | Scripted demo: MITM chain in the dashboard, lossy link in the CLI, conflict vs. spoofing side by side, hostile input, redaction, benchmark | `docs/demo-script.md`, video link in README |
