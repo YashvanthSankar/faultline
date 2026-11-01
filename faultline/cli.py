@@ -71,7 +71,7 @@ def cmd_analyze(args) -> int:
     from .engine import AnalyzeOptions, analyze
 
     con = _console(args.no_color)
-    if not os.path.isfile(args.capture):
+    if not os.path.exists(args.capture):
         con.print(f"[red]error:[/] no such file: {_safe(args.capture)}")
         return 2
     opts = AnalyzeOptions(redact=args.redact, sensitivity=args.sensitivity, max_packets=args.max_packets,

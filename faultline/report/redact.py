@@ -47,7 +47,7 @@ __all__ = ["redact_report", "Redactor"]
 _OCTET = r"(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)"
 # Four octets, no digit or dot directly before or after (so "1.0.0" and
 # "10.0.0.1.5" do not match, "192.168.1.15:443" and "(10.0.0.1)" do).
-IPV4_RE = re.compile(rf"(?<![\d.])(?:{_OCTET}\.){{3}}{_OCTET}(?![\d.])")
+IPV4_RE = re.compile(rf"(?<!\d)(?<!\d\.)(?:{_OCTET}\.){{3}}{_OCTET}(?!\d)(?!\.\d)")  # a sentence-ending "." is fine
 
 # Candidate IPv6 text: hex groups and colons, at least two colons, optionally an
 # embedded dotted IPv4 tail. Validated with ipaddress before replacement, so
@@ -62,9 +62,9 @@ IPV6_RE = re.compile(
 # 6 hex pairs with a consistent ':' or '-' separator and no hex / separator
 # neighbours (so a group inside an expanded IPv6 address is not taken as a MAC).
 MAC_RE = re.compile(
-    r"(?<![0-9A-Fa-f:\-])"
+    r"(?<![0-9A-Fa-f])(?<![0-9A-Fa-f][:\-])"
     r"[0-9A-Fa-f]{2}(?P<sep>[:\-])(?:[0-9A-Fa-f]{2}(?P=sep)){4}[0-9A-Fa-f]{2}"
-    r"(?![0-9A-Fa-f:\-])"
+    r"(?![0-9A-Fa-f])(?!(?P=sep)[0-9A-Fa-f])"  # "…:9e: 253" and "…:9e." are still MACs
 )
 
 # Domain-like tokens (only applied to known fields when redact_names=True).

@@ -188,3 +188,18 @@ def test_collision_resistance_on_many_hosts():
     r = Redactor(KEY)
     labels = {r.ip(f"10.{i >> 8}.{i & 255}.7") for i in range(2000)}
     assert len(labels) >= 1990  # 24-bit labels: a handful of collisions at most
+
+
+def test_sentence_final_and_arrow_forms_are_redacted():
+    """Regression: IPs followed by a full stop or preceded by an arrow must not leak."""
+    rep = {"findings": [{"summary": "check that the gateway is 192.168.1.1.", "fix": ["DNS 192.168.1.66."],
+                         "metrics": {"x": "login.example-bank.com → 192.168.1.66."}}]}
+    out = json.dumps(redact_report(rep))
+    assert "192.168.1." not in out
+    # version numbers are still left alone
+    assert redact_report({"t": "TLS 1.2 and v1.0.0."})["t"] == "TLS 1.2 and v1.0.0."
+
+
+def test_mac_followed_by_punctuation_is_redacted():
+    out = json.dumps(redact_report({"t": "ARP from 08:00:27:3a:66:9e: 253 targets; router 3c:84:6a:12:34:01."}))
+    assert "08:00:27" not in out and "3c:84:6a" not in out
