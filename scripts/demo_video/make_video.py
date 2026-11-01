@@ -54,13 +54,13 @@ SCENES: list[dict] = [
               "being lost, on both sides of the capture point, which points to congestion or a weak link rather than one bad "
               "cable. The explanation is written for a beginner, and the fix steps say how to confirm it.")),
     dict(id="S04", kind="web", action="landing",
-         say=("The same engine runs in a local web dashboard. You can drop in a capture, or pick one of the labelled sample "
-              "scenarios. Nothing leaves your computer.")),
+         say=("The same engine runs in a local web dashboard. Start a new analysis by dropping in a capture, or open one of "
+              "the labelled samples from the library. Nothing leaves your computer.")),
     dict(id="S05", kind="web", action="report_mitm",
-         say=("This is the full report for the man in the middle capture. The timeline shows when each problem happened, and "
-              "the network map shows the rogue device next to the real router. Each finding explains what is happening, the "
-              "likely cause and the fix, with a scoreboard of the evidence for attack, fault and misconfiguration. Every claim "
-              "points to exact packet numbers, and you can download just those packets to open in Wireshark.")),
+         say=("This is the report for the man in the middle capture. The overview shows the verdict, the health score, a "
+              "timeline, and what to fix first. The network view shows the rogue device right next to the real router. In the "
+              "findings view, every problem has an explanation, the fix, and a scoreboard of the evidence for attack, fault and "
+              "misconfiguration. Every claim points to exact packets, which you can download and open in Wireshark.")),
     dict(id="S06", kind="web", action="compare",
          say=("This is the core idea. Both captures show the same symptom: two devices claiming one IP address. On the left, "
               "Faultline concludes it is a misconfiguration, a printer and a laptop with the same address. On the right, it is "
@@ -83,9 +83,9 @@ SCENES: list[dict] = [
               "Wireshark project, it gets twenty out of twenty two, including real Nmap scans, a Teardrop attack and a shell "
               "hidden on the DNS port. The two misses are stealth scans, and we list them as limitations.")),
     dict(id="S10", kind="card", title="Faultline", sub="github.com/YashvanthSankar/faultline",
-         bullets=["Offline · Python 3.10+ · own parser and detectors", "37 labelled captures · 339 tests · 0 false alarms",
+         bullets=["Offline · Python 3.10+ · own parser and detectors", "37 labelled captures · 360 tests · 0 false alarms",
                   "Every result in this video can be reproduced from the repository"],
-         foot="Narration: synthesized voice. All footage: the real tool on the bundled sample captures.",
+         foot="Narration: synthesized voice (Sarvam AI). All footage: the real tool on the bundled sample captures.",
          say="Faultline runs offline, needs only Python, and every result in this video can be reproduced from the repository. Thank you."),
 ]
 

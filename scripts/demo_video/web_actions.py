@@ -5,23 +5,6 @@ from __future__ import annotations
 import time
 
 
-def _glide(page, selector: str, seconds: float, offset: int = 90) -> None:
-    """Scroll smoothly so that `selector` sits near the top of the viewport."""
-    loc = page.locator(selector).first
-    try:
-        box = loc.bounding_box()
-    except Exception:
-        box = None
-    if not box:
-        return
-    dy = box["y"] - offset
-    steps = max(1, int(seconds * 30))
-    page.mouse.move(800, 450)
-    for i in range(steps):
-        page.mouse.wheel(0, dy / steps)
-        page.wait_for_timeout(1000 / 30)
-
-
 def _hold(page, seconds: float) -> None:
     page.wait_for_timeout(int(seconds * 1000))
 
@@ -30,52 +13,84 @@ def _open(page, url: str) -> float:
     t0 = time.time()
     page.goto(url)
     page.wait_for_load_state("networkidle")
-    page.wait_for_timeout(400)
+    page.wait_for_timeout(500)
     return time.time() - t0
+
+
+def _click(page, selector: str, timeout: int = 2000) -> bool:
+    try:
+        loc = page.locator(selector).first
+        loc.scroll_into_view_if_needed(timeout=timeout)
+        box = loc.bounding_box()
+        if box:  # move the pointer visibly before clicking
+            page.mouse.move(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, steps=12)
+        loc.click(timeout=timeout)
+        return True
+    except Exception:
+        return False
+
+
+def _section(page, name: str) -> None:
+    if not _click(page, f'a.nav-item[data-section="{name}"]'):
+        page.evaluate(f"location.hash = '#{name}'")
+    page.wait_for_timeout(400)
+
+
+def _scroll(page, dy: float, seconds: float) -> None:
+    steps = max(1, int(seconds * 30))
+    for _ in range(steps):
+        page.mouse.wheel(0, dy / steps)
+        page.wait_for_timeout(33)
 
 
 def landing(page, base: str, dur: float) -> float:
     lead = _open(page, base + "/")
-    _hold(page, dur * 0.35)
-    _glide(page, "text=Start here", 1.5)
-    _hold(page, dur * 0.2)
-    _glide(page, "text=Try a bundled capture", 1.4)
-    try:
-        page.get_by_role("button", name="Attacks").first.click(timeout=1500)
-    except Exception:
-        pass
+    page.mouse.move(700, 500)
+    _hold(page, dur * 0.4)
+    _click(page, 'a.nav-item:has-text("Sample library")') or _scroll(page, 700, 1.5)
+    _hold(page, 1.2)
+    _click(page, '#sample-tabs button[data-filter="attack"]')
     return lead
 
 
 def report_mitm(page, base: str, dur: float) -> float:
-    lead = _open(page, base + "/sample/mitm_chain.pcap")
-    _hold(page, 3.0)
-    _glide(page, "#timeline", 1.2, offset=120)
-    _hold(page, 2.0)
-    _glide(page, ".map-panel", 1.5, offset=80)
+    lead = _open(page, base + "/sample/mitm_chain.pcap#overview")
+    page.mouse.move(900, 400)
+    _hold(page, 4.5)
+    _scroll(page, 520, 1.6)
+    _hold(page, 2.5)
+    _section(page, "network")
+    page.wait_for_timeout(600)
     try:
-        page.locator('[role="button"][aria-label*="192.168.1.66"]').first.hover(timeout=1500)
+        node = page.locator('[data-ip="192.168.1.66"]').first
+        box = node.bounding_box()
+        if box:
+            page.mouse.move(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2, steps=20)
+        node.hover(timeout=1500)
     except Exception:
         pass
-    _hold(page, 4.0)
-    page.mouse.move(80, 80)
-    _glide(page, "#findings", 1.5, offset=70)
-    _hold(page, 2.5)
-    _glide(page, ".reason", 1.5, offset=80)
-    _hold(page, 3.5)
-    _glide(page, "text=Evidence: the exact packets", 1.4, offset=80)
+    _hold(page, 4.5)
+    _section(page, "findings")
+    _hold(page, 1.5)
+    _click(page, '.tab[data-tab="why"]')
+    _hold(page, 4.5)
+    _click(page, '.tab[data-tab="evidence"]')
     return lead
 
 
 def compare(page, base: str, dur: float) -> float:
     lead = _open(page, base + "/compare?a=ip_conflict.pcap&b=arp_spoofing.pcap")
+    page.mouse.move(900, 400)
+    _hold(page, dur * 0.5)
+    _scroll(page, 560, 2.0)
     return lead
 
 
 def report_mixed(page, base: str, dur: float) -> float:
-    lead = _open(page, base + "/sample/outage_vs_attack_mixed.pcap")
+    lead = _open(page, base + "/sample/outage_vs_attack_mixed.pcap#overview")
+    page.mouse.move(900, 400)
     _hold(page, dur * 0.45)
-    _glide(page, "#findings", 1.6, offset=70)
+    _section(page, "findings")
     return lead
 
 
