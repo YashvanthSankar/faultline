@@ -131,20 +131,102 @@
 
   doc.documentElement.setAttribute("data-status", status);
 
+  // ------------------------------------------------------------ glossary
+  // Plain-language definitions for jargon. Terms are matched in finding text
+  // (first occurrence per paragraph, beginner mode) and get a dotted underline
+  // with a tooltip. Everything is built with text nodes; the matched text is
+  // kept exactly as written.
+  var GLOSSARY = [
+    ["MITRE ATT&CK", "A public catalogue of the tricks attackers use, so a behaviour can be named precisely (for example T1557 is 'man-in-the-middle')."],
+    ["man-in-the-middle", "An attacker quietly sits between two devices, reading or changing what they send to each other."],
+    ["MAC address", "The hardware serial number of a network card, like dc:a6:32:13:af:16. It only matters on the local network."],
+    ["IP address", "The number a device uses to be reached on a network, like 192.168.1.15. Devices on your Wi-Fi usually start with 192.168 or 10."],
+    ["retransmissions", "A packet sent again because the first copy was lost or never acknowledged. A few are normal; many mean a bad link."],
+    ["retransmission", "A packet sent again because the first copy was lost or never acknowledged. A few are normal; many mean a bad link."],
+    ["zero window", "A device telling the other side 'stop, I cannot take more data right now'. Often a slow or overloaded program, not the network."],
+    ["port scan", "One device knocking on many doors (ports) of another to find out what services are running. Usually reconnaissance before an attack."],
+    ["SYN flood", "Thousands of half-opened connections sent at a server so it runs out of room for real visitors."],
+    ["NXDOMAIN", "A DNS reply meaning 'that name does not exist'. Normal for typos; suspicious in large numbers of random-looking names."],
+    ["SERVFAIL", "A DNS reply meaning 'I could not look that up'. The DNS server itself is having trouble."],
+    ["Wireshark", "The free tool experts use to read packet captures. Faultline gives you filters you can paste into it."],
+    ["handshake", "The short hello exchange two devices perform before talking (TCP uses SYN, SYN-ACK, ACK; TLS adds certificates and keys)."],
+    ["gateway", "The device that connects your local network to the internet, usually your router. Everything leaving the network goes through it."],
+    ["router", "The box that connects your local network to the internet and passes traffic between networks."],
+    ["spoofing", "Pretending to be another device by sending packets with its address."],
+    ["broadcast", "A message sent to every device on the local network at once."],
+    ["latency", "How long a packet takes to get to the other side and back. High latency makes everything feel slow."],
+    ["subnet", "The group of addresses that belong to one local network, for example everything starting 192.168.1."],
+    ["pcap", "A file of recorded packets (a packet capture). Faultline reads these."],
+    ["DHCP", "The service that hands out IP addresses to devices when they join a network. Normally only your router does this."],
+    ["DNS", "The phone book of the internet: turns names like example.com into IP addresses."],
+    ["ARP", "How devices on a local network find each other's hardware addresses. It has no security, so it is easy to lie in."],
+    ["ICMP", "Small control messages such as ping and 'destination unreachable'."],
+    ["HTTPS", "Web traffic protected by TLS encryption; nobody in between can read it."],
+    ["HTTP", "Plain, unencrypted web traffic. Anyone on the path can read it, including passwords."],
+    ["TCP", "The reliable way most apps send data: it numbers packets, acknowledges them and resends what is lost."],
+    ["UDP", "A fire-and-forget way to send data with no acknowledgements. Used by DNS, video and games."],
+    ["TLS", "The encryption layer behind HTTPS. A failed TLS handshake means the secure connection could not be set up."],
+    ["RST", "A TCP 'reset' packet: one side slams the connection shut. A refused connection or a forcibly closed one."],
+    ["SYN", "The first packet of a TCP connection, asking 'can we talk?'. Many unanswered SYNs mean nobody is listening or packets are lost."],
+    ["MTU", "The largest packet a link can carry. If a path cannot handle big packets and nobody says so, large transfers stall."],
+    ["TTL", "A countdown in every packet that stops it circling forever. It reaching zero means a routing loop."]
+  ];
+  var glossRe = null, glossMap = {};
+  (function () {
+    var parts = GLOSSARY.map(function (g) {
+      glossMap[g[0].toLowerCase()] = g[1];
+      return g[0].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    });
+    glossRe = new RegExp("(^|[^A-Za-z0-9_.:-])(" + parts.join("|") + ")(?![A-Za-z0-9_])", "gi");
+  })();
+  var termSeq = 0;
+  function termEl(word, def) {
+    var tipId = "gt-" + (++termSeq);
+    var tip = h("span", { "class": "tip", role: "tooltip", id: tipId }, def);
+    var el = h("span", { "class": "term", tabindex: "0", "aria-describedby": tipId }, word, tip);
+    function place() {
+      // keep the tooltip on screen
+      tip.classList.remove("left");
+      var r = tip.getBoundingClientRect();
+      if (r.right > window.innerWidth - 8) { tip.classList.add("left"); }
+    }
+    el.addEventListener("mouseenter", place);
+    el.addEventListener("focus", place);
+    el.addEventListener("keydown", function (e) { if (e.key === "Escape") { el.blur(); } });
+    return el;
+  }
+  function glossify(text, seen) {
+    var out = [], last = 0, m;
+    glossRe.lastIndex = 0;
+    while ((m = glossRe.exec(text)) !== null) {
+      var word = m[2], key = word.toLowerCase();
+      if (seen[key]) { continue; }
+      // "retransmission" vs "retransmissions": treat as one term
+      seen[key] = true;
+      var start = m.index + m[1].length;
+      if (start > last) { out.push(text.slice(last, start)); }
+      out.push(termEl(word, glossMap[key]));
+      last = start + word.length;
+    }
+    if (last < text.length) { out.push(text.slice(last)); }
+    return out;
+  }
+
   // --------------------------------------------------------- rich text
-  // Backticks become <code>; finding ids (F1, F2 ...) become jump links.
+  // Backticks become <code>; finding ids (F1, F2 ...) become jump links;
+  // jargon gets a glossary tooltip (first occurrence per paragraph).
   function rich(text) {
-    var out = [];
+    var out = [], seen = {};
     str(text).split("`").forEach(function (part, i) {
       if (i % 2 === 1) { out.push(h("code", null, part)); return; }
       var re = /\bF\d{1,4}\b/g, last = 0, m;
       while ((m = re.exec(part)) !== null) {
         if (!byId[m[0]]) { continue; }
-        if (m.index > last) { out.push(part.slice(last, m.index)); }
+        if (m.index > last) { out.push(glossify(part.slice(last, m.index), seen)); }
         out.push(jump(m[0], m[0]));
         last = m.index + m[0].length;
       }
-      if (last < part.length) { out.push(part.slice(last)); }
+      if (last < part.length) { out.push(glossify(part.slice(last), seen)); }
     });
     return out;
   }
@@ -275,6 +357,8 @@
         var expert = b.getAttribute("data-mode") === "expert";
         doc.body.classList.toggle("expert", expert);
         modeBtns.forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+        // glossary tooltips are a beginner aid: not focusable in expert mode
+        Array.prototype.forEach.call(root.querySelectorAll(".term"), function (t) { t.setAttribute("tabindex", expert ? "-1" : "0"); });
       });
     });
     var tools = [
@@ -291,14 +375,30 @@
         icon(I_DOWN), h("span", { "class": "label" }, "HTML")));
       tools.push(h("a", { "class": "btn primary", href: "/" }, "Analyze another capture"));
     }
-    var links = [["#verdict", "Verdict"], ["#fix-first", "Fix first"], ["#findings", "Findings"], ["#network", "Network"], ["#capture", "Capture"]];
+    var links = [["#verdict", "Verdict"], ["#fix-first", incidents.length ? "Fix first" : "Start here"], ["#findings", "Findings"], ["#network", "Network"], ["#capture", "Capture"]];
+    var mini = h("a", { "class": "mini-verdict", href: "#verdict", "aria-hidden": "true", tabindex: "-1" },
+      h("span", { "class": "dot" }), h("b", null, STATUS[status].word), h("span", { "class": "mini-head" }, headline()));
     return h("header", { "class": "topbar" },
       h("div", { "class": "wrap" },
-        h("a", { "class": "brand", href: "#verdict" }, brandMark(), "Faultline"),
+        h("a", { "class": "brand", href: "#verdict" }, brandMark(), h("span", { "class": "brand-name" }, "Faultline")),
+        mini,
         h("nav", { "class": "navlinks", "aria-label": "Report sections" },
           links.filter(function (l) { return l[0] !== "#fix-first" || hasFixFirst(); })
             .map(function (l) { return h("a", { href: l[0] }, l[1]); })),
         h("div", { "class": "tools" }, tools)));
+  }
+  function watchScroll() {
+    var heroEl = doc.getElementById("verdict");
+    if (!heroEl) { return; }
+    function set(on) { doc.body.classList.toggle("scrolled", on); }
+    if (window.IntersectionObserver) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { set(!e.isIntersecting); });
+      }, { rootMargin: "-120px 0px 0px 0px", threshold: 0 });
+      io.observe(heroEl);
+    } else {
+      window.addEventListener("scroll", function () { set(window.scrollY > heroEl.offsetHeight - 120); }, { passive: true });
+    }
   }
 
   // ------------------------------------------------------------- gauge
@@ -548,21 +648,26 @@
   }
   function fixFirst() {
     if (!hasFixFirst()) { return null; }
-    var items = incidents.slice();
+    var items = incidents.slice(), single = null;
     if (!items.length) {
+      // No linked chain of problems: feature the most important finding instead of
+      // dressing it up as an "incident".
       var top = findings.filter(function (f) { return cat(f.category) !== "info"; })[0];
-      items = [{ title: top.title, category: top.category, severity: top.severity, story: top.summary,
-        root_cause: top.id, findings: [top.id], first_fix: arr(top.fix).slice(0, 3) }];
+      single = { title: top.title, category: top.category, severity: top.severity, story: top.summary,
+        root_cause: top.id, findings: [top.id], first_fix: arr(top.fix).slice(0, 3), confidence: top.confidence };
     }
+    var others = single ? findings.filter(function (f) { return cat(f.category) !== "info"; }).length - 1 : 0;
     return h("section", { id: "fix-first", "class": "section" },
       h("div", { "class": "wrap" },
         h("div", { "class": "section-head" },
           h("div", null,
-            h("h2", null, "Fix this first"),
-            h("p", null, "Related problems are grouped into one story. Fixing the root cause usually clears the symptoms that follow from it."))),
-        h("div", { "class": "incidents" }, items.map(incidentEl))));
+            h("h2", null, single ? "Start with this" : "Fix this first"),
+            h("p", null, single ?
+              "The most important finding, with the first things to try." + (others > 0 ? " " + others + " other " + plural(others, "finding is", "findings are") + " listed below." : "") :
+              "Related problems are grouped into one story. Fixing the root cause usually clears the symptoms that follow from it."))),
+        h("div", { "class": "incidents" }, single ? incidentEl(single, true) : items.map(function (i) { return incidentEl(i, false); }))));
   }
-  function incidentEl(inc) {
+  function incidentEl(inc, single) {
     var k = cat(inc.category);
     var ids = arr(inc.findings).filter(function (id) { return byId[id]; });
     var rootId = byId[inc.root_cause] ? inc.root_cause : ids[0];
@@ -571,11 +676,13 @@
     if (!steps.length && byId[rootId]) { steps = arr(byId[rootId].fix).slice(0, 3); }
     return h("article", { "class": "incident c-" + k },
       h("div", { "class": "incident-main" },
-        h("div", { "class": "row" }, pill(k), sevEl(inc.severity),
+        h("div", { "class": "row" }, pill(k), sevEl(inc.severity), single ? confEl(inc.confidence) : null,
+          single ? h("span", { "class": "fid-tag" }, str(rootId)) : null,
           ids.length > 1 ? h("span", { "class": "conf" }, ids.length + " linked findings") : null),
         h("h3", null, str(inc.title)),
         inc.story ? h("p", { "class": "story" }, rich(inc.story)) : null,
-        order.length ? h("ol", { "class": "chain", "aria-label": "Root cause, then symptoms" }, order.map(function (id, i) {
+        single ? h("p", { "class": "symlink" }, jump(rootId, "Read the full finding"), " ", h("span", null, "for the evidence and reasoning.")) : null,
+        !single && order.length ? h("ol", { "class": "chain", "aria-label": "Root cause, then symptoms" }, order.map(function (id, i) {
           var f = byId[id], fk = cat(f.category);
           return h("li", { "class": "c-" + fk }, h("button", { type: "button", "class": "node" + (i === 0 ? " root" : ""), onclick: function () { goto(id); } },
             h("small", null, h("b", null, str(id)), i === 0 ? " root cause" : " symptom"),
@@ -591,10 +698,36 @@
   var cards = [];
   var chipEls = {};
   var currentFilter = "all";
+  var hostFilter = null;          // an IP from the network map, or null
+  var hostChip = null;            // "Involving 192.168.1.66  x" chip
+  var onHostFilterChange = null;  // the map re-highlights its node
+  function applyFilters() {
+    cards.forEach(function (c) {
+      var okCat = currentFilter === "all" || c.cat === currentFilter;
+      var okHost = !hostFilter || c.hosts.indexOf(hostFilter) !== -1;
+      c.el.hidden = !(okCat && okHost);
+    });
+    if (hostChip) {
+      hostChip.hidden = !hostFilter;
+      if (hostFilter) {
+        var n = cards.filter(function (c) { return !c.el.hidden; }).length;
+        hostChip.firstChild.textContent = "Involving " + hostFilter + " (" + n + ")";
+      }
+    }
+    if (onHostFilterChange) { onHostFilterChange(hostFilter); }
+  }
   function setFilter(k) {
     currentFilter = k;
     Object.keys(chipEls).forEach(function (c) { chipEls[c].setAttribute("aria-pressed", String(c === k)); });
-    cards.forEach(function (c) { c.el.hidden = !(k === "all" || c.cat === k); });
+    applyFilters();
+  }
+  function setHostFilter(ip, scroll) {
+    hostFilter = ip || null;
+    if (hostFilter) { setFilter("all"); } else { applyFilters(); }
+    if (scroll && hostFilter) {
+      var el = doc.getElementById("findings");
+      if (el) { el.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" }); }
+    }
   }
   function findingsSection() {
     var counts = { all: findings.length, attack: 0, fault: 0, misconfig: 0, info: 0 };
@@ -607,6 +740,9 @@
       chipEls[d[0]] = b;
       return b;
     }));
+    hostChip = h("button", { type: "button", "class": "chip host", hidden: true, title: "Clear the device filter",
+      onclick: function () { setHostFilter(null); } }, h("span", null, ""), h("span", { "class": "x", "aria-hidden": "true" }, "×"), h("span", { "class": "sr-only" }, "clear device filter"));
+    chips.appendChild(hostChip);
     var list = h("div", { "class": "finding-list" });
     if (!findings.length) {
       list.appendChild(h("div", { "class": "empty" },
@@ -615,7 +751,7 @@
     }
     findings.forEach(function (f, i) {
       var c = card(f, i === 0);
-      cards.push({ el: c.el, cat: cat(f.category), id: f.id, open: c.open });
+      cards.push({ el: c.el, cat: cat(f.category), id: f.id, open: c.open, hosts: arr(f.hosts).map(str) });
       list.appendChild(c.el);
     });
     return h("section", { id: "findings", "class": "section" },
@@ -695,22 +831,35 @@
         h("button", { type: "button", "class": "btn", onclick: function () { copyText(filter, "Wireshark filter copied"); } }, icon(I_COPY), "Copy filter")));
     }
     var total = num(f.packet_total);
-    var rows = lines.slice(0, 50).map(function (l) {
+    var PREVIEW = 8, CAP = 200;
+    var rows = lines.slice(0, CAP).map(function (l, i) {
       var r = rel(l.ts);
-      return h("tr", null,
+      return h("tr", { hidden: i >= PREVIEW ? true : null, "class": i >= PREVIEW ? "extra" : null },
         h("td", { "class": "num" }, fmtInt(l.no)),
         h("td", { "class": "num mono" }, r === null ? "" : "+" + fmtClock(r, true)),
         h("td", { "class": "mono" }, str(l.summary)));
     });
-    var shown = rows.length;
+    var shown = rows.length, expanded = false;
+    var toggleBtn = null;
+    if (shown > PREVIEW) {
+      toggleBtn = h("button", { type: "button", "class": "btn small", "aria-expanded": "false", onclick: function () {
+        expanded = !expanded;
+        rows.forEach(function (r, i) { if (i >= PREVIEW) { r.hidden = !expanded; } });
+        toggleBtn.setAttribute("aria-expanded", String(expanded));
+        toggleBtn.firstChild.textContent = expanded ? "Show the first " + PREVIEW + " only" : "Show all " + fmtInt(shown) + " packets";
+      } }, h("span", null, "Show all " + fmtInt(shown) + " packets"), chevron());
+    }
+    var moreText = null;
+    if (total !== null && total > shown) {
+      moreText = "The table lists " + fmtInt(shown) + " of " + fmtInt(total) + " matching packets." + (pk.length > shown ? " The filter and the evidence file include " + fmtInt(pk.length) + "." : "");
+    }
     return h("div", { "class": "block evidence" },
       h("h4", null, "Evidence: the exact packets"),
       tools.length ? h("div", { "class": "evidence-tools" }, tools) : null,
       shown ? h("div", { "class": "table-scroll" }, h("table", null,
         h("thead", null, h("tr", null, h("th", { "class": "num", scope: "col" }, "No."), h("th", { "class": "num", scope: "col" }, "Time"), h("th", { scope: "col" }, "What happened"))),
         h("tbody", null, rows))) : null,
-      total !== null && total > shown ? h("p", { "class": "more" }, "Showing " + shown + " of " + fmtInt(total) + " matching packets." +
-        (pk.length > shown ? " The filter and the evidence file include " + fmtInt(pk.length) + "." : "")) : null);
+      toggleBtn || moreText ? h("div", { "class": "evidence-foot" }, toggleBtn, moreText ? h("p", { "class": "more" }, moreText) : null) : null);
   }
   function metricsEl(m) {
     m = obj(m);
@@ -785,7 +934,7 @@
     var c = null;
     for (var i = 0; i < cards.length; i++) { if (cards[i].id === id) { c = cards[i]; } }
     if (!c) { return; }
-    if (c.el.hidden) { setFilter("all"); }
+    if (c.el.hidden) { hostFilter = null; setFilter("all"); }
     c.open(true);
     c.el.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "start" });
     c.el.classList.remove("flash");
@@ -805,6 +954,295 @@
         h("span", { "class": "bar", "aria-hidden": "true" }, fillEl), h("span", { "class": "val" }, r.text));
     }));
   }
+  // ------------------------------------------------------------ network map
+  // An SVG picture of the network: the internet as a cloud on the left, the
+  // router in the middle, local devices on an arc to the right. Built from
+  // report.hosts, stats.conversations and the hosts named in findings.
+  var CAT_RANK = { attack: 3, fault: 2, misconfig: 1, info: 0 };
+  function networkMap() {
+    var MAX_DEVICES = 24, MAX_EXTERNAL = 6;
+    var W = 1000, H = 600;
+    var byIp = {}, fByHost = {};
+    hosts.forEach(function (x) { byIp[str(x.ip)] = x; });
+    findings.forEach(function (f) {
+      arr(f.hosts).forEach(function (x) { x = str(x); (fByHost[x] = fByHost[x] || []).push(f); });
+    });
+    function pk(x) { return (num(x.packets_sent) || 0) + (num(x.packets_recv) || 0); }
+    function worst(ip) {
+      var fs = fByHost[ip] || [], best = null;
+      fs.forEach(function (f) { var k = cat(f.category); if (k !== "info" && (best === null || CAT_RANK[k] > CAT_RANK[best])) { best = k; } });
+      return best;
+    }
+    function hasRole(x, r) { return arr(x.roles).indexOf(r) !== -1; }
+    function busySort(a, b) {
+      var fa = (fByHost[str(a.ip)] || []).length ? 1 : 0, fb = (fByHost[str(b.ip)] || []).length ? 1 : 0;
+      return fb - fa || pk(b) - pk(a);
+    }
+    var locals = hosts.filter(function (x) { return x.local !== false && str(x.ip); });
+    var externals = hosts.filter(function (x) { return x.local === false && str(x.ip); });
+    var gws = locals.filter(function (x) { return hasRole(x, "gateway"); }).sort(function (a, b) { return pk(b) - pk(a); });
+    var gw = gws[0] || null;
+    var devices = locals.filter(function (x) { return x !== gw; }).sort(busySort);
+    var shownDev = devices.slice(0, MAX_DEVICES), restDev = devices.slice(MAX_DEVICES);
+    externals.sort(busySort);
+    var shownExt = externals.slice(0, MAX_EXTERNAL), restExt = externals.slice(MAX_EXTERNAL);
+    if (!hosts.length) { return null; }
+
+    // ---- node positions
+    var nodes = {};   // ip -> node record
+    var list = [];
+    function add(ip, x, y, kind, host) {
+      var n = { ip: ip, x: x, y: y, kind: kind, host: host, edges: [], peers: {} };
+      nodes[ip] = n; list.push(n);
+      return n;
+    }
+    var CLOUD = { x: 118, y: H / 2 }, HUB = { x: 440, y: H / 2 };
+    var cloudNode = add("\u0000internet", CLOUD.x + 30, H - 62, "cloud", null);
+    var hubNode = gw ? add(str(gw.ip), HUB.x, HUB.y, "gateway", gw) : add("\u0000lan", HUB.x, HUB.y, "hub", null);
+    var devItems = shownDev.slice();
+    if (restDev.length) { devItems.push({ ip: "\u0000more", more: restDev }); }
+    var n = devItems.length;
+    devItems.forEach(function (x, i) {
+      var two = n > 10, outer = two && i % 2 === 1;
+      var rx = two ? (outer ? 420 : 300) : 330, ry = two ? (outer ? 235 : 165) : 205;
+      var span = n === 1 ? 0 : Math.min(200, 30 * (n - 1) + 40);
+      var deg = n === 1 ? 0 : -span / 2 + span * i / (n - 1);
+      var a = deg * Math.PI / 180;
+      var kind = x.more ? "more" : "device";
+      var node = add(x.more ? x.ip : str(x.ip), HUB.x + rx * Math.cos(a), HUB.y + ry * Math.sin(a), kind, x.more ? null : x);
+      if (x.more) { node.more = x.more; }
+    });
+    var m = shownExt.length;
+    shownExt.forEach(function (x, i) {
+      var yy = m === 1 ? CLOUD.y - 40 : 90 + (H - 250) * i / (m - 1);
+      add(str(x.ip), CLOUD.x + (i % 2 ? 62 : -2), yy, "external", x);
+    });
+    cloudNode.more = restExt;
+
+    // ---- edges (aggregated per node pair)
+    var edgeMap = {};
+    function target(ip) {
+      if (nodes[ip]) { return nodes[ip]; }
+      var hst = byIp[ip];
+      if (hst && hst.local === false) { return cloudNode; }
+      if (hst) { return restDev.indexOf(hst) !== -1 ? nodes["\u0000more"] : null; }
+      return /^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|fe80:|fd|fc)/i.test(ip) ? null : cloudNode;
+    }
+    function link(a, b, packets, bytes) {
+      if (!a || !b || a === b) { return; }
+      var key = a.ip < b.ip ? a.ip + "|" + b.ip : b.ip + "|" + a.ip;
+      var e = edgeMap[key];
+      if (!e) { e = edgeMap[key] = { a: a, b: b, packets: 0, bytes: 0, convs: 0 }; a.edges.push(e); b.edges.push(e); }
+      e.packets += packets; e.bytes += bytes; e.convs++;
+    }
+    var convs = arr(stats.conversations).filter(function (c) { return c && typeof c === "object"; });
+    convs.forEach(function (c) {
+      var a = str(c.a), b = str(c.b), p = num(c.packets) || 0, by = num(c.bytes) || 0;
+      var na = target(a), nb = target(b);
+      if (!na || !nb) { return; }
+      if (na !== nb) { na.peers[b] = true; nb.peers[a] = true; }
+      var aLocal = na.kind !== "cloud" && na.kind !== "external", bLocal = nb.kind !== "cloud" && nb.kind !== "external";
+      if (aLocal && bLocal) { link(na, nb, p, by); }
+      else if (aLocal !== bLocal) {
+        // local <-> internet traffic travels through the router
+        var loc = aLocal ? na : nb, ext = aLocal ? nb : na;
+        link(loc, hubNode, p, by);
+        link(hubNode, ext, p, by);
+      } else { link(na, nb, p, by); }
+    });
+    // every local device sits on the LAN: a faint link to the router if nothing else
+    list.forEach(function (nd) {
+      if ((nd.kind === "device" || nd.kind === "more") && !nd.edges.length) { link(nd, hubNode, 0, 0); }
+      if (nd.kind === "external" && !nd.edges.length) { link(nd, hubNode, 0, 0); }
+    });
+    if (!hubNode.edges.some(function (e) { return e.a === cloudNode || e.b === cloudNode; })) { link(hubNode, cloudNode, 0, 0); }
+    var edges = Object.keys(edgeMap).map(function (k) { return edgeMap[k]; });
+    var maxP = Math.max.apply(null, edges.map(function (e) { return e.packets; }).concat([1]));
+
+    // ---- drawing
+    var tip = h("div", { "class": "tooltip map-tip", "aria-hidden": "true" });
+    var box = h("div", { "class": "map-box" });
+    var svg = s("svg", { "class": "netmap", viewBox: "0 0 " + W + " " + H, role: "group",
+      "aria-label": "Network map: " + list.filter(function (x) { return x.kind === "device"; }).length + " local devices, " +
+        (gw ? "router " + str(gw.ip) : "no router identified") + ", " + externals.length + " internet hosts. Text version below." });
+    var gEdges = s("g", { "class": "edges" }), gNodes = s("g", { "class": "nodes" });
+    svg.appendChild(s("defs", null, s("radialGradient", { id: "fl-cloud" }, s("stop", { "class": "c0", offset: "0" }), s("stop", { "class": "c1", offset: "1" }))));
+    // the cloud behind the external hosts
+    svg.appendChild(s("ellipse", { "class": "cloud", cx: CLOUD.x + 30, cy: H / 2 + 10, rx: 122, ry: Math.min(275, 110 + 34 * Math.max(1, m)) }));
+    svg.appendChild(s("text", { "class": "cloud-label", x: CLOUD.x + 30, y: 30, "text-anchor": "middle" }, "Internet"));
+    if (hubNode.kind === "gateway" || n) {
+      svg.appendChild(s("text", { "class": "cloud-label", x: W - 24, y: 30, "text-anchor": "end" }, "Your local network"));
+    }
+    edges.forEach(function (e) {
+      var w = e.packets ? 1 + 5 * Math.log(1 + e.packets) / Math.log(1 + maxP) : 1;
+      var el = s("line", { "class": "edge" + (e.packets ? "" : " faint"), x1: e.a.x.toFixed(1), y1: e.a.y.toFixed(1), x2: e.b.x.toFixed(1), y2: e.b.y.toFixed(1), "stroke-width": w.toFixed(2) });
+      el.appendChild(s("title", null, e.a.kind === "cloud" ? "Internet" : e.a.ip, " ↔ ", e.b.kind === "cloud" ? "Internet" : e.b.ip, e.packets ? ": " + fmtInt(e.packets) + " packets, " + fmtBytes(e.bytes) : ""));
+      e.el = el;
+      gEdges.appendChild(el);
+    });
+    var ICON = {
+      gateway: "M-9 -2h18v8h-18z M-5 2h.1 M-1 2h.1 M-3 -2v-5 M3 -2v-5",
+      device: "M-7 -5h14v9h-14z M-9 6h18",
+      external: "M-6 -6h12v12h-12z M-6 -2h12 M-6 2h12",
+      hub: "M-8 0h16 M0 -8v16",
+      cloud: "",
+      more: "M-6 0h.1 M0 0h.1 M6 0h.1"
+    };
+    var RAD = { gateway: 28, device: 16, external: 12, hub: 24, more: 16, cloud: 0 };
+    var selected = null;
+    function labelOf(nd) {
+      if (nd.kind === "cloud") { return ""; }
+      if (nd.kind === "more") { return "+" + nd.more.length + " more"; }
+      return nd.ip;
+    }
+    function subLabel(nd) {
+      if (nd.kind === "gateway") { return "Router"; }
+      if (nd.kind === "hub") { return "Local network"; }
+      if (nd.kind === "more") { return plural(nd.more.length, "device", "devices"); }
+      var nm = nd.host ? arr(nd.host.names).map(str).filter(Boolean) : [];
+      return nm.length ? nm[0].slice(0, 28) : "";
+    }
+    function describe(nd) {
+      var parts = [];
+      if (nd.kind === "cloud") { return "The internet" + (restExt.length ? ": " + restExt.length + " more hosts" : ""); }
+      if (nd.kind === "more") { return nd.more.length + " quieter devices: " + nd.more.slice(0, 6).map(function (x) { return str(x.ip); }).join(", ") + (nd.more.length > 6 ? "…" : ""); }
+      parts.push(nd.ip);
+      var roles = nd.host ? arr(nd.host.roles).map(function (r) { return ({ gateway: "router", "dns-server": "DNS server", "dhcp-server": "DHCP server" })[str(r)] || str(r); }) : [];
+      if (roles.length) { parts.push(roles.join(", ")); }
+      var fs = fByHost[nd.ip] || [];
+      if (fs.length) { parts.push("involved in " + fs.map(function (f) { return str(f.id); }).join(", ")); }
+      return parts.join("; ");
+    }
+    function tooltipFor(nd) {
+      while (tip.firstChild) { tip.removeChild(tip.firstChild); }
+      if (nd.kind === "cloud") {
+        append(tip, [h("b", null, "The internet"), h("div", null, externals.length + " outside " + plural(externals.length, "host", "hosts") + " were contacted" + (restExt.length ? "; " + restExt.length + " not drawn individually" : "") + ".")]);
+        return;
+      }
+      if (nd.kind === "more") {
+        append(tip, [h("b", null, nd.more.length + " quieter devices"), h("div", null, nd.more.slice(0, 8).map(function (x) { return str(x.ip); }).join(", ") + (nd.more.length > 8 ? " …" : "")),
+          h("div", { "class": "hint" }, "All devices are listed in the table below.")]);
+        return;
+      }
+      if (nd.kind === "hub") { append(tip, [h("b", null, "Your local network"), h("div", null, "No router was identified in this capture.")]); return; }
+      var x = nd.host || {}, fs = fByHost[nd.ip] || [];
+      var macs = arr(x.macs).map(str), names = arr(x.names).map(str);
+      var roles = arr(x.roles).map(function (r) { return ({ gateway: "Router", "dns-server": "DNS server", "dhcp-server": "DHCP server" })[str(r)] || str(r); });
+      append(tip, [
+        h("b", null, nd.ip),
+        names.length ? h("div", { "class": "names" }, names.slice(0, 3).join(", ")) : null,
+        h("dl", null,
+          roles.length ? [h("dt", null, "Role"), h("dd", null, roles.join(", "))] : null,
+          macs.length ? [h("dt", null, "MAC"), h("dd", { "class": "mono" }, macs.slice(0, 3).join(" "), macs.length > 1 ? h("span", { "class": "warn" }, " (" + macs.length + " MACs)") : null)] : null,
+          h("dt", null, "Packets"), h("dd", null, fmtInt(x.packets_sent) + " sent, " + fmtInt(x.packets_recv) + " received"),
+          nd.kind === "external" ? [h("dt", null, "Where"), h("dd", null, "Outside your network")] : null),
+        fs.length ? h("ul", null, fs.slice(0, 5).map(function (f) { return h("li", { "class": "c-" + cat(f.category) }, str(f.id) + " " + str(f.title)); })) : h("div", { "class": "hint" }, "Not involved in any finding."),
+        fs.length ? h("div", { "class": "hint" }, selected === nd ? "Click again to show all findings" : "Click to show only these findings") : null
+      ]);
+    }
+    function showTip(nd) {
+      tooltipFor(nd);
+      box.appendChild(tip);
+      var bw = box.clientWidth || W, k = bw / W;
+      var tw = tip.offsetWidth || 220, th = tip.offsetHeight || 80;
+      var left = nd.x * k + (RAD[nd.kind] || 40) * k + 10, top = nd.y * k - th / 2;
+      if (left + tw > bw) { left = nd.x * k - (RAD[nd.kind] || 40) * k - tw - 10; }
+      top = clamp(top, 0, Math.max(0, box.clientHeight - th));
+      tip.style.left = Math.max(0, left) + "px";
+      tip.style.top = top + "px";
+      box.classList.add("hovering");
+      list.forEach(function (o) { if (o.el) { o.el.classList.toggle("peer", !!nd.peers[o.ip] || o.edges.some(function (e) { return (e.a === nd || e.b === nd) && (e.a === o || e.b === o); })); } });
+      edges.forEach(function (e) { e.el.classList.toggle("hot", e.a === nd || e.b === nd); });
+    }
+    function hideTip() {
+      box.classList.remove("hovering");
+      list.forEach(function (o) { if (o.el) { o.el.classList.remove("peer"); } });
+      edges.forEach(function (e) { e.el.classList.toggle("hot", selected !== null && (e.a === selected || e.b === selected)); });
+    }
+    list.forEach(function (nd) {
+      var k = nd.kind, r = RAD[k], fs = fByHost[nd.ip] || [], wc = worst(nd.ip);
+      var g = s("g", { "class": "node k-" + k + (wc ? " flag c-" + wc : ""), transform: "translate(" + nd.x.toFixed(1) + " " + nd.y.toFixed(1) + ")",
+        tabindex: "0", role: "button", "aria-label": describe(nd), "data-ip": k === "device" || k === "gateway" || k === "external" ? nd.ip : null });
+      if (k === "cloud") {
+        g.appendChild(s("circle", { "class": "body", r: 30 }));
+        g.appendChild(s("path", { "class": "glyph", d: "M-14 8a7 7 0 0 1 1-14a9 9 0 0 1 17-2a7 7 0 0 1 8 8a6 6 0 0 1-3 8z" }));
+        if (restExt.length) { g.appendChild(s("text", { "class": "count", x: 0, y: 44, "text-anchor": "middle" }, "+" + restExt.length + " more hosts")); }
+      } else {
+        g.appendChild(s("circle", { "class": "halo", r: r + 7 }));
+        g.appendChild(s("circle", { "class": "body", r: r }));
+        if (ICON[k]) { g.appendChild(s("path", { "class": "glyph", d: ICON[k], transform: k === "external" ? "scale(.75)" : (k === "gateway" ? "scale(1.25)" : null) })); }
+        var lab = s("text", { "class": "label", x: 0, y: r + 15, "text-anchor": "middle" }, labelOf(nd));
+        g.appendChild(lab);
+        var sub = subLabel(nd);
+        if (sub) { g.appendChild(s("text", { "class": "sublabel", x: 0, y: r + 28, "text-anchor": "middle" }, sub)); }
+        // role badges (DNS / DHCP) sit at the bottom right
+        var badges = [];
+        if (nd.host) {
+          if (hasRole(nd.host, "dns-server")) { badges.push(["DNS", "dns"]); }
+          if (hasRole(nd.host, "dhcp-server")) { badges.push(["DHCP", "dhcp"]); }
+          if (k !== "gateway" && hasRole(nd.host, "gateway")) { badges.push(["RTR", "rtr"]); }
+        }
+        badges.forEach(function (b, i) {
+          var bw = 8 + b[0].length * 6.2, bx = r * 0.55 + i * (bw + 3), by = r * 0.45;
+          var bg = s("g", { "class": "rbadge b-" + b[1] });
+          bg.appendChild(s("rect", { x: bx, y: by, width: bw, height: 14, rx: 4 }));
+          bg.appendChild(s("text", { x: bx + bw / 2, y: by + 10.5, "text-anchor": "middle" }, b[0]));
+          g.appendChild(bg);
+        });
+        if (fs.length) {
+          var fb = s("g", { "class": "fbadge" });
+          fb.appendChild(s("circle", { cx: -r * 0.72, cy: -r * 0.72, r: 9 }));
+          fb.appendChild(s("text", { x: -r * 0.72, y: -r * 0.72 + 3.6, "text-anchor": "middle" }, String(fs.length)));
+          g.appendChild(fb);
+        }
+      }
+      g.addEventListener("mouseenter", function () { showTip(nd); });
+      g.addEventListener("mouseleave", hideTip);
+      g.addEventListener("focus", function () { showTip(nd); });
+      g.addEventListener("blur", hideTip);
+      function activate() {
+        if (k === "cloud" || k === "hub") { return; }
+        if (k === "more") { var t = doc.getElementById("devices"); if (t) { t.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" }); } return; }
+        if (!fs.length) { toast(nd.ip + " is not involved in any finding."); return; }
+        setHostFilter(selected === nd ? null : nd.ip, true);
+      }
+      g.addEventListener("click", activate);
+      g.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); } });
+      nd.el = g;
+      gNodes.appendChild(g);
+    });
+    svg.appendChild(gEdges); svg.appendChild(gNodes);
+    onHostFilterChange = function (ip) {
+      selected = ip && nodes[ip] ? nodes[ip] : null;
+      list.forEach(function (o) { if (o.el) { o.el.classList.toggle("selected", o === selected); } });
+      edges.forEach(function (e) { e.el.classList.toggle("hot", selected !== null && (e.a === selected || e.b === selected)); });
+      box.classList.toggle("has-selection", selected !== null);
+    };
+    append(box, [svg, tip]);
+
+    // ---- legend + text fallback
+    function lg(cls, text) { return h("li", { "class": cls }, h("i", { "aria-hidden": "true" }), text); }
+    var legend = h("ul", { "class": "map-legend", "aria-label": "Map legend" },
+      lg("l-router", "Router (gateway)"), lg("l-device", "Device on your network"), lg("l-ext", "Host on the internet"),
+      lg("l-attack", "Involved in an attack"), lg("l-fault", "Involved in a fault"), lg("l-misconfig", "Involved in a misconfiguration"),
+      lg("l-edge", "Thicker line = more traffic"), lg("l-badge", "DNS / DHCP: acts as that server"));
+    var textList = h("details", { "class": "map-text" },
+      h("summary", null, "Text version of this map"),
+      h("ul", null, list.filter(function (x) { return x.kind !== "cloud" && x.kind !== "hub"; }).map(function (x) {
+        return h("li", null, describe(x) + (x.kind === "device" ? " (local device)" : x.kind === "external" ? " (internet)" : ""));
+      }), restExt.length ? h("li", null, "Internet: " + restExt.length + " more hosts not drawn.") : null));
+    var deviceCount = locals.length, note = [];
+    note.push(fmtInt(deviceCount) + " local " + plural(deviceCount, "device", "devices"));
+    if (gw) { note.push("router " + str(gw.ip)); }
+    note.push(fmtInt(externals.length) + " internet " + plural(externals.length, "host", "hosts"));
+    var flagged = Object.keys(fByHost).filter(function (ip) { return worst(ip); }).length;
+    return h("div", { "class": "panel map-panel", id: "map" },
+      h("div", { "class": "map-head" },
+        h("h3", null, "Network map"),
+        h("p", null, note.join(", ") + ". " + (flagged ? flagged + " " + plural(flagged, "device is", "devices are") + " involved in a finding: hover for details, click to see its findings." : "No device is involved in a finding."))),
+      box, legend, textList);
+  }
+
   function networkSection() {
     var attackHosts = {};
     findings.forEach(function (f) {
@@ -815,8 +1253,8 @@
       return ((num(b.packets_sent) || 0) + (num(b.packets_recv) || 0)) - ((num(a.packets_sent) || 0) + (num(a.packets_recv) || 0));
     });
     var shown = hs.slice(0, 60);
-    var hostTable = h("div", { "class": "panel" },
-      h("h3", null, "Devices"),
+    var hostTable = h("div", { "class": "panel", id: "devices" },
+      h("h3", null, "All devices"),
       shown.length ? h("div", { "class": "table-scroll" }, h("table", { "class": "hosts" },
         h("thead", null, h("tr", null, ["Address", "Name", "Hardware (MAC)", "Role", "Sent", "Received", "Data"].map(function (t, i) {
           return h("th", { scope: "col", "class": i >= 4 ? "num" : null }, t);
@@ -853,7 +1291,8 @@
       h("div", { "class": "wrap" },
         h("div", { "class": "section-head" }, h("div", null,
           h("h2", null, "Who was talking"),
-          h("p", null, "Every device seen in the capture, what it does, and how much it sent."))),
+          h("p", null, "A picture of the network as seen in this capture, then every device, what it does, and how much it sent."))),
+        networkMap(),
         hostTable,
         h("div", { "class": "net-grid" },
           h("div", { "class": "panel" }, h("h3", null, "Protocols"), prow.length ? barsList(prow, false) : h("p", { "class": "more" }, "No protocol data.")),
@@ -916,6 +1355,7 @@
   var frag = doc.createDocumentFragment();
   append(frag, [topbar(), h("main", null, hero(), fixFirst(), findingsSection(), networkSection(), captureSection()), footer(), toastEl]);
   root.appendChild(frag);
+  watchScroll();
   if (chartRedraw) {
     chartRedraw();
     var rt = null;

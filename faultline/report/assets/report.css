@@ -418,3 +418,115 @@ body.expert .beginner-only { display: none !important; }
   .steps li::before { color: #fff; background: #141a24; }
   a { text-decoration: none; }
 }
+
+/* ---------- sticky mini verdict ---------- */
+.mini-verdict {
+  display: none; align-items: center; gap: 9px; min-width: 0; max-width: 460px;
+  text-decoration: none; font-size: 14px; color: var(--muted);
+  padding: 5px 12px 5px 9px; border-radius: 999px; border: 1px solid var(--line-soft); background: var(--surface);
+}
+.mini-verdict .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--status); box-shadow: 0 0 0 3px color-mix(in srgb, var(--status) 22%, transparent); flex: none; }
+.mini-verdict b { color: var(--status); font: 700 14px var(--display); white-space: nowrap; }
+.mini-verdict .mini-head { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body.scrolled .mini-verdict { display: flex; animation: fade .25s ease; }
+body.scrolled .brand .brand-name { display: none; }
+@media (max-width: 1600px) { body.scrolled[data-embedded] .navlinks, [data-embedded="1"] body.scrolled .navlinks { display: none; } body.scrolled .tools { margin-left: auto; } }
+@media (max-width: 1180px) { body.scrolled .navlinks { display: none; } }
+
+/* ---------- glossary tooltips ---------- */
+.term { position: relative; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, var(--misconfig) 70%, transparent); text-underline-offset: 3px; text-decoration-thickness: 1.5px; cursor: help; border-radius: 3px; }
+.term:hover, .term:focus-visible { text-decoration-style: solid; color: var(--text); }
+.term .tip {
+  position: absolute; left: 0; bottom: calc(100% + 8px); z-index: 30; width: 290px; max-width: 70vw;
+  padding: 9px 11px; border-radius: 9px; background: var(--surface-2); border: 1px solid var(--line);
+  color: var(--text); font: 400 13px/1.45 var(--sans); font-style: normal; text-decoration: none;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .45); opacity: 0; visibility: hidden; transform: translateY(4px);
+  transition: opacity .12s ease, transform .12s ease; pointer-events: none; white-space: normal; text-align: left;
+}
+.term .tip.left { left: auto; right: 0; }
+.term .tip::after { content: ""; position: absolute; left: 14px; top: 100%; border: 6px solid transparent; border-top-color: var(--line); }
+.term .tip.left::after { left: auto; right: 14px; }
+.term:hover .tip, .term:focus .tip, .term:focus-visible .tip { opacity: 1; visibility: visible; transform: none; }
+body.expert .term { text-decoration: none; cursor: inherit; }
+body.expert .term .tip { display: none; }
+
+/* ---------- evidence table toggle ---------- */
+.evidence-foot { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
+.evidence-foot .more { margin: 0; }
+.btn.small { padding: 5px 10px; font-size: 13px; color: var(--muted); }
+.btn.small:hover { color: var(--text); }
+.btn.small svg { transition: transform .2s ease; }
+.btn.small[aria-expanded="true"] svg { transform: rotate(180deg); }
+.chip.host { color: var(--text); border-color: var(--focus); background: color-mix(in srgb, var(--focus) 12%, transparent); }
+.chip.host .x { font-size: 15px; line-height: 1; }
+.chip[hidden] { display: none; }
+
+/* ---------- network map ---------- */
+.map-panel { padding: 18px 20px 14px; margin-bottom: 18px; }
+.map-head { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-bottom: 8px; }
+.map-head h3 { margin: 0; }
+.map-head p { margin: 0; color: var(--muted); font-size: 13.5px; max-width: 70ch; }
+.map-box { position: relative; background: var(--bg-deep); border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
+.netmap { display: block; width: 100%; height: auto; font-family: var(--sans); }
+.netmap .cloud { fill: url(#fl-cloud); stroke: var(--line-soft); stroke-dasharray: 4 5; }
+.netmap stop.c0 { stop-color: var(--misconfig); stop-opacity: .14; }
+.netmap stop.c1 { stop-color: var(--misconfig); stop-opacity: .02; }
+.netmap .cloud-label { fill: var(--faint); font: 600 12px var(--sans); letter-spacing: .08em; text-transform: uppercase; }
+.netmap .edge { stroke: var(--line); stroke-linecap: round; opacity: .9; transition: opacity .15s ease, stroke .15s ease; }
+.netmap .edge.faint { stroke-dasharray: 3 6; opacity: .55; }
+.netmap .edge.hot { stroke: var(--focus); opacity: 1; }
+.map-box.hovering .edge:not(.hot), .map-box.has-selection .edge:not(.hot) { opacity: .25; }
+.netmap .node { cursor: pointer; outline: none; }
+.netmap .node .halo { fill: var(--c, transparent); opacity: 0; transition: opacity .15s ease; }
+.netmap .node .body { fill: var(--surface-2); stroke: var(--line); stroke-width: 1.5; transition: stroke .15s ease; }
+.netmap .node .glyph { fill: none; stroke: var(--muted); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.netmap .node .label { fill: var(--text); font: 500 11.5px var(--mono); }
+.netmap .node .sublabel { fill: var(--faint); font: 500 10.5px var(--sans); }
+.netmap .node .count { fill: var(--faint); font: 500 11px var(--sans); }
+.netmap .node.k-gateway .body { fill: var(--surface); stroke: var(--ok); stroke-width: 2; }
+.netmap .node.k-gateway .glyph { stroke: var(--ok); }
+.netmap .node.k-gateway .label { font-size: 12.5px; font-weight: 600; }
+.netmap .node.k-hub .body { fill: none; stroke-dasharray: 4 4; }
+.netmap .node.k-cloud .body { fill: transparent; stroke: none; }
+.netmap .node.k-cloud .glyph { stroke: var(--misconfig); stroke-width: 1.8; fill: color-mix(in srgb, var(--misconfig) 18%, transparent); }
+.netmap .node.k-external .body { fill: var(--bg); }
+.netmap .node.k-more .body { stroke-dasharray: 3 3; }
+.netmap .node.k-more .glyph { stroke-width: 2.4; }
+.netmap .node.flag .body { stroke: var(--c); stroke-width: 2.2; }
+.netmap .node.flag .glyph { stroke: var(--c); }
+.netmap .node.flag .halo { opacity: .12; }
+.netmap .node:hover .halo, .netmap .node:focus-visible .halo, .netmap .node.selected .halo { opacity: .28; fill: var(--c, var(--focus)); }
+.netmap .node:focus-visible .body { stroke: var(--focus); }
+.netmap .node.selected .body { stroke: var(--focus); stroke-width: 2.5; }
+.netmap .node.peer .body { stroke: var(--focus); }
+.netmap .fbadge circle { fill: var(--c); stroke: var(--bg-deep); stroke-width: 2; }
+.netmap .fbadge text { fill: var(--bg-deep); font: 700 10.5px var(--sans); }
+.netmap .rbadge rect { fill: var(--bg-deep); stroke-width: 1; }
+.netmap .rbadge text { font: 700 8.5px var(--sans); letter-spacing: .02em; }
+.netmap .rbadge.b-dns rect { stroke: var(--misconfig); } .netmap .rbadge.b-dns text { fill: var(--misconfig); }
+.netmap .rbadge.b-dhcp rect { stroke: var(--fault); } .netmap .rbadge.b-dhcp text { fill: var(--fault); }
+.netmap .rbadge.b-rtr rect { stroke: var(--ok); } .netmap .rbadge.b-rtr text { fill: var(--ok); }
+.map-box .tooltip { max-width: 320px; min-width: 200px; }
+.map-box.hovering .tooltip { opacity: 1; }
+.map-tip .names { color: var(--muted); margin-top: 1px; overflow-wrap: anywhere; }
+.map-tip dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 6px 0 0; }
+.map-tip dt { color: var(--faint); }
+.map-tip dd { margin: 0; overflow-wrap: anywhere; }
+.map-tip .warn { color: var(--attack); }
+.map-tip .hint { margin-top: 6px; color: var(--faint); font-size: 12px; }
+.map-tip ul { margin-top: 6px; }
+.map-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 12px 0 0; padding: 0; list-style: none; font-size: 12.5px; color: var(--muted); }
+.map-legend li { display: inline-flex; align-items: center; gap: 7px; }
+.map-legend i { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface-2); flex: none; }
+.map-legend .l-router i { border-color: var(--ok); border-width: 2px; }
+.map-legend .l-ext i { background: var(--bg); border-color: var(--misconfig); border-style: dashed; }
+.map-legend .l-attack i { border-color: var(--attack); background: color-mix(in srgb, var(--attack) 25%, var(--surface-2)); }
+.map-legend .l-fault i { border-color: var(--fault); background: color-mix(in srgb, var(--fault) 25%, var(--surface-2)); }
+.map-legend .l-misconfig i { border-color: var(--misconfig); background: color-mix(in srgb, var(--misconfig) 25%, var(--surface-2)); }
+.map-legend .l-edge i { width: 22px; height: 0; border: 0; border-top: 3px solid var(--line); border-radius: 2px; }
+.map-legend .l-badge i { width: auto; height: auto; border-radius: 4px; border-color: var(--misconfig); background: var(--bg-deep); font: 700 8px var(--sans); color: var(--misconfig); padding: 1px 4px; }
+.map-legend .l-badge i::before { content: "DNS"; }
+.map-text { margin-top: 10px; font-size: 13px; color: var(--muted); }
+.map-text summary { cursor: pointer; color: var(--faint); }
+.map-text ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 3px; font-family: var(--mono); font-size: 12px; }
+@media print { .map-box .tooltip, .term .tip { display: none !important; } .netmap .node .body { fill: #fff; } }

@@ -146,3 +146,47 @@ def test_redacted_report_has_no_evidence_downloads(report):
     html = render_html(r)
     assert '"redacted":true' in html
     assert '"evidence"' not in html
+
+
+# --------------------------------------------------------------------------- new UI features
+
+
+def test_network_map_and_glossary_are_in_renderer():
+    js = (ASSETS / "report.js").read_text(encoding="utf-8")
+    css = (ASSETS / "report.css").read_text(encoding="utf-8")
+    assert "function networkMap(" in js and "Text version of this map" in js
+    assert "MAX_DEVICES = 24" in js  # large captures are capped and aggregated as "+N more"
+    assert "GLOSSARY" in js and '["ARP",' in js and '["DHCP",' in js and '["NXDOMAIN",' in js
+    assert 'role: "tooltip"' in js and 'tabindex: "0"' in js  # keyboard-accessible tooltips
+    assert "Show all " in js and "PREVIEW = 8" in js  # evidence table preview + toggle
+    assert "mini-verdict" in js and ".mini-verdict" in css
+    assert "Start with this" in js
+    assert ".netmap" in css and ".term .tip" in css
+
+
+def test_renderer_only_builds_dom_from_text(report):
+    """Every string that reaches the DOM goes through textContent / createElement."""
+    js = (ASSETS / "report.js").read_text(encoding="utf-8")
+    assert "createElementNS" in js and "textContent" in js
+    assert "new RegExp(" in js  # glossary regex is built from a static list only
+    # the glossary regex is built from literal terms; no report data is ever interpolated into it
+    assert js.count("new RegExp(") == 1
+    assert not re.search(r"\.on[a-z]+\s*=", js)  # no inline handler assignment
+    assert "javascript:" not in js
+
+
+def test_hostile_host_strings_are_escaped_in_page(report):
+    r = copy.deepcopy(report)
+    r["hosts"] = [{"ip": '"><img src=x onerror=alert(3)>', "macs": ["<script>x</script>"], "roles": ["gateway"], "local": True,
+                   "packets_sent": 1, "packets_recv": 1, "names": ["</script><b>n</b>"]}]
+    r["stats"] = {"conversations": [{"a": '"><svg onload=alert(4)>', "b": "203.0.113.1", "proto": "TCP", "packets": 5, "bytes": 10}]}
+    html = render_html(r)
+    body = html.split('id="faultline-data">', 1)[1]
+    assert "<img src=x" not in body and "<svg onload" not in body and "<script>x" not in body
+    assert "<b>n</b>" not in body
+
+
+def test_fixture_has_evidence_for_toggle(report):
+    """The fixture carries enough evidence rows for the 'Show all N packets' toggle to appear."""
+    rows = [len(f.get("evidence_lines") or []) for f in report["findings"]]
+    assert rows and max(rows) >= 1

@@ -198,7 +198,10 @@ class HostTable:
 
     def to_list(self, limit: int = 500) -> list[dict]:
         self.gateway()
-        ranked = sorted(self.hosts.values(), key=lambda h: (not is_private(h.ip), -(h.packets_sent + h.packets_recv)))
+        # "0.0.0.0" (a DHCP client before it has an address) and broadcast addresses are not devices
+        real = [h for h in self.hosts.values()
+                if h.ip not in ("0.0.0.0", "255.255.255.255", "::") and not is_multicast_or_broadcast(h.ip)]
+        ranked = sorted(real, key=lambda h: (not is_private(h.ip), -(h.packets_sent + h.packets_recv)))
         return [h.to_dict() for h in ranked[:limit]]
 
 

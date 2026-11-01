@@ -28,7 +28,7 @@ Faultline treats this as a diagnosis problem rather than an alerting problem:
 | False alarms on the benchmark | 0 (including a 5,900-packet busy office capture with benign look-alikes) | `faultline bench` |
 | Public real-world captures (wiki.wireshark.org) diagnosed correctly | 20 of 22, no false alarms; the two misses are stealth scans, listed under [Limitations](#limitations) | `python scripts/validate_public.py` |
 | Hostile or corrupted input | 6 of 6 malformed sample files handled; 0 crashes in 3,000 fuzzed captures | `python scripts/fuzz.py -n 3000 --seed 42` |
-| Automated tests | 339 passing on Python 3.10 and 3.12 | `pytest -q` |
+| Automated tests | 357 passing on Python 3.10 and 3.12 | `pytest -q` |
 
 The labelled benchmark uses captures produced by our own scenario lab, so it shows that the detectors behave as designed. The public captures are the independent check.
 
@@ -65,7 +65,22 @@ All images below are generated from the bundled samples by [`scripts/make_assets
 |---|---|
 | <img src="docs/images/terminal-ip-conflict.svg" alt="IP conflict reported as a misconfiguration" width="440"> | <img src="docs/images/terminal-arp-spoofing.svg" alt="ARP spoofing reported as an attack" width="440"> |
 
-<!-- WEB_UI_SCREENSHOTS: regenerated from the new dashboard UI -->
+**Web dashboard and HTML report.** `faultline web` serves the same analysis as an interactive report; `--html` writes it as a single offline file. Screenshots are taken from the running dashboard by [`scripts/make_web_shots.py`](scripts/make_web_shots.py).
+
+<img src="docs/images/web-report-mitm.png" alt="Web report for mitm_chain.pcap: Under attack verdict, health score, timeline" width="900">
+
+The reasoning behind a verdict is shown for every finding. For `arp_spoofing.pcap`, the attack explanation scores 13.0 against 1.0 for a misconfiguration; each piece of evidence is listed with its weight, followed by why the alternative was rejected:
+
+<img src="docs/images/web-why-attack.png" alt="Evidence scoreboard: attack 13.0 versus misconfiguration 1.0, with each indicator and its weight" width="900">
+
+| Network map: the rogue device (.66) next to the real router | Two captures compared side by side |
+|---|---|
+| <img src="docs/images/web-network-map.png" alt="Network map with the rogue DHCP/DNS device highlighted" width="440"> | <img src="docs/images/web-compare.png" alt="Compare view: IP conflict versus ARP spoofing" width="440"> |
+| **A fault and an attack in one capture, reported separately** | **Landing page with the labelled sample gallery** |
+| <img src="docs/images/web-report-mixed.png" alt="Report for outage_vs_attack_mixed.pcap" width="440"> | <img src="docs/images/web-landing.png" alt="Dashboard landing page" width="440"> |
+
+Other features of the report: a beginner/expert toggle, plain-language tooltips for technical terms, filters, an expandable evidence table with a Wireshark filter and a per-finding evidence download, and a printable layout. The full-page version is in [`docs/images/web-report-full-mitm.png`](docs/images/web-report-full-mitm.png), and complete interactive reports are in [`docs/examples/`](docs/examples) (download one and open it in a browser).
+
 
 ## Demo video
 
@@ -95,7 +110,7 @@ The reasoning behind these choices, with worked examples and the alternatives we
 | Reasoning | Per-finding classification with confidence and "why not" text, incident chains linking root causes to symptoms, health score, overall verdict |
 | Explanations | Summary, beginner explanation with an analogy, likely cause, ordered fix steps with commands, and an expert paragraph for every finding |
 | Evidence | Frame numbers (Wireshark numbering), a ready-made Wireshark filter, an evidence table, a small evidence capture per finding, host roles (gateway, DNS, DHCP), top talkers, conversations, timeline |
-| Interfaces | Terminal report, self-contained interactive HTML report, local web dashboard, JSON |
+| Interfaces | Terminal report; self-contained interactive HTML report (network map, timeline, evidence scoreboard, beginner and expert views, term tooltips); local web dashboard with a sample gallery and a side-by-side compare view; JSON |
 | Automation | Exit codes and `--fail-on` for scheduled checks or CI; `faultline diff` to compare captures before and after a fix |
 | Privacy and security | Address pseudonymisation (`--redact`), credentials detected but never extracted, no payload storage, owner-only report files, hardened report and dashboard (see [Security](#security)) |
 
@@ -317,7 +332,7 @@ The images in [`docs/proof/`](docs/proof) show the verification commands being r
 
 ```bash
 pip install -e ".[dev]"
-pytest -q                                   # 339 tests
+pytest -q                                   # 357 tests
 faultline bench                             # labelled benchmark
 python scripts/validate_public.py           # public captures (downloads about 1.5 MB)
 python scripts/fuzz.py -n 3000 --seed 42    # fuzzing
@@ -363,8 +378,8 @@ faultline/
   lab/          packet builder and labelled scenarios
   bench.py, diff.py, cli.py
 samples/        37 labelled captures and labels.json
-tests/          339 tests
-scripts/        fuzz.py, check_secrets.py, validate_public.py, make_assets.py, make_proof.py
+tests/          357 tests
+scripts/        fuzz.py, check_secrets.py, validate_public.py, make_assets.py, make_proof.py, make_web_shots.py
 docs/           THINKING.md, DETECTORS.md, demo-script.md, images/, examples/, proof/
 ```
 
@@ -379,6 +394,7 @@ The analysis engine (reader, decoders, detectors, classification, correlation) u
 | [rich](https://github.com/Textualize/rich) | MIT | Terminal output |
 | [Flask](https://github.com/pallets/flask), with Werkzeug, Jinja2, MarkupSafe, itsdangerous, click, blinker | BSD-3-Clause / MIT | Local web dashboard |
 | [pytest](https://github.com/pytest-dev/pytest) | MIT | Tests (development only) |
+| [Playwright](https://github.com/microsoft/playwright-python) | Apache-2.0 | Optional: README screenshots of the dashboard (`scripts/make_web_shots.py`); not needed to run Faultline |
 
 Not used: Wireshark, tshark, pyshark, Scapy, dpkt, Zeek, Suricata, or any external API or network service. Capture parsing, protocol decoding, detection and diagnosis are our own code.
 

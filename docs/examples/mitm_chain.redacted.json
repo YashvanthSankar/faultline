@@ -3,7 +3,7 @@
     "name": "Faultline",
     "version": "1.0.0"
   },
-  "generated_at": "2026-11-01T14:24:50+05:30",
+  "generated_at": "2026-11-01T14:40:56+05:30",
   "capture": {
     "name": "mitm_chain.pcap",
     "format": "pcap",
@@ -25,7 +25,7 @@
   },
   "verdict": {
     "status": "under_attack",
-    "headline": "Rogue DHCP server on the network (lan-host-4e9588).",
+    "headline": "Rogue DHCP server on the network (lan-host-c39d4c).",
     "summary": "We found 2 signs of malicious activity. This is not an ordinary outage: restarting the router will not fix it. Separately, 1 genuine fault or misconfiguration also needs attention.",
     "score": 52,
     "counts": {
@@ -43,22 +43,22 @@
       "severity": 4,
       "severity_name": "critical",
       "confidence": 0.99,
-      "title": "Rogue DHCP server on the network (lan-host-4e9588)",
-      "summary": "An unauthorised DHCP server lan-host-4e9588 (mac-799d71) sent 2 DHCP messages telling devices to use router lan-host-4e9588 and DNS lan-host-4e9588.",
-      "explanation": "When a device joins a network it shouts 'can someone give me an address?' (DHCP) and trusts the first answer. A second server, lan-host-4e9588, is answering too, and it tells devices to send their traffic and name lookups through a device that is not your real router. That lets it watch or redirect everything those devices do, while the addresses it hands out look completely normal.",
+      "title": "Rogue DHCP server on the network (lan-host-c39d4c)",
+      "summary": "An unauthorised DHCP server lan-host-c39d4c (mac-13a708) sent 2 DHCP messages telling devices to use router lan-host-c39d4c and DNS lan-host-c39d4c.",
+      "explanation": "When a device joins a network it shouts 'can someone give me an address?' (DHCP) and trusts the first answer. A second server, lan-host-c39d4c, is answering too, and it tells devices to send their traffic and name lookups through a device that is not your real router. That lets it watch or redirect everything those devices do, while the addresses it hands out look completely normal.",
       "analogy": "Like a fake receptionist at the hotel entrance handing out room keys and directions that lead to their own office.",
-      "cause": "A rogue DHCP server at mac-799d71 (an attacker's laptop or a tool like yersinia, ettercap or bettercap).",
+      "cause": "A rogue DHCP server at mac-13a708 (an attacker's laptop or a tool like yersinia, ettercap or bettercap).",
       "fix": [
-        "Find the port: look up mac-799d71 in the switch MAC address table (`show mac address-table address mac-799d71`) or the router's client list, and disconnect it.",
+        "Find the port: look up mac-13a708 in the switch MAC address table (`show mac address-table address mac-13a708`) or the router's client list, and disconnect it.",
         "Enable DHCP snooping on the switch, trusting only the uplink to your real DHCP server.",
-        "On affected devices, renew the lease (`ipconfig /release` then `ipconfig /renew`, or reconnect Wi-Fi) and check with `ipconfig /all` that the gateway is lan-host-d3f96d.",
+        "On affected devices, renew the lease (`ipconfig /release` then `ipconfig /renew`, or reconnect Wi-Fi) and check with `ipconfig /all` that the gateway is lan-host-1436ce.",
         "Treat traffic from affected devices as possibly intercepted: change important passwords."
       ],
-      "technical": "Legitimate server (most ACKs / gateway match / first seen): lan-host-d3f96d (mac-1ebf35): subnet lan-host-49822e/24, router lan-host-d3f96d, DNS lan-host-d3f96d, 1 offers / 0 ACKs. Other server: lan-host-4e9588 (mac-799d71): subnet lan-host-49822e/24, router lan-host-4e9588, DNS lan-host-4e9588, 1 offers / 1 ACKs; same subnet: True; contested transactions: 1, other server won 1; median offer latency 1.5 ms vs 32.1 ms.",
+      "technical": "Legitimate server (most ACKs / gateway match / first seen): lan-host-1436ce (mac-60cce9): subnet lan-host-15ccaa/24, router lan-host-1436ce, DNS lan-host-1436ce, 1 offers / 0 ACKs. Other server: lan-host-c39d4c (mac-13a708): subnet lan-host-15ccaa/24, router lan-host-c39d4c, DNS lan-host-c39d4c, 1 offers / 1 ACKs; same subnet: True; contested transactions: 1, other server won 1; median offer latency 1.5 ms vs 32.1 ms.",
       "mitre": "T1557.003 DHCP Spoofing",
       "hosts": [
-        "lan-host-4e9588",
-        "lan-host-d3f96d"
+        "lan-host-c39d4c",
+        "lan-host-1436ce"
       ],
       "packets": [
         101,
@@ -69,29 +69,29 @@
       "first_ts": 1793462410.001474,
       "last_ts": 1793462410.045148,
       "metrics": {
-        "legit_server": "lan-host-d3f96d",
-        "legit_mac": "mac-1ebf35",
+        "legit_server": "lan-host-1436ce",
+        "legit_mac": "mac-60cce9",
         "legit_routers": [
-          "lan-host-d3f96d"
+          "lan-host-1436ce"
         ],
         "legit_dns": [
-          "lan-host-d3f96d"
+          "lan-host-1436ce"
         ],
-        "legit_subnet": "lan-host-49822e/24",
-        "other_server": "lan-host-4e9588",
-        "other_mac": "mac-799d71",
+        "legit_subnet": "lan-host-15ccaa/24",
+        "other_server": "lan-host-c39d4c",
+        "other_mac": "mac-13a708",
         "other_routers": [
-          "lan-host-4e9588"
+          "lan-host-c39d4c"
         ],
         "other_dns": [
-          "lan-host-4e9588"
+          "lan-host-c39d4c"
         ],
-        "other_subnet": "lan-host-49822e/24",
+        "other_subnet": "lan-host-15ccaa/24",
         "same_subnet": true,
         "other_offers": 1,
         "other_acks": 1,
         "other_clients": [
-          "mac-777d68"
+          "mac-a5f01f"
         ],
         "races": 1,
         "other_wins": 1,
@@ -100,17 +100,17 @@
       },
       "indicators": [
         {
-          "text": "lan-host-4e9588 (mac-799d71) hands out addresses in the same subnet as the real server (lan-host-49822e/24), so its leases look normal",
+          "text": "lan-host-c39d4c (mac-13a708) hands out addresses in the same subnet as the real server (lan-host-15ccaa/24), so its leases look normal",
           "supports": "attack",
           "weight": 1.5
         },
         {
-          "text": "It names itself (lan-host-4e9588) as the router instead of lan-host-d3f96d",
+          "text": "It names itself (lan-host-c39d4c) as the router instead of lan-host-1436ce",
           "supports": "attack",
           "weight": 2.5
         },
         {
-          "text": "It points clients' DNS at a local device (lan-host-4e9588) instead of lan-host-d3f96d",
+          "text": "It points clients' DNS at a local device (lan-host-c39d4c) instead of lan-host-1436ce",
           "supports": "attack",
           "weight": 2.0
         },
@@ -125,7 +125,7 @@
           "weight": 0.5
         },
         {
-          "text": "Clients then used lan-host-4e9588 as their DNS server",
+          "text": "Clients then used lan-host-c39d4c as their DNS server",
           "supports": "attack",
           "weight": 1.5
         }
@@ -137,9 +137,9 @@
       "alternatives": [
         {
           "category": "misconfig",
-          "title": "A second router is handing out addresses (lan-host-4e9588)",
+          "title": "A second router is handing out addresses (lan-host-c39d4c)",
           "score": 0.0,
-          "why_not": "Nothing in the traffic pointed to a misconfiguration. The stronger evidence: It names itself (lan-host-4e9588) as the router instead of lan-host-d3f96d; It points clients' DNS at a local device (lan-host-4e9588) instead of lan-host-d3f96d."
+          "why_not": "Nothing in the traffic pointed to a misconfiguration. The stronger evidence: It names itself (lan-host-c39d4c) as the router instead of lan-host-1436ce; It points clients' DNS at a local device (lan-host-c39d4c) instead of lan-host-1436ce."
         }
       ],
       "symptom_of": null,
@@ -149,19 +149,19 @@
           "no": 101,
           "ts": 1793462410.001474,
           "rel": 9.508777,
-          "summary": "DHCP OFFER xid=0x0e2f9d37 client mac-777d68 offer lan-host-0707a4 lan-host-4e9588 \u2192 255.255.255.255"
+          "summary": "DHCP OFFER xid=0x0e2f9d37 client mac-a5f01f offer lan-host-cf45a7 lan-host-c39d4c \u2192 255.255.255.255"
         },
         {
           "no": 102,
           "ts": 1793462410.032073,
           "rel": 9.539376,
-          "summary": "DHCP OFFER xid=0x0e2f9d37 client mac-777d68 offer lan-host-91aa41 lan-host-d3f96d \u2192 255.255.255.255"
+          "summary": "DHCP OFFER xid=0x0e2f9d37 client mac-a5f01f offer lan-host-b16502 lan-host-1436ce \u2192 255.255.255.255"
         },
         {
           "no": 104,
           "ts": 1793462410.045148,
           "rel": 9.552451,
-          "summary": "DHCP ACK xid=0x0e2f9d37 client mac-777d68 offer lan-host-0707a4 lan-host-4e9588 \u2192 255.255.255.255"
+          "summary": "DHCP ACK xid=0x0e2f9d37 client mac-a5f01f offer lan-host-cf45a7 lan-host-c39d4c \u2192 255.255.255.255"
         }
       ]
     },
@@ -173,21 +173,21 @@
       "severity_name": "critical",
       "confidence": 0.95,
       "title": "DNS answers are being forged",
-      "summary": "Someone is sending fake DNS answers for intranet-portal.example-bank.com, login.example-bank.com, pointing them to lan-host-4e9588.",
+      "summary": "Someone is sending fake DNS answers for intranet-portal.example-bank.com, login.example-bank.com, pointing them to lan-host-c39d4c.",
       "explanation": "DNS is the internet's phone book: it turns names into addresses. Here a device is answering name lookups with fake addresses before (or instead of) the real server, so you may land on a copy of a website built to steal passwords, or have your traffic secretly routed through the attacker.",
       "analogy": "Like someone swapping the numbers in your phone book so your calls to the bank reach a fraudster.",
-      "cause": "DNS spoofing from lan-host-4e9588 (mac-799d71), typically combined with ARP spoofing or a rogue DHCP server (tools such as ettercap dns_spoof, bettercap, dnschef).",
+      "cause": "DNS spoofing from lan-host-c39d4c (mac-13a708), typically combined with ARP spoofing or a rogue DHCP server (tools such as ettercap dns_spoof, bettercap, dnschef).",
       "fix": [
-        "Find and disconnect lan-host-4e9588 (mac-799d71): look up its MAC in the switch MAC table or router client list.",
-        "Check what real DNS says: `nslookup intranet-portal.example-bank.com inet-host-1ae3c1` and compare with what your device got.",
+        "Find and disconnect lan-host-c39d4c (mac-13a708): look up its MAC in the switch MAC table or router client list.",
+        "Check what real DNS says: `nslookup intranet-portal.example-bank.com inet-host-4ad9c8` and compare with what your device got.",
         "Flush DNS caches on affected devices (`ipconfig /flushdns`; macOS `sudo dscacheutil -flushcache`).",
         "Check for ARP spoofing / rogue DHCP (`arp -a`, `ipconfig /all`); enable DHCP snooping and Dynamic ARP Inspection.",
         "Use encrypted DNS (DoH/DoT) and HTTPS; treat credentials entered meanwhile as exposed."
       ],
-      "technical": "Conflicting answers to one transaction: 0; answers from unqueried servers: 0; private answers for public domains: lan-host-4e9588 \u2190 1 domains. Forged IPs: lan-host-4e9588; legit IPs: -; forging MAC: mac-799d71 (lan-host-4e9588).",
+      "technical": "Conflicting answers to one transaction: 0; answers from unqueried servers: 0; private answers for public domains: lan-host-c39d4c \u2190 1 domains. Forged IPs: lan-host-c39d4c; legit IPs: -; forging MAC: mac-13a708 (lan-host-c39d4c).",
       "mitre": "T1557 Adversary-in-the-Middle",
       "hosts": [
-        "lan-host-4e9588"
+        "lan-host-c39d4c"
       ],
       "packets": [
         114,
@@ -205,22 +205,22 @@
           "login.example-bank.com"
         ],
         "forged_ips": [
-          "lan-host-4e9588"
+          "lan-host-c39d4c"
         ],
         "legit_ips": [],
-        "forger_mac": "mac-799d71",
-        "forger_ip": "lan-host-4e9588",
+        "forger_mac": "mac-13a708",
+        "forger_ip": "lan-host-c39d4c",
         "portal_ip": null,
         "fast_forgeries": 0
       },
       "indicators": [
         {
-          "text": "Public websites resolved to a local address: intranet-portal.example-bank.com, login.example-bank.com \u2192 lan-host-4e9588",
+          "text": "Public websites resolved to a local address: intranet-portal.example-bank.com, login.example-bank.com \u2192 lan-host-c39d4c",
           "supports": "attack",
           "weight": 1.0
         },
         {
-          "text": "The fake address lan-host-4e9588 is the DNS server handed out by a second (rogue) DHCP server, answering with its own address, not the router",
+          "text": "The fake address lan-host-c39d4c is the DNS server handed out by a second (rogue) DHCP server, answering with its own address, not the router",
           "supports": "attack",
           "weight": 2.0
         },
@@ -239,7 +239,7 @@
           "category": "misconfig",
           "title": "Captive portal or split-horizon DNS is redirecting names",
           "score": 0.5,
-          "why_not": "Some signs pointed this way (No lookup received two conflicting answers), but they were outweighed. The stronger evidence: The fake address lan-host-4e9588 is the DNS server handed out by a second (rogue) DHCP server, answering with its own address, not the router; Public websites resolved to a local address: intranet-portal.example-bank.com, login.example-bank.com \u2192 lan-host-4e9588."
+          "why_not": "Some signs pointed this way (No lookup received two conflicting answers), but they were outweighed. The stronger evidence: The fake address lan-host-c39d4c is the DNS server handed out by a second (rogue) DHCP server, answering with its own address, not the router; Public websites resolved to a local address: intranet-portal.example-bank.com, login.example-bank.com \u2192 lan-host-c39d4c."
         }
       ],
       "symptom_of": "F1",
@@ -249,19 +249,19 @@
           "no": 114,
           "ts": 1793462422.741435,
           "rel": 22.248738,
-          "summary": "DNS response 0xc64d login.example-bank.com NOERROR \u2192 lan-host-4e9588 (lan-host-4e9588 \u2192 lan-host-0707a4)"
+          "summary": "DNS response 0xc64d login.example-bank.com NOERROR \u2192 lan-host-c39d4c (lan-host-c39d4c \u2192 lan-host-cf45a7)"
         },
         {
           "no": 309,
           "ts": 1793462445.278062,
           "rel": 44.785365,
-          "summary": "DNS response 0xc68a login.example-bank.com NOERROR \u2192 lan-host-4e9588 (lan-host-4e9588 \u2192 lan-host-0707a4)"
+          "summary": "DNS response 0xc68a login.example-bank.com NOERROR \u2192 lan-host-c39d4c (lan-host-c39d4c \u2192 lan-host-cf45a7)"
         },
         {
           "no": 396,
           "ts": 1793462458.175116,
           "rel": 57.682419,
-          "summary": "DNS response 0xc697 intranet-portal.example-bank.com NOERROR \u2192 lan-host-4e9588 (lan-host-4e9588 \u2192 lan-host-0707a4)"
+          "summary": "DNS response 0xc697 intranet-portal.example-bank.com NOERROR \u2192 lan-host-c39d4c (lan-host-c39d4c \u2192 lan-host-cf45a7)"
         }
       ]
     },
@@ -272,22 +272,22 @@
       "severity": 3,
       "severity_name": "high",
       "confidence": 0.93,
-      "title": "Passwords are being sent unencrypted (HTTP Basic to lan-host-4e9588:80)",
-      "summary": "3 logins to the HTTP Basic server lan-host-4e9588:80 sent the username and password as readable text.",
+      "title": "Passwords are being sent unencrypted (HTTP Basic to lan-host-c39d4c:80)",
+      "summary": "3 logins to the HTTP Basic server lan-host-c39d4c:80 sent the username and password as readable text.",
       "explanation": "HTTP Basic is an old protocol that sends your login exactly as typed, without encryption. Anyone who can capture traffic on the way (as this capture just did) could read and reuse the password. Faultline only detected that a login happened; it never stores or shows the password itself.",
       "analogy": "Like writing your PIN on a postcard: every postman on the way can read it.",
-      "cause": "The HTTP Basic service on lan-host-4e9588:80 accepts logins without TLS/SSH encryption.",
+      "cause": "The HTTP Basic service on lan-host-c39d4c:80 accepts logins without TLS/SSH encryption.",
       "fix": [
         "Serve the site over HTTPS only (redirect port 80 to 443) so the login header is encrypted.",
         "Prefer a proper login form or token over HTTP Basic, and enable HSTS.",
-        "Change the passwords that were used here: they must be considered exposed (1 device logged in: lan-host-0707a4).",
+        "Change the passwords that were used here: they must be considered exposed (1 device logged in: lan-host-cf45a7).",
         "Check the server's logs for logins from unknown addresses."
       ],
-      "technical": "3 packets flagged as HTTP Basic credentials to lan-host-4e9588:80 over 3 TCP sessions from 1 clients (lan-host-0707a4) between 35.4 s; peak 3 sessions / 0 credential packets per 60 s from one client. Secret not retained.",
+      "technical": "3 packets flagged as HTTP Basic credentials to lan-host-c39d4c:80 over 3 TCP sessions from 1 clients (lan-host-cf45a7) between 35.4 s; peak 3 sessions / 0 credential packets per 60 s from one client. Secret not retained.",
       "mitre": null,
       "hosts": [
-        "lan-host-4e9588",
-        "lan-host-0707a4"
+        "lan-host-c39d4c",
+        "lan-host-cf45a7"
       ],
       "packets": [
         118,
@@ -299,11 +299,11 @@
       "last_ts": 1793462458.186058,
       "metrics": {
         "protocol": "HTTP Basic",
-        "server": "lan-host-4e9588:80",
+        "server": "lan-host-c39d4c:80",
         "packets": 3,
         "sessions": 3,
         "clients": [
-          "lan-host-0707a4"
+          "lan-host-cf45a7"
         ],
         "server_public": false,
         "peak_sessions_per_min": 3,
@@ -311,7 +311,7 @@
       },
       "indicators": [
         {
-          "text": "3 login messages for HTTP Basic to lan-host-4e9588:80 travelled without encryption (3 sessions, 1 client)",
+          "text": "3 login messages for HTTP Basic to lan-host-c39d4c:80 travelled without encryption (3 sessions, 1 client)",
           "supports": "misconfig",
           "weight": 2.5
         },
@@ -332,19 +332,19 @@
           "no": 118,
           "ts": 1793462422.752399,
           "rel": 22.259702,
-          "summary": "TCP lan-host-0707a4:51986 \u2192 lan-host-4e9588:80 [PA] seq=758325241 ack=1837729202 win=2047 len=197 HTTP POST login.example-bank.com/login"
+          "summary": "TCP lan-host-cf45a7:51986 \u2192 lan-host-c39d4c:80 [PA] seq=758325241 ack=1837729202 win=2047 len=197 HTTP POST login.example-bank.com/login"
         },
         {
           "no": 313,
           "ts": 1793462445.289296,
           "rel": 44.796599,
-          "summary": "TCP lan-host-0707a4:51992 \u2192 lan-host-4e9588:80 [PA] seq=3767526892 ack=2116577429 win=2047 len=197 HTTP POST login.example-bank.com/login"
+          "summary": "TCP lan-host-cf45a7:51992 \u2192 lan-host-c39d4c:80 [PA] seq=3767526892 ack=2116577429 win=2047 len=197 HTTP POST login.example-bank.com/login"
         },
         {
           "no": 400,
           "ts": 1793462458.186058,
           "rel": 57.693361,
-          "summary": "TCP lan-host-0707a4:51995 \u2192 lan-host-4e9588:80 [PA] seq=2865701666 ack=657587985 win=2047 len=207 HTTP POST intranet-portal.example-bank.com/login"
+          "summary": "TCP lan-host-cf45a7:51995 \u2192 lan-host-c39d4c:80 [PA] seq=2865701666 ack=657587985 win=2047 len=207 HTTP POST intranet-portal.example-bank.com/login"
         }
       ]
     }
@@ -356,7 +356,7 @@
       "category": "attack",
       "severity": 4,
       "severity_name": "critical",
-      "story": "A device on your network put itself between your users and the internet (Rogue DHCP server on the network (lan-host-4e9588)). Because their traffic now flows through it, it can read or change what they see (DNS answers are being forged; Passwords are being sent unencrypted (HTTP Basic to lan-host-4e9588:80)).",
+      "story": "A device on your network put itself between your users and the internet (Rogue DHCP server on the network (lan-host-c39d4c)). Because their traffic now flows through it, it can read or change what they see (DNS answers are being forged; Passwords are being sent unencrypted (HTTP Basic to lan-host-c39d4c:80)).",
       "root_cause": "F1",
       "findings": [
         "F1",
@@ -364,24 +364,24 @@
         "F3"
       ],
       "hosts": [
-        "lan-host-4e9588",
-        "lan-host-d3f96d",
-        "lan-host-0707a4"
+        "lan-host-c39d4c",
+        "lan-host-1436ce",
+        "lan-host-cf45a7"
       ],
       "first_ts": 1793462410.001474,
       "last_ts": 1793462458.186058,
       "first_fix": [
-        "Find the port: look up mac-799d71 in the switch MAC address table (`show mac address-table address mac-799d71`) or the router's client list, and disconnect it.",
+        "Find the port: look up mac-13a708 in the switch MAC address table (`show mac address-table address mac-13a708`) or the router's client list, and disconnect it.",
         "Enable DHCP snooping on the switch, trusting only the uplink to your real DHCP server.",
-        "On affected devices, renew the lease (`ipconfig /release` then `ipconfig /renew`, or reconnect Wi-Fi) and check with `ipconfig /all` that the gateway is lan-host-d3f96d."
+        "On affected devices, renew the lease (`ipconfig /release` then `ipconfig /renew`, or reconnect Wi-Fi) and check with `ipconfig /all` that the gateway is lan-host-1436ce."
       ]
     }
   ],
   "hosts": [
     {
-      "ip": "lan-host-c403f1",
+      "ip": "lan-host-ebbc65",
       "macs": [
-        "mac-482695"
+        "mac-c5ee9f"
       ],
       "first_ts": 1793462410.448118,
       "last_ts": 1793462477.503096,
@@ -393,9 +393,9 @@
       "local": true
     },
     {
-      "ip": "lan-host-c477bb",
+      "ip": "lan-host-be6bb7",
       "macs": [
-        "mac-693203"
+        "mac-a96e80"
       ],
       "first_ts": 1793462441.816954,
       "last_ts": 1793462492.374434,
@@ -407,9 +407,9 @@
       "local": true
     },
     {
-      "ip": "lan-host-449b31",
+      "ip": "lan-host-e56dea",
       "macs": [
-        "mac-746c51"
+        "mac-e36c6d"
       ],
       "first_ts": 1793462463.148873,
       "last_ts": 1793462485.959212,
@@ -421,9 +421,9 @@
       "local": true
     },
     {
-      "ip": "lan-host-44527e",
+      "ip": "lan-host-ed5fe7",
       "macs": [
-        "mac-78618f"
+        "mac-a3af24"
       ],
       "first_ts": 1793462400.492697,
       "last_ts": 1793462460.138176,
@@ -435,9 +435,9 @@
       "local": true
     },
     {
-      "ip": "lan-host-ace0c3",
+      "ip": "lan-host-688116",
       "macs": [
-        "mac-5d1cf2"
+        "mac-0422e7"
       ],
       "first_ts": 1793462429.526468,
       "last_ts": 1793462507.907898,
@@ -449,9 +449,9 @@
       "local": true
     },
     {
-      "ip": "lan-host-f2211f",
+      "ip": "lan-host-9aecc8",
       "macs": [
-        "mac-829633"
+        "mac-27576f"
       ],
       "first_ts": 1793462406.98847,
       "last_ts": 1793462506.324996,
@@ -463,9 +463,9 @@
       "local": true
     },
     {
-      "ip": "lan-host-d3f96d",
+      "ip": "lan-host-1436ce",
       "macs": [
-        "mac-1ebf35"
+        "mac-60cce9"
       ],
       "first_ts": 1793462400.493807,
       "last_ts": 1793462508.817926,
@@ -481,9 +481,9 @@
       "local": true
     },
     {
-      "ip": "lan-host-9c6fda",
+      "ip": "lan-host-e85df0",
       "macs": [
-        "mac-0f6fc2"
+        "mac-42ddd5"
       ],
       "first_ts": 1793462426.327787,
       "last_ts": 1793462465.505873,
@@ -495,9 +495,9 @@
       "local": true
     },
     {
-      "ip": "lan-host-4e9588",
+      "ip": "lan-host-c39d4c",
       "macs": [
-        "mac-799d71"
+        "mac-13a708"
       ],
       "first_ts": 1793462410.001474,
       "last_ts": 1793462458.195731,
@@ -512,9 +512,9 @@
       "local": true
     },
     {
-      "ip": "lan-host-0707a4",
+      "ip": "lan-host-cf45a7",
       "macs": [
-        "mac-777d68"
+        "mac-a5f01f"
       ],
       "first_ts": 1793462411.045148,
       "last_ts": 1793462458.195731,
@@ -526,9 +526,9 @@
       "local": true
     },
     {
-      "ip": "lan-host-c0431b",
+      "ip": "lan-host-324ad8",
       "macs": [
-        "mac-4586f8"
+        "mac-05aa12"
       ],
       "first_ts": 1793462503.556192,
       "last_ts": 1793462504.198064,
@@ -540,9 +540,9 @@
       "local": true
     },
     {
-      "ip": "lan-host-b73654",
+      "ip": "lan-host-a3cc0f",
       "macs": [
-        "mac-46f4fc"
+        "mac-3b2008"
       ],
       "first_ts": 1793462429.444174,
       "last_ts": 1793462457.537279,
@@ -554,9 +554,9 @@
       "local": true
     },
     {
-      "ip": "lan-host-cff010",
+      "ip": "lan-host-f874b5",
       "macs": [
-        "mac-77ecf8"
+        "mac-803fcf"
       ],
       "first_ts": 1793462508.802642,
       "last_ts": 1793462509.587781,
@@ -568,23 +568,7 @@
       "local": true
     },
     {
-      "ip": "0.0.0.0",
-      "macs": [
-        "mac-777d68"
-      ],
-      "first_ts": 1793462410.0,
-      "last_ts": 1793462410.041972,
-      "packets_sent": 2,
-      "packets_recv": 0,
-      "bytes_sent": 684,
-      "roles": [],
-      "names": [
-        "intern-laptop"
-      ],
-      "local": true
-    },
-    {
-      "ip": "inet-host-7cdc11",
+      "ip": "inet-host-48b3f1",
       "macs": [],
       "first_ts": 1793462447.140452,
       "last_ts": 1793462472.524078,
@@ -596,7 +580,7 @@
       "local": false
     },
     {
-      "ip": "inet-host-a9e422",
+      "ip": "inet-host-ea37ff",
       "macs": [],
       "first_ts": 1793462406.998995,
       "last_ts": 1793462437.551327,
@@ -608,7 +592,7 @@
       "local": false
     },
     {
-      "ip": "inet-host-b2295b",
+      "ip": "inet-host-1becf1",
       "macs": [],
       "first_ts": 1793462441.830223,
       "last_ts": 1793462460.138176,
@@ -620,7 +604,7 @@
       "local": false
     },
     {
-      "ip": "inet-host-e298b7",
+      "ip": "inet-host-435df2",
       "macs": [],
       "first_ts": 1793462431.595812,
       "last_ts": 1793462507.907898,
@@ -632,7 +616,7 @@
       "local": false
     },
     {
-      "ip": "inet-host-75bf21",
+      "ip": "inet-host-45dd2c",
       "macs": [],
       "first_ts": 1793462426.351779,
       "last_ts": 1793462470.187897,
@@ -644,7 +628,7 @@
       "local": false
     },
     {
-      "ip": "inet-host-5e0c56",
+      "ip": "inet-host-a572f2",
       "macs": [],
       "first_ts": 1793462447.141292,
       "last_ts": 1793462509.587781,
@@ -656,7 +640,7 @@
       "local": false
     },
     {
-      "ip": "inet-host-a1fb18",
+      "ip": "inet-host-565424",
       "macs": [],
       "first_ts": 1793462400.511464,
       "last_ts": 1793462477.285081,
@@ -668,7 +652,7 @@
       "local": false
     },
     {
-      "ip": "inet-host-dd26b1",
+      "ip": "inet-host-ac7ce9",
       "macs": [],
       "first_ts": 1793462466.424195,
       "last_ts": 1793462466.966813,
@@ -680,7 +664,7 @@
       "local": false
     },
     {
-      "ip": "inet-host-a42fcf",
+      "ip": "inet-host-206cc4",
       "macs": [],
       "first_ts": 1793462428.43592,
       "last_ts": 1793462492.374434,
@@ -704,61 +688,61 @@
     },
     "top_talkers": [
       {
-        "ip": "inet-host-7cdc11",
+        "ip": "inet-host-48b3f1",
         "packets": 62,
         "bytes": 63646,
         "local": false
       },
       {
-        "ip": "inet-host-b2295b",
+        "ip": "inet-host-1becf1",
         "packets": 58,
         "bytes": 59097,
         "local": false
       },
       {
-        "ip": "inet-host-a9e422",
+        "ip": "inet-host-ea37ff",
         "packets": 57,
         "bytes": 44134,
         "local": false
       },
       {
-        "ip": "inet-host-e298b7",
+        "ip": "inet-host-435df2",
         "packets": 52,
         "bytes": 35619,
         "local": false
       },
       {
-        "ip": "inet-host-75bf21",
+        "ip": "inet-host-45dd2c",
         "packets": 40,
         "bytes": 30399,
         "local": false
       },
       {
-        "ip": "inet-host-5e0c56",
+        "ip": "inet-host-a572f2",
         "packets": 39,
         "bytes": 28261,
         "local": false
       },
       {
-        "ip": "inet-host-dd26b1",
+        "ip": "inet-host-ac7ce9",
         "packets": 24,
         "bytes": 26148,
         "local": false
       },
       {
-        "ip": "inet-host-a1fb18",
+        "ip": "inet-host-565424",
         "packets": 22,
         "bytes": 13489,
         "local": false
       },
       {
-        "ip": "lan-host-c403f1",
+        "ip": "lan-host-ebbc65",
         "packets": 61,
         "bytes": 7782,
         "local": true
       },
       {
-        "ip": "lan-host-c477bb",
+        "ip": "lan-host-be6bb7",
         "packets": 56,
         "bytes": 6834,
         "local": true
@@ -766,106 +750,106 @@
     ],
     "conversations": [
       {
-        "a": "lan-host-449b31",
-        "b": "inet-host-7cdc11",
+        "a": "lan-host-e56dea",
+        "b": "inet-host-48b3f1",
         "proto": "TCP",
         "packets": 77,
         "bytes": 52255
       },
       {
-        "a": "lan-host-c477bb",
-        "b": "inet-host-b2295b",
+        "a": "lan-host-be6bb7",
+        "b": "inet-host-1becf1",
         "proto": "TCP",
         "packets": 57,
         "bytes": 34882
       },
       {
-        "a": "lan-host-c403f1",
-        "b": "inet-host-75bf21",
+        "a": "lan-host-ebbc65",
+        "b": "inet-host-45dd2c",
         "proto": "TCP",
         "packets": 36,
         "bytes": 11981
       },
       {
-        "a": "lan-host-c403f1",
-        "b": "inet-host-dd26b1",
+        "a": "lan-host-ebbc65",
+        "b": "inet-host-ac7ce9",
         "proto": "TCP",
         "packets": 35,
         "bytes": 22244
       },
       {
-        "a": "lan-host-c477bb",
-        "b": "inet-host-e298b7",
+        "a": "lan-host-be6bb7",
+        "b": "inet-host-435df2",
         "proto": "TCP",
         "packets": 33,
         "bytes": 9539
       },
       {
-        "a": "lan-host-f2211f",
-        "b": "inet-host-a9e422",
+        "a": "lan-host-9aecc8",
+        "b": "inet-host-ea37ff",
         "proto": "TCP",
         "packets": 30,
         "bytes": 17173
       },
       {
-        "a": "lan-host-44527e",
-        "b": "inet-host-b2295b",
+        "a": "lan-host-ed5fe7",
+        "b": "inet-host-1becf1",
         "proto": "TCP",
         "packets": 28,
         "bytes": 16539
       },
       {
-        "a": "lan-host-0707a4",
-        "b": "lan-host-4e9588",
+        "a": "lan-host-cf45a7",
+        "b": "lan-host-c39d4c",
         "proto": "TCP",
         "packets": 27,
         "bytes": 1830
       },
       {
-        "a": "lan-host-ace0c3",
-        "b": "inet-host-e298b7",
+        "a": "lan-host-688116",
+        "b": "inet-host-435df2",
         "proto": "TCP",
         "packets": 24,
         "bytes": 5024
       },
       {
-        "a": "lan-host-c403f1",
-        "b": "inet-host-5e0c56",
+        "a": "lan-host-ebbc65",
+        "b": "inet-host-a572f2",
         "proto": "TCP",
         "packets": 24,
         "bytes": 10662
       },
       {
-        "a": "lan-host-c0431b",
-        "b": "inet-host-e298b7",
+        "a": "lan-host-324ad8",
+        "b": "inet-host-435df2",
         "proto": "TCP",
         "packets": 24,
         "bytes": 10764
       },
       {
-        "a": "lan-host-44527e",
-        "b": "inet-host-a9e422",
+        "a": "lan-host-ed5fe7",
+        "b": "inet-host-ea37ff",
         "proto": "TCP",
         "packets": 22,
         "bytes": 9512
       },
       {
-        "a": "lan-host-9c6fda",
-        "b": "inet-host-75bf21",
+        "a": "lan-host-e85df0",
+        "b": "inet-host-45dd2c",
         "proto": "TCP",
         "packets": 22,
         "bytes": 10107
       },
       {
-        "a": "lan-host-44527e",
-        "b": "inet-host-a1fb18",
+        "a": "lan-host-ed5fe7",
+        "b": "inet-host-565424",
         "proto": "TCP",
         "packets": 17,
         "bytes": 5690
       },
       {
-        "a": "lan-host-cff010",
-        "b": "inet-host-5e0c56",
+        "a": "lan-host-f874b5",
+        "b": "inet-host-a572f2",
         "proto": "TCP",
         "packets": 17,
         "bytes": 5559
@@ -1432,19 +1416,19 @@
           "end": 1793462410.045148,
           "finding": "F1",
           "category": "attack",
-          "title": "Rogue DHCP server on the network (lan-host-4e9588)"
+          "title": "Rogue DHCP server on the network (lan-host-c39d4c)"
         },
         {
           "t": 1793462422.752399,
           "end": 1793462458.186058,
           "finding": "F3",
           "category": "misconfig",
-          "title": "Passwords are being sent unencrypted (HTTP Basic to lan-host-4e9588:80)"
+          "title": "Passwords are being sent unencrypted (HTTP Basic to lan-host-c39d4c:80)"
         }
       ]
     }
   },
   "redacted": true,
   "warnings": [],
-  "analysis_seconds": 0.022
+  "analysis_seconds": 0.021
 }

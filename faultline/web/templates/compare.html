@@ -1,0 +1,101 @@
+{% extends "_base.html" %}
+{% set worst = {'under_attack': 0, 'faulty': 1, 'minor_issues': 2, 'healthy': 3} %}
+{% block status %}{% if worst[a.status] <= worst[b.status] %}{{ a.status }}{% else %}{{ b.status }}{% endif %}{% endblock %}
+{% block title %}Compare: {{ a.name }} vs {{ b.name }} | Faultline{% endblock %}
+{% block body %}
+<main class="cmp">
+  <section class="section cmp-head">
+    <div class="wrap">
+      <p class="eyebrow">Compare two captures</p>
+      <h1 class="cmp-title"><span class="mono">{{ a.name }}</span> <span class="vs">vs</span> <span class="mono">{{ b.name }}</span></h1>
+      <p class="lede">The same symptom can have opposite causes, and a fix only counts if the capture after it looks healthier. Faultline reads both files and puts the verdicts side by side.</p>
+    </div>
+  </section>
+
+  <section class="section cmp-sides">
+    <div class="wrap">
+      <div class="sides">
+        {% for side, label in ((a, 'A'), (b, 'B')) %}
+        <article class="side s-{{ side.status }}">
+          <header class="side-head">
+            <span class="side-tag">{{ label }}</span>
+            <span class="mono side-name">{{ side.name }}</span>
+            {% if side.link %}<a class="btn" href="{{ side.link }}">Open full report</a>{% endif %}
+          </header>
+          <div class="verdict-row">
+            <div>
+              <p class="status-word small">{{ side.word }}</p>
+              <p class="side-headline">{{ side.headline or 'Analysis complete.' }}</p>
+            </div>
+            <div class="score" aria-label="Health score {{ side.score if side.score is not none else '?' }} out of 100">
+              <b>{{ side.score if side.score is not none else '?' }}</b><span>health</span>
+            </div>
+          </div>
+          <ul class="mini-counts" aria-label="Findings by type">
+            <li class="c-attack{% if not side.counts.attack %} zero{% endif %}"><b>{{ side.counts.attack }}</b> attack{{ '' if side.counts.attack == 1 else 's' }}</li>
+            <li class="c-fault{% if not side.counts.fault %} zero{% endif %}"><b>{{ side.counts.fault }}</b> fault{{ '' if side.counts.fault == 1 else 's' }}</li>
+            <li class="c-misconfig{% if not side.counts.misconfig %} zero{% endif %}"><b>{{ side.counts.misconfig }}</b> misconfig{{ '' if side.counts.misconfig == 1 else 's' }}</li>
+          </ul>
+          {% if side.findings %}
+          <ol class="side-findings">
+            {% for f in side.findings %}
+            <li class="c-{{ f.category }}">
+              <span class="pill">{% if f.category == 'misconfig' %}Misconfig{% elif f.category == 'info' %}Note{% else %}{{ f.category|capitalize }}{% endif %}</span>
+              <span class="ft"><b>{{ f.title }}</b>{% if f.summary %}<span class="fs">{{ f.summary }}</span>{% endif %}</span>
+              <span class="fid">{{ f.id }}</span>
+            </li>
+            {% endfor %}
+          </ol>
+          {% else %}
+          <p class="side-empty">Nothing looks wrong in this capture.</p>
+          {% endif %}
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  {% if diff %}
+  <section class="section" id="changed">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <h2>What changed from A to B</h2>
+          <p>Problems are matched by what they are and which devices they involve, so the same issue is recognised even if its numbering differs.</p>
+        </div>
+      </div>
+      <p class="conclusion s-{{ b.status }}">{{ diff.conclusion }}</p>
+      <div class="diff-grid">
+        <div class="panel d-fixed">
+          <h3><i></i>Fixed <span class="n">{{ diff.fixed|length }}</span></h3>
+          {% if diff.fixed %}<ul>{% for f in diff.fixed %}<li class="c-{{ f.category }}"><span class="pill">{{ f.category|capitalize }}</span> {{ f.title }}</li>{% endfor %}</ul>
+          {% else %}<p class="none">Nothing from A disappeared in B.</p>{% endif %}
+        </div>
+        <div class="panel d-new">
+          <h3><i></i>New <span class="n">{{ diff.new|length }}</span></h3>
+          {% if diff.new %}<ul>{% for f in diff.new %}<li class="c-{{ f.category }}"><span class="pill">{{ f.category|capitalize }}</span> {{ f.title }}</li>{% endfor %}</ul>
+          {% else %}<p class="none">B has no problems that A did not have.</p>{% endif %}
+        </div>
+        <div class="panel d-same">
+          <h3><i></i>Still present <span class="n">{{ diff.persisting|length }}</span></h3>
+          {% if diff.persisting %}<ul>{% for p in diff.persisting %}<li class="c-{{ p.after.category }}"><span class="pill">{{ p.after.category|capitalize }}</span> {{ p.after.title }} <span class="trend t-{{ p.trend }}">{{ p.trend }}</span></li>{% endfor %}</ul>
+          {% else %}<p class="none">No problem appears in both captures.</p>{% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="section">
+    <div class="wrap cmp-actions">
+      <a class="btn primary big" href="/">Compare other captures</a>
+      {% if a.link and b.link %}<span class="lede">Or open the full report for <a href="{{ a.link }}">A</a> or <a href="{{ b.link }}">B</a> to see the packets behind each verdict.</span>{% endif %}
+    </div>
+  </section>
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <p><strong>Faultline runs offline.</strong> Both captures were analysed on this computer; uploads are deleted immediately.</p>
+  </div>
+</footer>
+{% endblock %}

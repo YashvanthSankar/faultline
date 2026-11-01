@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src &#x27;none&#x27;; script-src &#x27;sha256-dtVXJClDF5Ho99ex5cM8N5N6ggix5v3qR6zgnEI3koM=&#x27;; style-src &#x27;sha256-35Ebjexa3i5wA7nlM9qO4n0eiUVCSTSyu6w2QqJTOJU=&#x27;; img-src data:; font-src &#x27;none&#x27;; connect-src &#x27;none&#x27;; object-src &#x27;none&#x27;; media-src &#x27;none&#x27;; frame-src &#x27;none&#x27;; worker-src &#x27;none&#x27;; manifest-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;">
+<meta http-equiv="Content-Security-Policy" content="default-src &#x27;none&#x27;; script-src &#x27;sha256-Ub1UspVg+7uc9LhL+zpJb9n59yRHZGDKRxDRvNhsLoA=&#x27;; style-src &#x27;sha256-fxV7W/wAtL2oG6H2obTinhROTp5ZNwbIUmgr560z+Qk=&#x27;; img-src data:; font-src &#x27;none&#x27;; connect-src &#x27;none&#x27;; object-src &#x27;none&#x27;; media-src &#x27;none&#x27;; frame-src &#x27;none&#x27;; worker-src &#x27;none&#x27;; manifest-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;">
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark light">
@@ -429,12 +429,124 @@ body.expert .beginner-only { display: none !important; }
   .steps li::before { color: #fff; background: #141a24; }
   a { text-decoration: none; }
 }
+
+/* ---------- sticky mini verdict ---------- */
+.mini-verdict {
+  display: none; align-items: center; gap: 9px; min-width: 0; max-width: 460px;
+  text-decoration: none; font-size: 14px; color: var(--muted);
+  padding: 5px 12px 5px 9px; border-radius: 999px; border: 1px solid var(--line-soft); background: var(--surface);
+}
+.mini-verdict .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--status); box-shadow: 0 0 0 3px color-mix(in srgb, var(--status) 22%, transparent); flex: none; }
+.mini-verdict b { color: var(--status); font: 700 14px var(--display); white-space: nowrap; }
+.mini-verdict .mini-head { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body.scrolled .mini-verdict { display: flex; animation: fade .25s ease; }
+body.scrolled .brand .brand-name { display: none; }
+@media (max-width: 1600px) { body.scrolled[data-embedded] .navlinks, [data-embedded="1"] body.scrolled .navlinks { display: none; } body.scrolled .tools { margin-left: auto; } }
+@media (max-width: 1180px) { body.scrolled .navlinks { display: none; } }
+
+/* ---------- glossary tooltips ---------- */
+.term { position: relative; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, var(--misconfig) 70%, transparent); text-underline-offset: 3px; text-decoration-thickness: 1.5px; cursor: help; border-radius: 3px; }
+.term:hover, .term:focus-visible { text-decoration-style: solid; color: var(--text); }
+.term .tip {
+  position: absolute; left: 0; bottom: calc(100% + 8px); z-index: 30; width: 290px; max-width: 70vw;
+  padding: 9px 11px; border-radius: 9px; background: var(--surface-2); border: 1px solid var(--line);
+  color: var(--text); font: 400 13px/1.45 var(--sans); font-style: normal; text-decoration: none;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .45); opacity: 0; visibility: hidden; transform: translateY(4px);
+  transition: opacity .12s ease, transform .12s ease; pointer-events: none; white-space: normal; text-align: left;
+}
+.term .tip.left { left: auto; right: 0; }
+.term .tip::after { content: ""; position: absolute; left: 14px; top: 100%; border: 6px solid transparent; border-top-color: var(--line); }
+.term .tip.left::after { left: auto; right: 14px; }
+.term:hover .tip, .term:focus .tip, .term:focus-visible .tip { opacity: 1; visibility: visible; transform: none; }
+body.expert .term { text-decoration: none; cursor: inherit; }
+body.expert .term .tip { display: none; }
+
+/* ---------- evidence table toggle ---------- */
+.evidence-foot { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
+.evidence-foot .more { margin: 0; }
+.btn.small { padding: 5px 10px; font-size: 13px; color: var(--muted); }
+.btn.small:hover { color: var(--text); }
+.btn.small svg { transition: transform .2s ease; }
+.btn.small[aria-expanded="true"] svg { transform: rotate(180deg); }
+.chip.host { color: var(--text); border-color: var(--focus); background: color-mix(in srgb, var(--focus) 12%, transparent); }
+.chip.host .x { font-size: 15px; line-height: 1; }
+.chip[hidden] { display: none; }
+
+/* ---------- network map ---------- */
+.map-panel { padding: 18px 20px 14px; margin-bottom: 18px; }
+.map-head { display: flex; align-items: baseline; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-bottom: 8px; }
+.map-head h3 { margin: 0; }
+.map-head p { margin: 0; color: var(--muted); font-size: 13.5px; max-width: 70ch; }
+.map-box { position: relative; background: var(--bg-deep); border: 1px solid var(--line-soft); border-radius: 12px; overflow: hidden; }
+.netmap { display: block; width: 100%; height: auto; font-family: var(--sans); }
+.netmap .cloud { fill: url(#fl-cloud); stroke: var(--line-soft); stroke-dasharray: 4 5; }
+.netmap stop.c0 { stop-color: var(--misconfig); stop-opacity: .14; }
+.netmap stop.c1 { stop-color: var(--misconfig); stop-opacity: .02; }
+.netmap .cloud-label { fill: var(--faint); font: 600 12px var(--sans); letter-spacing: .08em; text-transform: uppercase; }
+.netmap .edge { stroke: var(--line); stroke-linecap: round; opacity: .9; transition: opacity .15s ease, stroke .15s ease; }
+.netmap .edge.faint { stroke-dasharray: 3 6; opacity: .55; }
+.netmap .edge.hot { stroke: var(--focus); opacity: 1; }
+.map-box.hovering .edge:not(.hot), .map-box.has-selection .edge:not(.hot) { opacity: .25; }
+.netmap .node { cursor: pointer; outline: none; }
+.netmap .node .halo { fill: var(--c, transparent); opacity: 0; transition: opacity .15s ease; }
+.netmap .node .body { fill: var(--surface-2); stroke: var(--line); stroke-width: 1.5; transition: stroke .15s ease; }
+.netmap .node .glyph { fill: none; stroke: var(--muted); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.netmap .node .label { fill: var(--text); font: 500 11.5px var(--mono); }
+.netmap .node .sublabel { fill: var(--faint); font: 500 10.5px var(--sans); }
+.netmap .node .count { fill: var(--faint); font: 500 11px var(--sans); }
+.netmap .node.k-gateway .body { fill: var(--surface); stroke: var(--ok); stroke-width: 2; }
+.netmap .node.k-gateway .glyph { stroke: var(--ok); }
+.netmap .node.k-gateway .label { font-size: 12.5px; font-weight: 600; }
+.netmap .node.k-hub .body { fill: none; stroke-dasharray: 4 4; }
+.netmap .node.k-cloud .body { fill: transparent; stroke: none; }
+.netmap .node.k-cloud .glyph { stroke: var(--misconfig); stroke-width: 1.8; fill: color-mix(in srgb, var(--misconfig) 18%, transparent); }
+.netmap .node.k-external .body { fill: var(--bg); }
+.netmap .node.k-more .body { stroke-dasharray: 3 3; }
+.netmap .node.k-more .glyph { stroke-width: 2.4; }
+.netmap .node.flag .body { stroke: var(--c); stroke-width: 2.2; }
+.netmap .node.flag .glyph { stroke: var(--c); }
+.netmap .node.flag .halo { opacity: .12; }
+.netmap .node:hover .halo, .netmap .node:focus-visible .halo, .netmap .node.selected .halo { opacity: .28; fill: var(--c, var(--focus)); }
+.netmap .node:focus-visible .body { stroke: var(--focus); }
+.netmap .node.selected .body { stroke: var(--focus); stroke-width: 2.5; }
+.netmap .node.peer .body { stroke: var(--focus); }
+.netmap .fbadge circle { fill: var(--c); stroke: var(--bg-deep); stroke-width: 2; }
+.netmap .fbadge text { fill: var(--bg-deep); font: 700 10.5px var(--sans); }
+.netmap .rbadge rect { fill: var(--bg-deep); stroke-width: 1; }
+.netmap .rbadge text { font: 700 8.5px var(--sans); letter-spacing: .02em; }
+.netmap .rbadge.b-dns rect { stroke: var(--misconfig); } .netmap .rbadge.b-dns text { fill: var(--misconfig); }
+.netmap .rbadge.b-dhcp rect { stroke: var(--fault); } .netmap .rbadge.b-dhcp text { fill: var(--fault); }
+.netmap .rbadge.b-rtr rect { stroke: var(--ok); } .netmap .rbadge.b-rtr text { fill: var(--ok); }
+.map-box .tooltip { max-width: 320px; min-width: 200px; }
+.map-box.hovering .tooltip { opacity: 1; }
+.map-tip .names { color: var(--muted); margin-top: 1px; overflow-wrap: anywhere; }
+.map-tip dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 6px 0 0; }
+.map-tip dt { color: var(--faint); }
+.map-tip dd { margin: 0; overflow-wrap: anywhere; }
+.map-tip .warn { color: var(--attack); }
+.map-tip .hint { margin-top: 6px; color: var(--faint); font-size: 12px; }
+.map-tip ul { margin-top: 6px; }
+.map-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 12px 0 0; padding: 0; list-style: none; font-size: 12.5px; color: var(--muted); }
+.map-legend li { display: inline-flex; align-items: center; gap: 7px; }
+.map-legend i { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface-2); flex: none; }
+.map-legend .l-router i { border-color: var(--ok); border-width: 2px; }
+.map-legend .l-ext i { background: var(--bg); border-color: var(--misconfig); border-style: dashed; }
+.map-legend .l-attack i { border-color: var(--attack); background: color-mix(in srgb, var(--attack) 25%, var(--surface-2)); }
+.map-legend .l-fault i { border-color: var(--fault); background: color-mix(in srgb, var(--fault) 25%, var(--surface-2)); }
+.map-legend .l-misconfig i { border-color: var(--misconfig); background: color-mix(in srgb, var(--misconfig) 25%, var(--surface-2)); }
+.map-legend .l-edge i { width: 22px; height: 0; border: 0; border-top: 3px solid var(--line); border-radius: 2px; }
+.map-legend .l-badge i { width: auto; height: auto; border-radius: 4px; border-color: var(--misconfig); background: var(--bg-deep); font: 700 8px var(--sans); color: var(--misconfig); padding: 1px 4px; }
+.map-legend .l-badge i::before { content: "DNS"; }
+.map-text { margin-top: 10px; font-size: 13px; color: var(--muted); }
+.map-text summary { cursor: pointer; color: var(--faint); }
+.map-text ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 3px; font-family: var(--mono); font-size: 12px; }
+@media print { .map-box .tooltip, .term .tip { display: none !important; } .netmap .node .body { fill: #fff; } }
 </style>
 </head>
 <body>
 <div id="app"></div>
 <noscript><p>This report needs JavaScript to display. The raw data is embedded in this file as JSON.</p></noscript>
-<script type="application/json" id="faultline-data">{"tool":{"name":"Faultline","version":"1.0.0"},"generated_at":"2026-11-01T14:24:50+05:30","capture":{"name":"outage_vs_attack_mixed.pcap","format":"pcap","compressed":false,"file_bytes":639269,"packets":1799,"bytes_captured":610461,"linktypes":[1],"first_ts":1793462400.498998,"last_ts":1793462550.600446,"duration":150.10144805908203,"truncated":false,"limited":false,"warnings":[],"sha256":"2da9a717b7f546e81babd83c3453c6d200329740fe90b4d9aaf2b317d2219a0a","malformed_packets":0},"verdict":{"status":"under_attack","headline":"Port scan: 192.168.1.66 is checking which services are open on 192.168.1.20.","summary":"We found 1 sign of malicious activity. This is not an ordinary outage: restarting the router will not fix it. Separately, 1 genuine fault or misconfiguration also needs attention.","score":75,"counts":{"attack":1,"fault":1,"misconfig":0,"info":0}},"findings":[{"id":"F1","kind":"scan.port","category":"attack","severity":3,"severity_name":"high","confidence":0.96,"title":"Port scan: 192.168.1.66 is checking which services are open on 192.168.1.20","summary":"192.168.1.66 probed 300 ports on 192.168.1.20 in 1.4 s (222 probes/s) using a TCP SYN scan.","explanation":"A port is like a numbered door on a computer; each service (web, file sharing, remote login) listens behind one. 192.168.1.66 knocked on 300 doors in a short time to find out which ones open, which is the usual first step before an attack (reconnaissance). No open ports were confirmed.","analogy":"Like someone walking down a hotel corridor trying every door handle to see which room is unlocked.","cause":"A port-scanning tool (such as nmap or masscan) running on 192.168.1.66: either a security test, a curious user, or malware / an attacker mapping the network.","fix":["Identify the device behind 192.168.1.66: run `arp -a` (or check the DHCP lease list / switch MAC table) to find its MAC address and owner.","If it is not an authorised security scan, disconnect it or block it at the firewall (e.g. `iptables -I INPUT -s 192.168.1.66 -j DROP`) and check it for malware.","On the target(s), list what is listening (`netstat -an` / `ss -tlnp`) and close services that are not needed, especially any port the scan found open.","Review firewall and server logs for logins or exploits from this address after the scan.","If it is your own vulnerability scanner, schedule it and add it to an allow-list so it is expected."],"technical":"TCP SYN scan from 192.168.1.66 against 1 host(s) (192.168.1.20): 300 probes, 300 TCP + 0 UDP distinct ports, peak 300 distinct ports/60 s (threshold 25); stealth FIN/NULL/Xmas/other = 0/0/0/0; responses: 0 SYN/ACK (open), 299 RST (closed), 0 ICMP port-unreachable, 0 UDP replies; prober behaviour: 0 half-open resets, 0 completed handshakes, 0 closed without data, 0 carried data. Rate 221.7 probes/s over 1.35 s.","mitre":"T1046 Network Service Discovery","hosts":["192.168.1.66","192.168.1.20"],"packets":[593,595,597,599,601,603,605,607,609,611,613,615,617,619,621,623,625,627,629,631,633,636,638,640,642,644,646,648,650,652,654,656,658,660,662,664,666,668,670,672,674,676,678,680,682,684,686,688,690,692,694,696,698,700,702,704,706,708,710,712,714,716,718,720,722,724,726,728,730,732,734,736,738,740,742,744,746,748,750,752,754,756,758,760,762,764,766,768,770,772,774,776,778,780,782,784,786,788,790,792,794,796,798,800,802,804,806,808,810,812,814,816,818,820,822,824,826,828,830,832,834,836,838,840,842,844,846,848,850,852,854,856,858,860,862,864,866,868,870,872,874,876,878,880,882,884,886,888,890,892,894,896,898,900,902,904,906,908,910,912,914,916,918,920,922,924,926,928,930,932,934,936,938,940,942,944,946,948,950,952,954,956,958,960,962,964,966,968,970,972,974,976,978,980,982,984,986,988,990,992],"packet_total":300,"first_ts":1793462460.0,"last_ts":1793462461.352961,"metrics":{"source":"192.168.1.66","technique":"TCP SYN scan","targets":["192.168.1.20"],"target_count":1,"probes":300,"ports_probed":300,"tcp_ports":300,"udp_ports":0,"peak_ports_per_window":300,"window_s":60.0,"rate_per_s":221.74,"duration_s":1.353,"open_ports":[],"open_count":0,"closed":299,"udp_closed":0,"half_open":0,"connect_close":0,"with_data":0,"stealth":{"fin":0,"null":0,"xmas":0,"other":0},"sample_ports":["541/tcp","1985/tcp","1354/tcp","1003/tcp","1454/tcp","70/tcp","863/tcp","1551/tcp","1984/tcp","1043/tcp"]},"indicators":[{"text":"192.168.1.66 tried 300 different ports on 192.168.1.20 (up to 300 within 60 s); normal programs talk to one or two ports per server","supports":"attack","weight":3.0},{"text":"Probes arrived at 222 per second, far faster than a person or normal application opens connections","supports":"attack","weight":1.0},{"text":"No connection was used to exchange data: nothing here looks like a working application that is merely misconfigured","supports":"attack","weight":0.5}],"scores":{"attack":5.0},"alternatives":[],"symptom_of":null,"incident":null,"evidence_lines":[{"no":593,"ts":1793462460.0,"rel":59.501002,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:541 [S] seq=265196516 ack=0 win=1024 len=0"},{"no":595,"ts":1793462460.004154,"rel":59.505156,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1985 [S] seq=1603175814 ack=0 win=1024 len=0"},{"no":597,"ts":1793462460.007881,"rel":59.508883,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1354 [S] seq=1892629413 ack=0 win=1024 len=0"},{"no":599,"ts":1793462460.011243,"rel":59.512245,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1003 [S] seq=3501009496 ack=0 win=1024 len=0"},{"no":601,"ts":1793462460.016308,"rel":59.51731,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1454 [S] seq=3290314894 ack=0 win=1024 len=0"},{"no":603,"ts":1793462460.020976,"rel":59.521978,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:70 [S] seq=3777026310 ack=0 win=1024 len=0"},{"no":605,"ts":1793462460.02624,"rel":59.527242,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:863 [S] seq=2334669050 ack=0 win=1024 len=0"},{"no":607,"ts":1793462460.030687,"rel":59.531689,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1551 [S] seq=3992951943 ack=0 win=1024 len=0"},{"no":609,"ts":1793462460.03522,"rel":59.536222,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1984 [S] seq=3547226293 ack=0 win=1024 len=0"},{"no":611,"ts":1793462460.040395,"rel":59.541397,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1043 [S] seq=1575151566 ack=0 win=1024 len=0"},{"no":613,"ts":1793462460.044892,"rel":59.545894,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:470 [S] seq=3372657847 ack=0 win=1024 len=0"},{"no":615,"ts":1793462460.050859,"rel":59.551861,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:522 [S] seq=1310048117 ack=0 win=1024 len=0"},{"no":617,"ts":1793462460.055989,"rel":59.556991,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:396 [S] seq=3131763688 ack=0 win=1024 len=0"},{"no":619,"ts":1793462460.060118,"rel":59.56112,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1674 [S] seq=496851537 ack=0 win=1024 len=0"},{"no":621,"ts":1793462460.066012,"rel":59.567014,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:882 [S] seq=282881400 ack=0 win=1024 len=0"},{"no":623,"ts":1793462460.070804,"rel":59.571806,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1750 [S] seq=329835944 ack=0 win=1024 len=0"},{"no":625,"ts":1793462460.076086,"rel":59.577088,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:765 [S] seq=2158796388 ack=0 win=1024 len=0"},{"no":627,"ts":1793462460.081434,"rel":59.582436,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:802 [S] seq=1052043206 ack=0 win=1024 len=0"},{"no":629,"ts":1793462460.087224,"rel":59.588226,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:354 [S] seq=2521109892 ack=0 win=1024 len=0"},{"no":631,"ts":1793462460.090753,"rel":59.591755,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:538 [S] seq=2464855827 ack=0 win=1024 len=0"},{"no":633,"ts":1793462460.094113,"rel":59.595115,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1297 [S] seq=2487740656 ack=0 win=1024 len=0"},{"no":636,"ts":1793462460.098223,"rel":59.599225,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1513 [S] seq=3399881108 ack=0 win=1024 len=0"},{"no":638,"ts":1793462460.101642,"rel":59.602644,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1789 [S] seq=2685913710 ack=0 win=1024 len=0"},{"no":640,"ts":1793462460.106446,"rel":59.607448,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:173 [S] seq=3685779320 ack=0 win=1024 len=0"},{"no":642,"ts":1793462460.11046,"rel":59.611462,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1885 [S] seq=2331892775 ack=0 win=1024 len=0"},{"no":644,"ts":1793462460.114374,"rel":59.615376,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:895 [S] seq=4294612302 ack=0 win=1024 len=0"},{"no":646,"ts":1793462460.118187,"rel":59.619189,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:899 [S] seq=943229313 ack=0 win=1024 len=0"},{"no":648,"ts":1793462460.122594,"rel":59.623596,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:392 [S] seq=4048933905 ack=0 win=1024 len=0"},{"no":650,"ts":1793462460.128038,"rel":59.62904,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:881 [S] seq=1091392620 ack=0 win=1024 len=0"},{"no":652,"ts":1793462460.13126,"rel":59.632262,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:839 [S] seq=1213805373 ack=0 win=1024 len=0"},{"no":654,"ts":1793462460.134952,"rel":59.635954,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1719 [S] seq=485966317 ack=0 win=1024 len=0"},{"no":656,"ts":1793462460.138642,"rel":59.639644,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1124 [S] seq=2690983081 ack=0 win=1024 len=0"},{"no":658,"ts":1793462460.144638,"rel":59.64564,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1516 [S] seq=2771022171 ack=0 win=1024 len=0"},{"no":660,"ts":1793462460.147904,"rel":59.648906,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1661 [S] seq=3364122674 ack=0 win=1024 len=0"},{"no":662,"ts":1793462460.153216,"rel":59.654218,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:610 [S] seq=2757003294 ack=0 win=1024 len=0"},{"no":664,"ts":1793462460.157139,"rel":59.658141,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1267 [S] seq=995472467 ack=0 win=1024 len=0"},{"no":666,"ts":1793462460.162314,"rel":59.663316,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:263 [S] seq=237175392 ack=0 win=1024 len=0"},{"no":668,"ts":1793462460.166529,"rel":59.667531,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1508 [S] seq=1139656500 ack=0 win=1024 len=0"},{"no":670,"ts":1793462460.170747,"rel":59.671749,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:647 [S] seq=4066412580 ack=0 win=1024 len=0"},{"no":672,"ts":1793462460.175956,"rel":59.676958,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:500 [S] seq=4276129851 ack=0 win=1024 len=0"}]},{"id":"F2","kind":"dns.timeout","category":"fault","severity":2,"severity_name":"medium","confidence":0.86,"title":"DNS lookups are timing out","summary":"Your DNS server 192.168.1.1 stopped answering at 21:30:35: 29 of 68 lookups (43%) got no reply.","explanation":"Before your device can open a website it asks a DNS server to turn the name (like example.com) into an address. These questions are going unanswered, so websites and apps seem 'down' even though the internet connection itself may be fine.","analogy":"Like phoning directory enquiries and nobody ever picks up.","cause":"The DNS server 192.168.1.1 is down, overloaded or unreachable (or a firewall is dropping DNS).","fix":["Test it directly: `nslookup example.com 192.168.1.1`, then compare with `nslookup example.com 1.1.1.1`.","If only your server fails, restart it (often the router) or switch DNS to a working one (router/DHCP settings, or the device's network settings).","Check firewall rules that might block UDP/TCP port 53.","On Windows run `ipconfig /flushdns`; check which DNS servers are configured with `ipconfig /all`."],"technical":"Unanswered within 3 s: 192.168.1.1: 29/68 unanswered. Working: none. Retries: 58; queries in the last 3 s ignored: 0.","mitre":null,"hosts":["192.168.1.1","192.168.1.10","192.168.1.11","192.168.1.12","192.168.1.15","192.168.1.20"],"packets":[559,561,564,567,571,573,576,579,582,586,588,591,1129,1197,1201,1203,1207,1210,1212,1215,1219,1221,1224,1228,1230,1234,1236,1239,1242],"packet_total":29,"first_ts":1793462435.0,"last_ts":1793462549.924752,"metrics":{"unanswered":29,"queries":68,"ratio":0.426,"servers":{"192.168.1.1":{"queries":68,"unanswered":29,"answered":39,"last_ok":1793462549.905873}},"clients":["192.168.1.10","192.168.1.11","192.168.1.12","192.168.1.15","192.168.1.20","192.168.1.21","192.168.1.30","192.168.1.31","192.168.1.40","192.168.1.45"],"retries":58},"indicators":[{"text":"29 DNS lookups out of 68 got no answer within 3 s","supports":"fault","weight":1.5},{"text":"Devices retried 58 lookups, as they do when DNS goes quiet","supports":"fault","weight":0.5}],"scores":{"fault":2.5},"alternatives":[],"symptom_of":null,"incident":null,"evidence_lines":[{"no":559,"ts":1793462435.0,"rel":34.501002,"summary":"DNS query 0x365a A docs.example.org (192.168.1.20 → 192.168.1.1)"},{"no":561,"ts":1793462437.280264,"rel":36.781266,"summary":"DNS query 0x3686 A api.example.io (192.168.1.10 → 192.168.1.1)"},{"no":564,"ts":1793462439.246277,"rel":38.747279,"summary":"DNS query 0x36b6 A mail.example.net (192.168.1.30 → 192.168.1.1)"},{"no":567,"ts":1793462441.150245,"rel":40.651247,"summary":"DNS query 0x36de A api.example.io (192.168.1.30 → 192.168.1.1)"},{"no":571,"ts":1793462444.174111,"rel":43.675113,"summary":"DNS query 0x36f7 A docs.example.org (192.168.1.45 → 192.168.1.1)"},{"no":573,"ts":1793462445.844802,"rel":45.345804,"summary":"DNS query 0x371a A docs.example.org (192.168.1.30 → 192.168.1.1)"},{"no":576,"ts":1793462447.700541,"rel":47.201543,"summary":"DNS query 0x3727 A mail.example.net (192.168.1.30 → 192.168.1.1)"},{"no":579,"ts":1793462449.606388,"rel":49.10739,"summary":"DNS query 0x3736 A api.example.io (192.168.1.30 → 192.168.1.1)"},{"no":582,"ts":1793462451.534403,"rel":51.035405,"summary":"DNS query 0x375f A www.example.com (192.168.1.20 → 192.168.1.1)"},{"no":586,"ts":1793462454.659663,"rel":54.160665,"summary":"DNS query 0x3763 A docs.example.org (192.168.1.11 → 192.168.1.1)"},{"no":588,"ts":1793462456.162903,"rel":55.663905,"summary":"DNS query 0x377a A www.example.com (192.168.1.45 → 192.168.1.1)"},{"no":591,"ts":1793462459.096946,"rel":58.597948,"summary":"DNS query 0x379d A www.example.com (192.168.1.20 → 192.168.1.1)"},{"no":1129,"ts":1793462461.206492,"rel":60.707494,"summary":"DNS query 0x37ab A docs.example.org (192.168.1.30 → 192.168.1.1)"},{"no":1197,"ts":1793462464.104617,"rel":63.605619,"summary":"DNS query 0x37cc A mail.example.net (192.168.1.12 → 192.168.1.1)"},{"no":1201,"ts":1793462467.503258,"rel":67.00426,"summary":"DNS query 0x37ea A mail.example.net (192.168.1.60 → 192.168.1.1)"},{"no":1203,"ts":1793462469.604898,"rel":69.1059,"summary":"DNS query 0x37f1 A docs.example.org (192.168.1.30 → 192.168.1.1)"},{"no":1207,"ts":1793462473.039669,"rel":72.540671,"summary":"DNS query 0x3805 A docs.example.org (192.168.1.31 → 192.168.1.1)"},{"no":1210,"ts":1793462476.462934,"rel":75.963936,"summary":"DNS query 0x3815 A mail.example.net (192.168.1.55 → 192.168.1.1)"},{"no":1212,"ts":1793462479.047754,"rel":78.548756,"summary":"DNS query 0x382d A www.example.com (192.168.1.15 → 192.168.1.1)"},{"no":1215,"ts":1793462480.879846,"rel":80.380848,"summary":"DNS query 0x3850 A www.example.com (192.168.1.20 → 192.168.1.1)"},{"no":1219,"ts":1793462484.103418,"rel":83.60442,"summary":"DNS query 0x385c A www.example.com (192.168.1.60 → 192.168.1.1)"},{"no":1221,"ts":1793462485.967212,"rel":85.468214,"summary":"DNS query 0x3883 A www.example.com (192.168.1.20 → 192.168.1.1)"},{"no":1224,"ts":1793462488.875406,"rel":88.376408,"summary":"DNS query 0x38a8 A mail.example.net (192.168.1.12 → 192.168.1.1)"},{"no":1228,"ts":1793462492.216761,"rel":91.717763,"summary":"DNS query 0x38d0 A www.example.com (192.168.1.30 → 192.168.1.1)"},{"no":1230,"ts":1793462494.546611,"rel":94.047613,"summary":"DNS query 0x38e7 A docs.example.org (192.168.1.21 → 192.168.1.1)"},{"no":1234,"ts":1793462497.840761,"rel":97.341763,"summary":"DNS query 0x38ea A mail.example.net (192.168.1.11 → 192.168.1.1)"},{"no":1236,"ts":1793462500.227361,"rel":99.728363,"summary":"DNS query 0x38ed A docs.example.org (192.168.1.21 → 192.168.1.1)"},{"no":1239,"ts":1793462502.297809,"rel":101.798811,"summary":"DNS query 0x38f8 A docs.example.org (192.168.1.60 → 192.168.1.1)"},{"no":1242,"ts":1793462504.589588,"rel":104.09059,"summary":"DNS query 0x3921 A www.example.com (192.168.1.60 → 192.168.1.1)"}]}],"incidents":[],"hosts":[{"ip":"192.168.1.20","macs":["b8:27:eb:14:b4:1d"],"first_ts":1793462409.759495,"last_ts":1793462545.866653,"packets_sent":393,"packets_recv":390,"bytes_sent":27635,"roles":[],"names":[],"local":true},{"ip":"192.168.1.66","macs":["08:00:27:3a:66:9e"],"first_ts":1793462460.0,"last_ts":1793462461.353361,"packets_sent":300,"packets_recv":300,"bytes_sent":17400,"roles":[],"names":[],"local":true},{"ip":"192.168.1.11","macs":["3c:22:fb:11:ab:08"],"first_ts":1793462401.95755,"last_ts":1793462545.87263,"packets_sent":106,"packets_recv":120,"bytes_sent":13503,"roles":[],"names":[],"local":true},{"ip":"192.168.1.15","macs":["dc:a6:32:13:af:16"],"first_ts":1793462406.410706,"last_ts":1793462521.958872,"packets_sent":80,"packets_recv":91,"bytes_sent":9668,"roles":[],"names":[],"local":true},{"ip":"192.168.1.1","macs":["3c:84:6a:12:34:01"],"first_ts":1793462400.499774,"last_ts":1793462549.924752,"packets_sent":39,"packets_recv":126,"bytes_sent":3751,"roles":["dns-server","gateway"],"names":[],"local":true},{"ip":"192.168.1.45","macs":["e4:5f:01:19:cd:40"],"first_ts":1793462411.063882,"last_ts":1793462550.600446,"packets_sent":68,"packets_recv":83,"bytes_sent":7800,"roles":[],"names":[],"local":true},{"ip":"192.168.1.60","macs":["9c:b6:d0:1b:dc:4e"],"first_ts":1793462427.748279,"last_ts":1793462544.889539,"packets_sent":58,"packets_recv":52,"bytes_sent":6898,"roles":[],"names":[],"local":true},{"ip":"192.168.1.55","macs":["c8:e2:65:1a:d7:47"],"first_ts":1793462400.498998,"last_ts":1793462544.495908,"packets_sent":47,"packets_recv":50,"bytes_sent":6081,"roles":[],"names":[],"local":true},{"ip":"192.168.1.31","macs":["f0:18:98:17:bf:32"],"first_ts":1793462423.207829,"last_ts":1793462519.151648,"packets_sent":28,"packets_recv":29,"bytes_sent":3076,"roles":[],"names":[],"local":true},{"ip":"192.168.1.12","macs":["a4:83:e7:12:ac:0f"],"first_ts":1793462427.623536,"last_ts":1793462521.534136,"packets_sent":28,"packets_recv":27,"bytes_sent":2668,"roles":[],"names":[],"local":true},{"ip":"192.168.1.40","macs":["8c:85:90:18:c8:39"],"first_ts":1793462414.235593,"last_ts":1793462517.896426,"packets_sent":16,"packets_recv":18,"bytes_sent":2154,"roles":[],"names":[],"local":true},{"ip":"192.168.1.30","macs":["28:d2:44:16:be:2b"],"first_ts":1793462439.246277,"last_ts":1793462495.216761,"packets_sent":24,"packets_recv":0,"bytes_sent":1809,"roles":[],"names":[],"local":true},{"ip":"192.168.1.21","macs":["00:1a:a0:15:b5:24"],"first_ts":1793462420.054607,"last_ts":1793462503.227361,"packets_sent":14,"packets_recv":8,"bytes_sent":1176,"roles":[],"names":[],"local":true},{"ip":"192.168.1.10","macs":["f4:5c:89:10:aa:01"],"first_ts":1793462429.110399,"last_ts":1793462519.962508,"packets_sent":12,"packets_recv":9,"bytes_sent":1022,"roles":[],"names":[],"local":true},{"ip":"203.0.113.200","macs":[],"first_ts":1793462414.916157,"last_ts":1793462550.600446,"packets_sent":134,"packets_recv":109,"bytes_sent":129965,"roles":[],"names":[],"local":false},{"ip":"198.51.100.20","macs":[],"first_ts":1793462411.082091,"last_ts":1793462545.866653,"packets_sent":131,"packets_recv":108,"bytes_sent":124335,"roles":[],"names":[],"local":false},{"ip":"203.0.113.10","macs":[],"first_ts":1793462512.067902,"last_ts":1793462544.205446,"packets_sent":78,"packets_recv":63,"bytes_sent":78869,"roles":[],"names":[],"local":false},{"ip":"198.51.100.44","macs":[],"first_ts":1793462401.976871,"last_ts":1793462419.806112,"packets_sent":62,"packets_recv":50,"bytes_sent":62772,"roles":[],"names":[],"local":false},{"ip":"198.51.100.5","macs":[],"first_ts":1793462409.77459,"last_ts":1793462519.962508,"packets_sent":39,"packets_recv":39,"bytes_sent":20600,"roles":[],"names":[],"local":false},{"ip":"203.0.113.80","macs":[],"first_ts":1793462406.422031,"last_ts":1793462523.553749,"packets_sent":35,"packets_recv":30,"bytes_sent":32394,"roles":[],"names":[],"local":false},{"ip":"93.184.216.34","macs":[],"first_ts":1793462424.160224,"last_ts":1793462424.406152,"packets_sent":29,"packets_recv":20,"bytes_sent":34802,"roles":[],"names":[],"local":false},{"ip":"203.0.113.81","macs":[],"first_ts":1793462520.786975,"last_ts":1793462521.958872,"packets_sent":15,"packets_recv":14,"bytes_sent":11071,"roles":[],"names":[],"local":false},{"ip":"203.0.113.25","macs":[],"first_ts":1793462532.153475,"last_ts":1793462532.975932,"packets_sent":14,"packets_recv":14,"bytes_sent":8906,"roles":[],"names":[],"local":false},{"ip":"203.0.113.123","macs":[],"first_ts":1793462510.0,"last_ts":1793462510.020851,"packets_sent":1,"packets_recv":1,"bytes_sent":90,"roles":[],"names":[],"local":false}],"stats":{"protocols":{"TCP":1394,"TLS":182,"DNS":165,"ARP":48,"HTTP":8,"UDP":2},"top_talkers":[{"ip":"203.0.113.200","packets":134,"bytes":129965,"local":false},{"ip":"198.51.100.20","packets":131,"bytes":124335,"local":false},{"ip":"203.0.113.10","packets":78,"bytes":78869,"local":false},{"ip":"198.51.100.44","packets":62,"bytes":62772,"local":false},{"ip":"93.184.216.34","packets":29,"bytes":34802,"local":false},{"ip":"203.0.113.80","packets":35,"bytes":32394,"local":false},{"ip":"192.168.1.20","packets":393,"bytes":27635,"local":true},{"ip":"198.51.100.5","packets":39,"bytes":20600,"local":false},{"ip":"192.168.1.66","packets":300,"bytes":17400,"local":true},{"ip":"192.168.1.11","packets":106,"bytes":13503,"local":true}],"conversations":[{"a":"192.168.1.20","b":"192.168.1.66","proto":"TCP","packets":600,"bytes":33600},{"a":"192.168.1.20","b":"203.0.113.10","proto":"TCP","packets":85,"bytes":49684},{"a":"192.168.1.45","b":"198.51.100.20","proto":"TCP","packets":72,"bytes":48193},{"a":"192.168.1.11","b":"198.51.100.44","proto":"TCP","packets":68,"bytes":42776},{"a":"192.168.1.55","b":"198.51.100.20","proto":"TCP","packets":68,"bytes":30466},{"a":"192.168.1.11","b":"203.0.113.200","proto":"TCP","packets":66,"bytes":29499},{"a":"192.168.1.45","b":"203.0.113.200","proto":"TCP","packets":45,"bytes":33242},{"a":"192.168.1.15","b":"93.184.216.34","proto":"TCP","packets":43,"bytes":32581},{"a":"192.168.1.12","b":"203.0.113.200","proto":"TCP","packets":37,"bytes":22479},{"a":"192.168.1.60","b":"203.0.113.200","proto":"TCP","packets":30,"bytes":17560},{"a":"192.168.1.31","b":"198.51.100.20","proto":"TCP","packets":30,"bytes":17372},{"a":"192.168.1.11","b":"203.0.113.10","proto":"TCP","packets":30,"bytes":17525},{"a":"192.168.1.15","b":"203.0.113.80","proto":"TCP","packets":29,"bytes":16177},{"a":"192.168.1.1","b":"192.168.1.20","proto":"DNS","packets":25,"bytes":1988},{"a":"192.168.1.1","b":"192.168.1.30","proto":"DNS","packets":24,"bytes":1809}],"timeline":{"start":1793462400.498998,"bucket_seconds":1,"series":[{"t":1793462400,"packets":4,"bytes":262},{"t":1793462401,"packets":5,"bytes":324},{"t":1793462402,"packets":27,"bytes":16809},{"t":1793462403,"packets":4,"bytes":264},{"t":1793462404,"packets":0,"bytes":0},{"t":1793462405,"packets":0,"bytes":0},{"t":1793462406,"packets":34,"bytes":20337},{"t":1793462407,"packets":7,"bytes":1629},{"t":1793462408,"packets":0,"bytes":0},{"t":1793462409,"packets":19,"bytes":6272},{"t":1793462410,"packets":7,"bytes":1962},{"t":1793462411,"packets":52,"bytes":38289},{"t":1793462412,"packets":4,"bytes":264},{"t":1793462413,"packets":0,"bytes":0},{"t":1793462414,"packets":38,"bytes":15562},{"t":1793462415,"packets":39,"bytes":16551},{"t":1793462416,"packets":18,"bytes":6152},{"t":1793462417,"packets":4,"bytes":264},{"t":1793462418,"packets":47,"bytes":36648},{"t":1793462419,"packets":7,"bytes":1792},{"t":1793462420,"packets":18,"bytes":4542},{"t":1793462421,"packets":0,"bytes":0},{"t":1793462422,"packets":32,"bytes":16033},{"t":1793462423,"packets":18,"bytes":4540},{"t":1793462424,"packets":51,"bytes":37367},{"t":1793462425,"packets":0,"bytes":0},{"t":1793462426,"packets":0,"bytes":0},{"t":1793462427,"packets":55,"bytes":27492},{"t":1793462428,"packets":34,"bytes":23380},{"t":1793462429,"packets":4,"bytes":288},{"t":1793462430,"packets":30,"bytes":14539},{"t":1793462431,"packets":0,"bytes":0},{"t":1793462432,"packets":0,"bytes":0},{"t":1793462433,"packets":0,"bytes":0},{"t":1793462434,"packets":0,"bytes":0},{"t":1793462435,"packets":1,"bytes":76},{"t":1793462436,"packets":1,"bytes":76},{"t":1793462437,"packets":1,"bytes":74},{"t":1793462438,"packets":2,"bytes":150},{"t":1793462439,"packets":1,"bytes":76},{"t":1793462440,"packets":2,"bytes":150},{"t":1793462441,"packets":1,"bytes":74},{"t":1793462442,"packets":2,"bytes":150},{"t":1793462443,"packets":0,"bytes":0},{"t":1793462444,"packets":2,"bytes":150},{"t":1793462445,"packets":2,"bytes":152},{"t":1793462446,"packets":1,"bytes":76},{"t":1793462447,"packets":2,"bytes":152},{"t":1793462448,"packets":2,"bytes":152},{"t":1793462449,"packets":1,"bytes":74},{"t":1793462450,"packets":2,"bytes":150},{"t":1793462451,"packets":1,"bytes":75},{"t":1793462452,"packets":2,"bytes":149},{"t":1793462453,"packets":0,"bytes":0},{"t":1793462454,"packets":2,"bytes":151},{"t":1793462455,"packets":1,"bytes":76},{"t":1793462456,"packets":1,"bytes":75},{"t":1793462457,"packets":2,"bytes":151},{"t":1793462458,"packets":0,"bytes":0},{"t":1793462459,"packets":2,"bytes":150},{"t":1793462460,"packets":443,"bytes":24827},{"t":1793462461,"packets":159,"bytes":8924},{"t":1793462462,"packets":2,"bytes":151},{"t":1793462463,"packets":0,"bytes":0},{"t":1793462464,"packets":2,"bytes":152},{"t":1793462465,"packets":1,"bytes":76},{"t":1793462466,"packets":0,"bytes":0},{"t":1793462467,"packets":2,"bytes":152},{"t":1793462468,"packets":1,"bytes":76},{"t":1793462469,"packets":1,"bytes":76},{"t":1793462470,"packets":2,"bytes":152},{"t":1793462471,"packets":0,"bytes":0},{"t":1793462472,"packets":1,"bytes":76},{"t":1793462473,"packets":1,"bytes":76},{"t":1793462474,"packets":1,"bytes":76},{"t":1793462475,"packets":0,"bytes":0},{"t":1793462476,"packets":2,"bytes":152},{"t":1793462477,"packets":1,"bytes":76},{"t":1793462478,"packets":0,"bytes":0},{"t":1793462479,"packets":2,"bytes":151},{"t":1793462480,"packets":2,"bytes":150},{"t":1793462481,"packets":1,"bytes":75},{"t":1793462482,"packets":1,"bytes":75},{"t":1793462483,"packets":1,"bytes":75},{"t":1793462484,"packets":1,"bytes":75},{"t":1793462485,"packets":2,"bytes":150},{"t":1793462486,"packets":1,"bytes":75},{"t":1793462487,"packets":1,"bytes":75},{"t":1793462488,"packets":2,"bytes":151},{"t":1793462489,"packets":1,"bytes":76},{"t":1793462490,"packets":0,"bytes":0},{"t":1793462491,"packets":1,"bytes":76},{"t":1793462492,"packets":1,"bytes":75},{"t":1793462493,"packets":1,"bytes":75},{"t":1793462494,"packets":1,"bytes":76},{"t":1793462495,"packets":2,"bytes":151},{"t":1793462496,"packets":0,"bytes":0},{"t":1793462497,"packets":2,"bytes":152},{"t":1793462498,"packets":1,"bytes":76},{"t":1793462499,"packets":0,"bytes":0},{"t":1793462500,"packets":2,"bytes":152},{"t":1793462501,"packets":1,"bytes":76},{"t":1793462502,"packets":1,"bytes":76},{"t":1793462503,"packets":2,"bytes":152},{"t":1793462504,"packets":1,"bytes":75},{"t":1793462505,"packets":2,"bytes":151},{"t":1793462506,"packets":0,"bytes":0},{"t":1793462507,"packets":1,"bytes":75},{"t":1793462508,"packets":0,"bytes":0},{"t":1793462509,"packets":2,"bytes":84},{"t":1793462510,"packets":2,"bytes":180},{"t":1793462511,"packets":0,"bytes":0},{"t":1793462512,"packets":36,"bytes":15563},{"t":1793462513,"packets":0,"bytes":0},{"t":1793462514,"packets":38,"bytes":21090},{"t":1793462515,"packets":0,"bytes":0},{"t":1793462516,"packets":0,"bytes":0},{"t":1793462517,"packets":6,"bytes":452},{"t":1793462518,"packets":36,"bytes":21881},{"t":1793462519,"packets":26,"bytes":5050},{"t":1793462520,"packets":17,"bytes":5856},{"t":1793462521,"packets":18,"bytes":7640},{"t":1793462522,"packets":17,"bytes":4741},{"t":1793462523,"packets":15,"bytes":9990},{"t":1793462524,"packets":2,"bytes":84},{"t":1793462525,"packets":27,"bytes":11285},{"t":1793462526,"packets":0,"bytes":0},{"t":1793462527,"packets":0,"bytes":0},{"t":1793462528,"packets":0,"bytes":0},{"t":1793462529,"packets":62,"bytes":41177},{"t":1793462530,"packets":28,"bytes":18676},{"t":1793462531,"packets":0,"bytes":0},{"t":1793462532,"packets":30,"bytes":11054},{"t":1793462533,"packets":0,"bytes":0},{"t":1793462534,"packets":2,"bytes":166},{"t":1793462535,"packets":0,"bytes":0},{"t":1793462536,"packets":0,"bytes":0},{"t":1793462537,"packets":0,"bytes":0},{"t":1793462538,"packets":0,"bytes":0},{"t":1793462539,"packets":0,"bytes":0},{"t":1793462540,"packets":0,"bytes":0},{"t":1793462541,"packets":0,"bytes":0},{"t":1793462542,"packets":0,"bytes":0},{"t":1793462543,"packets":13,"bytes":4742},{"t":1793462544,"packets":109,"bytes":54057},{"t":1793462545,"packets":15,"bytes":7269},{"t":1793462546,"packets":0,"bytes":0},{"t":1793462547,"packets":0,"bytes":0},{"t":1793462548,"packets":0,"bytes":0},{"t":1793462549,"packets":6,"bytes":729},{"t":1793462550,"packets":47,"bytes":36966}],"markers":[{"t":1793462460.0,"end":1793462461.352961,"finding":"F1","category":"attack","title":"Port scan: 192.168.1.66 is checking which services are open on 192.168.1.20"},{"t":1793462435.0,"end":1793462549.924752,"finding":"F2","category":"fault","title":"DNS lookups are timing out"}]}},"redacted":false,"warnings":[],"analysis_seconds":0.049,"evidence":{"F2":"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","F1":"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"}}</script>
+<script type="application/json" id="faultline-data">{"tool":{"name":"Faultline","version":"1.0.0"},"generated_at":"2026-11-01T14:40:56+05:30","capture":{"name":"outage_vs_attack_mixed.pcap","format":"pcap","compressed":false,"file_bytes":639269,"packets":1799,"bytes_captured":610461,"linktypes":[1],"first_ts":1793462400.498998,"last_ts":1793462550.600446,"duration":150.10144805908203,"truncated":false,"limited":false,"warnings":[],"sha256":"2da9a717b7f546e81babd83c3453c6d200329740fe90b4d9aaf2b317d2219a0a","malformed_packets":0},"verdict":{"status":"under_attack","headline":"Port scan: 192.168.1.66 is checking which services are open on 192.168.1.20.","summary":"We found 1 sign of malicious activity. This is not an ordinary outage: restarting the router will not fix it. Separately, 1 genuine fault or misconfiguration also needs attention.","score":75,"counts":{"attack":1,"fault":1,"misconfig":0,"info":0}},"findings":[{"id":"F1","kind":"scan.port","category":"attack","severity":3,"severity_name":"high","confidence":0.96,"title":"Port scan: 192.168.1.66 is checking which services are open on 192.168.1.20","summary":"192.168.1.66 probed 300 ports on 192.168.1.20 in 1.4 s (222 probes/s) using a TCP SYN scan.","explanation":"A port is like a numbered door on a computer; each service (web, file sharing, remote login) listens behind one. 192.168.1.66 knocked on 300 doors in a short time to find out which ones open, which is the usual first step before an attack (reconnaissance). No open ports were confirmed.","analogy":"Like someone walking down a hotel corridor trying every door handle to see which room is unlocked.","cause":"A port-scanning tool (such as nmap or masscan) running on 192.168.1.66: either a security test, a curious user, or malware / an attacker mapping the network.","fix":["Identify the device behind 192.168.1.66: run `arp -a` (or check the DHCP lease list / switch MAC table) to find its MAC address and owner.","If it is not an authorised security scan, disconnect it or block it at the firewall (e.g. `iptables -I INPUT -s 192.168.1.66 -j DROP`) and check it for malware.","On the target(s), list what is listening (`netstat -an` / `ss -tlnp`) and close services that are not needed, especially any port the scan found open.","Review firewall and server logs for logins or exploits from this address after the scan.","If it is your own vulnerability scanner, schedule it and add it to an allow-list so it is expected."],"technical":"TCP SYN scan from 192.168.1.66 against 1 host(s) (192.168.1.20): 300 probes, 300 TCP + 0 UDP distinct ports, peak 300 distinct ports/60 s (threshold 25); stealth FIN/NULL/Xmas/other = 0/0/0/0; responses: 0 SYN/ACK (open), 299 RST (closed), 0 ICMP port-unreachable, 0 UDP replies; prober behaviour: 0 half-open resets, 0 completed handshakes, 0 closed without data, 0 carried data. Rate 221.7 probes/s over 1.35 s.","mitre":"T1046 Network Service Discovery","hosts":["192.168.1.66","192.168.1.20"],"packets":[593,595,597,599,601,603,605,607,609,611,613,615,617,619,621,623,625,627,629,631,633,636,638,640,642,644,646,648,650,652,654,656,658,660,662,664,666,668,670,672,674,676,678,680,682,684,686,688,690,692,694,696,698,700,702,704,706,708,710,712,714,716,718,720,722,724,726,728,730,732,734,736,738,740,742,744,746,748,750,752,754,756,758,760,762,764,766,768,770,772,774,776,778,780,782,784,786,788,790,792,794,796,798,800,802,804,806,808,810,812,814,816,818,820,822,824,826,828,830,832,834,836,838,840,842,844,846,848,850,852,854,856,858,860,862,864,866,868,870,872,874,876,878,880,882,884,886,888,890,892,894,896,898,900,902,904,906,908,910,912,914,916,918,920,922,924,926,928,930,932,934,936,938,940,942,944,946,948,950,952,954,956,958,960,962,964,966,968,970,972,974,976,978,980,982,984,986,988,990,992],"packet_total":300,"first_ts":1793462460.0,"last_ts":1793462461.352961,"metrics":{"source":"192.168.1.66","technique":"TCP SYN scan","targets":["192.168.1.20"],"target_count":1,"probes":300,"ports_probed":300,"tcp_ports":300,"udp_ports":0,"peak_ports_per_window":300,"window_s":60.0,"rate_per_s":221.74,"duration_s":1.353,"open_ports":[],"open_count":0,"closed":299,"udp_closed":0,"half_open":0,"connect_close":0,"with_data":0,"stealth":{"fin":0,"null":0,"xmas":0,"other":0},"sample_ports":["541/tcp","1985/tcp","1354/tcp","1003/tcp","1454/tcp","70/tcp","863/tcp","1551/tcp","1984/tcp","1043/tcp"]},"indicators":[{"text":"192.168.1.66 tried 300 different ports on 192.168.1.20 (up to 300 within 60 s); normal programs talk to one or two ports per server","supports":"attack","weight":3.0},{"text":"Probes arrived at 222 per second, far faster than a person or normal application opens connections","supports":"attack","weight":1.0},{"text":"No connection was used to exchange data: nothing here looks like a working application that is merely misconfigured","supports":"attack","weight":0.5}],"scores":{"attack":5.0},"alternatives":[],"symptom_of":null,"incident":null,"evidence_lines":[{"no":593,"ts":1793462460.0,"rel":59.501002,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:541 [S] seq=265196516 ack=0 win=1024 len=0"},{"no":595,"ts":1793462460.004154,"rel":59.505156,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1985 [S] seq=1603175814 ack=0 win=1024 len=0"},{"no":597,"ts":1793462460.007881,"rel":59.508883,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1354 [S] seq=1892629413 ack=0 win=1024 len=0"},{"no":599,"ts":1793462460.011243,"rel":59.512245,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1003 [S] seq=3501009496 ack=0 win=1024 len=0"},{"no":601,"ts":1793462460.016308,"rel":59.51731,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1454 [S] seq=3290314894 ack=0 win=1024 len=0"},{"no":603,"ts":1793462460.020976,"rel":59.521978,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:70 [S] seq=3777026310 ack=0 win=1024 len=0"},{"no":605,"ts":1793462460.02624,"rel":59.527242,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:863 [S] seq=2334669050 ack=0 win=1024 len=0"},{"no":607,"ts":1793462460.030687,"rel":59.531689,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1551 [S] seq=3992951943 ack=0 win=1024 len=0"},{"no":609,"ts":1793462460.03522,"rel":59.536222,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1984 [S] seq=3547226293 ack=0 win=1024 len=0"},{"no":611,"ts":1793462460.040395,"rel":59.541397,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1043 [S] seq=1575151566 ack=0 win=1024 len=0"},{"no":613,"ts":1793462460.044892,"rel":59.545894,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:470 [S] seq=3372657847 ack=0 win=1024 len=0"},{"no":615,"ts":1793462460.050859,"rel":59.551861,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:522 [S] seq=1310048117 ack=0 win=1024 len=0"},{"no":617,"ts":1793462460.055989,"rel":59.556991,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:396 [S] seq=3131763688 ack=0 win=1024 len=0"},{"no":619,"ts":1793462460.060118,"rel":59.56112,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1674 [S] seq=496851537 ack=0 win=1024 len=0"},{"no":621,"ts":1793462460.066012,"rel":59.567014,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:882 [S] seq=282881400 ack=0 win=1024 len=0"},{"no":623,"ts":1793462460.070804,"rel":59.571806,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1750 [S] seq=329835944 ack=0 win=1024 len=0"},{"no":625,"ts":1793462460.076086,"rel":59.577088,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:765 [S] seq=2158796388 ack=0 win=1024 len=0"},{"no":627,"ts":1793462460.081434,"rel":59.582436,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:802 [S] seq=1052043206 ack=0 win=1024 len=0"},{"no":629,"ts":1793462460.087224,"rel":59.588226,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:354 [S] seq=2521109892 ack=0 win=1024 len=0"},{"no":631,"ts":1793462460.090753,"rel":59.591755,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:538 [S] seq=2464855827 ack=0 win=1024 len=0"},{"no":633,"ts":1793462460.094113,"rel":59.595115,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1297 [S] seq=2487740656 ack=0 win=1024 len=0"},{"no":636,"ts":1793462460.098223,"rel":59.599225,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1513 [S] seq=3399881108 ack=0 win=1024 len=0"},{"no":638,"ts":1793462460.101642,"rel":59.602644,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1789 [S] seq=2685913710 ack=0 win=1024 len=0"},{"no":640,"ts":1793462460.106446,"rel":59.607448,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:173 [S] seq=3685779320 ack=0 win=1024 len=0"},{"no":642,"ts":1793462460.11046,"rel":59.611462,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1885 [S] seq=2331892775 ack=0 win=1024 len=0"},{"no":644,"ts":1793462460.114374,"rel":59.615376,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:895 [S] seq=4294612302 ack=0 win=1024 len=0"},{"no":646,"ts":1793462460.118187,"rel":59.619189,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:899 [S] seq=943229313 ack=0 win=1024 len=0"},{"no":648,"ts":1793462460.122594,"rel":59.623596,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:392 [S] seq=4048933905 ack=0 win=1024 len=0"},{"no":650,"ts":1793462460.128038,"rel":59.62904,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:881 [S] seq=1091392620 ack=0 win=1024 len=0"},{"no":652,"ts":1793462460.13126,"rel":59.632262,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:839 [S] seq=1213805373 ack=0 win=1024 len=0"},{"no":654,"ts":1793462460.134952,"rel":59.635954,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1719 [S] seq=485966317 ack=0 win=1024 len=0"},{"no":656,"ts":1793462460.138642,"rel":59.639644,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1124 [S] seq=2690983081 ack=0 win=1024 len=0"},{"no":658,"ts":1793462460.144638,"rel":59.64564,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1516 [S] seq=2771022171 ack=0 win=1024 len=0"},{"no":660,"ts":1793462460.147904,"rel":59.648906,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1661 [S] seq=3364122674 ack=0 win=1024 len=0"},{"no":662,"ts":1793462460.153216,"rel":59.654218,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:610 [S] seq=2757003294 ack=0 win=1024 len=0"},{"no":664,"ts":1793462460.157139,"rel":59.658141,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1267 [S] seq=995472467 ack=0 win=1024 len=0"},{"no":666,"ts":1793462460.162314,"rel":59.663316,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:263 [S] seq=237175392 ack=0 win=1024 len=0"},{"no":668,"ts":1793462460.166529,"rel":59.667531,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:1508 [S] seq=1139656500 ack=0 win=1024 len=0"},{"no":670,"ts":1793462460.170747,"rel":59.671749,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:647 [S] seq=4066412580 ack=0 win=1024 len=0"},{"no":672,"ts":1793462460.175956,"rel":59.676958,"summary":"TCP 192.168.1.66:45555 → 192.168.1.20:500 [S] seq=4276129851 ack=0 win=1024 len=0"}]},{"id":"F2","kind":"dns.timeout","category":"fault","severity":2,"severity_name":"medium","confidence":0.86,"title":"DNS lookups are timing out","summary":"Your DNS server 192.168.1.1 stopped answering at 21:30:35: 29 of 68 lookups (43%) got no reply.","explanation":"Before your device can open a website it asks a DNS server to turn the name (like example.com) into an address. These questions are going unanswered, so websites and apps seem 'down' even though the internet connection itself may be fine.","analogy":"Like phoning directory enquiries and nobody ever picks up.","cause":"The DNS server 192.168.1.1 is down, overloaded or unreachable (or a firewall is dropping DNS).","fix":["Test it directly: `nslookup example.com 192.168.1.1`, then compare with `nslookup example.com 1.1.1.1`.","If only your server fails, restart it (often the router) or switch DNS to a working one (router/DHCP settings, or the device's network settings).","Check firewall rules that might block UDP/TCP port 53.","On Windows run `ipconfig /flushdns`; check which DNS servers are configured with `ipconfig /all`."],"technical":"Unanswered within 3 s: 192.168.1.1: 29/68 unanswered. Working: none. Retries: 58; queries in the last 3 s ignored: 0.","mitre":null,"hosts":["192.168.1.1","192.168.1.10","192.168.1.11","192.168.1.12","192.168.1.15","192.168.1.20"],"packets":[559,561,564,567,571,573,576,579,582,586,588,591,1129,1197,1201,1203,1207,1210,1212,1215,1219,1221,1224,1228,1230,1234,1236,1239,1242],"packet_total":29,"first_ts":1793462435.0,"last_ts":1793462549.924752,"metrics":{"unanswered":29,"queries":68,"ratio":0.426,"servers":{"192.168.1.1":{"queries":68,"unanswered":29,"answered":39,"last_ok":1793462549.905873}},"clients":["192.168.1.10","192.168.1.11","192.168.1.12","192.168.1.15","192.168.1.20","192.168.1.21","192.168.1.30","192.168.1.31","192.168.1.40","192.168.1.45"],"retries":58},"indicators":[{"text":"29 DNS lookups out of 68 got no answer within 3 s","supports":"fault","weight":1.5},{"text":"Devices retried 58 lookups, as they do when DNS goes quiet","supports":"fault","weight":0.5}],"scores":{"fault":2.5},"alternatives":[],"symptom_of":null,"incident":null,"evidence_lines":[{"no":559,"ts":1793462435.0,"rel":34.501002,"summary":"DNS query 0x365a A docs.example.org (192.168.1.20 → 192.168.1.1)"},{"no":561,"ts":1793462437.280264,"rel":36.781266,"summary":"DNS query 0x3686 A api.example.io (192.168.1.10 → 192.168.1.1)"},{"no":564,"ts":1793462439.246277,"rel":38.747279,"summary":"DNS query 0x36b6 A mail.example.net (192.168.1.30 → 192.168.1.1)"},{"no":567,"ts":1793462441.150245,"rel":40.651247,"summary":"DNS query 0x36de A api.example.io (192.168.1.30 → 192.168.1.1)"},{"no":571,"ts":1793462444.174111,"rel":43.675113,"summary":"DNS query 0x36f7 A docs.example.org (192.168.1.45 → 192.168.1.1)"},{"no":573,"ts":1793462445.844802,"rel":45.345804,"summary":"DNS query 0x371a A docs.example.org (192.168.1.30 → 192.168.1.1)"},{"no":576,"ts":1793462447.700541,"rel":47.201543,"summary":"DNS query 0x3727 A mail.example.net (192.168.1.30 → 192.168.1.1)"},{"no":579,"ts":1793462449.606388,"rel":49.10739,"summary":"DNS query 0x3736 A api.example.io (192.168.1.30 → 192.168.1.1)"},{"no":582,"ts":1793462451.534403,"rel":51.035405,"summary":"DNS query 0x375f A www.example.com (192.168.1.20 → 192.168.1.1)"},{"no":586,"ts":1793462454.659663,"rel":54.160665,"summary":"DNS query 0x3763 A docs.example.org (192.168.1.11 → 192.168.1.1)"},{"no":588,"ts":1793462456.162903,"rel":55.663905,"summary":"DNS query 0x377a A www.example.com (192.168.1.45 → 192.168.1.1)"},{"no":591,"ts":1793462459.096946,"rel":58.597948,"summary":"DNS query 0x379d A www.example.com (192.168.1.20 → 192.168.1.1)"},{"no":1129,"ts":1793462461.206492,"rel":60.707494,"summary":"DNS query 0x37ab A docs.example.org (192.168.1.30 → 192.168.1.1)"},{"no":1197,"ts":1793462464.104617,"rel":63.605619,"summary":"DNS query 0x37cc A mail.example.net (192.168.1.12 → 192.168.1.1)"},{"no":1201,"ts":1793462467.503258,"rel":67.00426,"summary":"DNS query 0x37ea A mail.example.net (192.168.1.60 → 192.168.1.1)"},{"no":1203,"ts":1793462469.604898,"rel":69.1059,"summary":"DNS query 0x37f1 A docs.example.org (192.168.1.30 → 192.168.1.1)"},{"no":1207,"ts":1793462473.039669,"rel":72.540671,"summary":"DNS query 0x3805 A docs.example.org (192.168.1.31 → 192.168.1.1)"},{"no":1210,"ts":1793462476.462934,"rel":75.963936,"summary":"DNS query 0x3815 A mail.example.net (192.168.1.55 → 192.168.1.1)"},{"no":1212,"ts":1793462479.047754,"rel":78.548756,"summary":"DNS query 0x382d A www.example.com (192.168.1.15 → 192.168.1.1)"},{"no":1215,"ts":1793462480.879846,"rel":80.380848,"summary":"DNS query 0x3850 A www.example.com (192.168.1.20 → 192.168.1.1)"},{"no":1219,"ts":1793462484.103418,"rel":83.60442,"summary":"DNS query 0x385c A www.example.com (192.168.1.60 → 192.168.1.1)"},{"no":1221,"ts":1793462485.967212,"rel":85.468214,"summary":"DNS query 0x3883 A www.example.com (192.168.1.20 → 192.168.1.1)"},{"no":1224,"ts":1793462488.875406,"rel":88.376408,"summary":"DNS query 0x38a8 A mail.example.net (192.168.1.12 → 192.168.1.1)"},{"no":1228,"ts":1793462492.216761,"rel":91.717763,"summary":"DNS query 0x38d0 A www.example.com (192.168.1.30 → 192.168.1.1)"},{"no":1230,"ts":1793462494.546611,"rel":94.047613,"summary":"DNS query 0x38e7 A docs.example.org (192.168.1.21 → 192.168.1.1)"},{"no":1234,"ts":1793462497.840761,"rel":97.341763,"summary":"DNS query 0x38ea A mail.example.net (192.168.1.11 → 192.168.1.1)"},{"no":1236,"ts":1793462500.227361,"rel":99.728363,"summary":"DNS query 0x38ed A docs.example.org (192.168.1.21 → 192.168.1.1)"},{"no":1239,"ts":1793462502.297809,"rel":101.798811,"summary":"DNS query 0x38f8 A docs.example.org (192.168.1.60 → 192.168.1.1)"},{"no":1242,"ts":1793462504.589588,"rel":104.09059,"summary":"DNS query 0x3921 A www.example.com (192.168.1.60 → 192.168.1.1)"}]}],"incidents":[],"hosts":[{"ip":"192.168.1.20","macs":["b8:27:eb:14:b4:1d"],"first_ts":1793462409.759495,"last_ts":1793462545.866653,"packets_sent":393,"packets_recv":390,"bytes_sent":27635,"roles":[],"names":[],"local":true},{"ip":"192.168.1.66","macs":["08:00:27:3a:66:9e"],"first_ts":1793462460.0,"last_ts":1793462461.353361,"packets_sent":300,"packets_recv":300,"bytes_sent":17400,"roles":[],"names":[],"local":true},{"ip":"192.168.1.11","macs":["3c:22:fb:11:ab:08"],"first_ts":1793462401.95755,"last_ts":1793462545.87263,"packets_sent":106,"packets_recv":120,"bytes_sent":13503,"roles":[],"names":[],"local":true},{"ip":"192.168.1.15","macs":["dc:a6:32:13:af:16"],"first_ts":1793462406.410706,"last_ts":1793462521.958872,"packets_sent":80,"packets_recv":91,"bytes_sent":9668,"roles":[],"names":[],"local":true},{"ip":"192.168.1.1","macs":["3c:84:6a:12:34:01"],"first_ts":1793462400.499774,"last_ts":1793462549.924752,"packets_sent":39,"packets_recv":126,"bytes_sent":3751,"roles":["dns-server","gateway"],"names":[],"local":true},{"ip":"192.168.1.45","macs":["e4:5f:01:19:cd:40"],"first_ts":1793462411.063882,"last_ts":1793462550.600446,"packets_sent":68,"packets_recv":83,"bytes_sent":7800,"roles":[],"names":[],"local":true},{"ip":"192.168.1.60","macs":["9c:b6:d0:1b:dc:4e"],"first_ts":1793462427.748279,"last_ts":1793462544.889539,"packets_sent":58,"packets_recv":52,"bytes_sent":6898,"roles":[],"names":[],"local":true},{"ip":"192.168.1.55","macs":["c8:e2:65:1a:d7:47"],"first_ts":1793462400.498998,"last_ts":1793462544.495908,"packets_sent":47,"packets_recv":50,"bytes_sent":6081,"roles":[],"names":[],"local":true},{"ip":"192.168.1.31","macs":["f0:18:98:17:bf:32"],"first_ts":1793462423.207829,"last_ts":1793462519.151648,"packets_sent":28,"packets_recv":29,"bytes_sent":3076,"roles":[],"names":[],"local":true},{"ip":"192.168.1.12","macs":["a4:83:e7:12:ac:0f"],"first_ts":1793462427.623536,"last_ts":1793462521.534136,"packets_sent":28,"packets_recv":27,"bytes_sent":2668,"roles":[],"names":[],"local":true},{"ip":"192.168.1.40","macs":["8c:85:90:18:c8:39"],"first_ts":1793462414.235593,"last_ts":1793462517.896426,"packets_sent":16,"packets_recv":18,"bytes_sent":2154,"roles":[],"names":[],"local":true},{"ip":"192.168.1.30","macs":["28:d2:44:16:be:2b"],"first_ts":1793462439.246277,"last_ts":1793462495.216761,"packets_sent":24,"packets_recv":0,"bytes_sent":1809,"roles":[],"names":[],"local":true},{"ip":"192.168.1.21","macs":["00:1a:a0:15:b5:24"],"first_ts":1793462420.054607,"last_ts":1793462503.227361,"packets_sent":14,"packets_recv":8,"bytes_sent":1176,"roles":[],"names":[],"local":true},{"ip":"192.168.1.10","macs":["f4:5c:89:10:aa:01"],"first_ts":1793462429.110399,"last_ts":1793462519.962508,"packets_sent":12,"packets_recv":9,"bytes_sent":1022,"roles":[],"names":[],"local":true},{"ip":"203.0.113.200","macs":[],"first_ts":1793462414.916157,"last_ts":1793462550.600446,"packets_sent":134,"packets_recv":109,"bytes_sent":129965,"roles":[],"names":[],"local":false},{"ip":"198.51.100.20","macs":[],"first_ts":1793462411.082091,"last_ts":1793462545.866653,"packets_sent":131,"packets_recv":108,"bytes_sent":124335,"roles":[],"names":[],"local":false},{"ip":"203.0.113.10","macs":[],"first_ts":1793462512.067902,"last_ts":1793462544.205446,"packets_sent":78,"packets_recv":63,"bytes_sent":78869,"roles":[],"names":[],"local":false},{"ip":"198.51.100.44","macs":[],"first_ts":1793462401.976871,"last_ts":1793462419.806112,"packets_sent":62,"packets_recv":50,"bytes_sent":62772,"roles":[],"names":[],"local":false},{"ip":"198.51.100.5","macs":[],"first_ts":1793462409.77459,"last_ts":1793462519.962508,"packets_sent":39,"packets_recv":39,"bytes_sent":20600,"roles":[],"names":[],"local":false},{"ip":"203.0.113.80","macs":[],"first_ts":1793462406.422031,"last_ts":1793462523.553749,"packets_sent":35,"packets_recv":30,"bytes_sent":32394,"roles":[],"names":[],"local":false},{"ip":"93.184.216.34","macs":[],"first_ts":1793462424.160224,"last_ts":1793462424.406152,"packets_sent":29,"packets_recv":20,"bytes_sent":34802,"roles":[],"names":[],"local":false},{"ip":"203.0.113.81","macs":[],"first_ts":1793462520.786975,"last_ts":1793462521.958872,"packets_sent":15,"packets_recv":14,"bytes_sent":11071,"roles":[],"names":[],"local":false},{"ip":"203.0.113.25","macs":[],"first_ts":1793462532.153475,"last_ts":1793462532.975932,"packets_sent":14,"packets_recv":14,"bytes_sent":8906,"roles":[],"names":[],"local":false},{"ip":"203.0.113.123","macs":[],"first_ts":1793462510.0,"last_ts":1793462510.020851,"packets_sent":1,"packets_recv":1,"bytes_sent":90,"roles":[],"names":[],"local":false}],"stats":{"protocols":{"TCP":1394,"TLS":182,"DNS":165,"ARP":48,"HTTP":8,"UDP":2},"top_talkers":[{"ip":"203.0.113.200","packets":134,"bytes":129965,"local":false},{"ip":"198.51.100.20","packets":131,"bytes":124335,"local":false},{"ip":"203.0.113.10","packets":78,"bytes":78869,"local":false},{"ip":"198.51.100.44","packets":62,"bytes":62772,"local":false},{"ip":"93.184.216.34","packets":29,"bytes":34802,"local":false},{"ip":"203.0.113.80","packets":35,"bytes":32394,"local":false},{"ip":"192.168.1.20","packets":393,"bytes":27635,"local":true},{"ip":"198.51.100.5","packets":39,"bytes":20600,"local":false},{"ip":"192.168.1.66","packets":300,"bytes":17400,"local":true},{"ip":"192.168.1.11","packets":106,"bytes":13503,"local":true}],"conversations":[{"a":"192.168.1.20","b":"192.168.1.66","proto":"TCP","packets":600,"bytes":33600},{"a":"192.168.1.20","b":"203.0.113.10","proto":"TCP","packets":85,"bytes":49684},{"a":"192.168.1.45","b":"198.51.100.20","proto":"TCP","packets":72,"bytes":48193},{"a":"192.168.1.11","b":"198.51.100.44","proto":"TCP","packets":68,"bytes":42776},{"a":"192.168.1.55","b":"198.51.100.20","proto":"TCP","packets":68,"bytes":30466},{"a":"192.168.1.11","b":"203.0.113.200","proto":"TCP","packets":66,"bytes":29499},{"a":"192.168.1.45","b":"203.0.113.200","proto":"TCP","packets":45,"bytes":33242},{"a":"192.168.1.15","b":"93.184.216.34","proto":"TCP","packets":43,"bytes":32581},{"a":"192.168.1.12","b":"203.0.113.200","proto":"TCP","packets":37,"bytes":22479},{"a":"192.168.1.60","b":"203.0.113.200","proto":"TCP","packets":30,"bytes":17560},{"a":"192.168.1.31","b":"198.51.100.20","proto":"TCP","packets":30,"bytes":17372},{"a":"192.168.1.11","b":"203.0.113.10","proto":"TCP","packets":30,"bytes":17525},{"a":"192.168.1.15","b":"203.0.113.80","proto":"TCP","packets":29,"bytes":16177},{"a":"192.168.1.1","b":"192.168.1.20","proto":"DNS","packets":25,"bytes":1988},{"a":"192.168.1.1","b":"192.168.1.30","proto":"DNS","packets":24,"bytes":1809}],"timeline":{"start":1793462400.498998,"bucket_seconds":1,"series":[{"t":1793462400,"packets":4,"bytes":262},{"t":1793462401,"packets":5,"bytes":324},{"t":1793462402,"packets":27,"bytes":16809},{"t":1793462403,"packets":4,"bytes":264},{"t":1793462404,"packets":0,"bytes":0},{"t":1793462405,"packets":0,"bytes":0},{"t":1793462406,"packets":34,"bytes":20337},{"t":1793462407,"packets":7,"bytes":1629},{"t":1793462408,"packets":0,"bytes":0},{"t":1793462409,"packets":19,"bytes":6272},{"t":1793462410,"packets":7,"bytes":1962},{"t":1793462411,"packets":52,"bytes":38289},{"t":1793462412,"packets":4,"bytes":264},{"t":1793462413,"packets":0,"bytes":0},{"t":1793462414,"packets":38,"bytes":15562},{"t":1793462415,"packets":39,"bytes":16551},{"t":1793462416,"packets":18,"bytes":6152},{"t":1793462417,"packets":4,"bytes":264},{"t":1793462418,"packets":47,"bytes":36648},{"t":1793462419,"packets":7,"bytes":1792},{"t":1793462420,"packets":18,"bytes":4542},{"t":1793462421,"packets":0,"bytes":0},{"t":1793462422,"packets":32,"bytes":16033},{"t":1793462423,"packets":18,"bytes":4540},{"t":1793462424,"packets":51,"bytes":37367},{"t":1793462425,"packets":0,"bytes":0},{"t":1793462426,"packets":0,"bytes":0},{"t":1793462427,"packets":55,"bytes":27492},{"t":1793462428,"packets":34,"bytes":23380},{"t":1793462429,"packets":4,"bytes":288},{"t":1793462430,"packets":30,"bytes":14539},{"t":1793462431,"packets":0,"bytes":0},{"t":1793462432,"packets":0,"bytes":0},{"t":1793462433,"packets":0,"bytes":0},{"t":1793462434,"packets":0,"bytes":0},{"t":1793462435,"packets":1,"bytes":76},{"t":1793462436,"packets":1,"bytes":76},{"t":1793462437,"packets":1,"bytes":74},{"t":1793462438,"packets":2,"bytes":150},{"t":1793462439,"packets":1,"bytes":76},{"t":1793462440,"packets":2,"bytes":150},{"t":1793462441,"packets":1,"bytes":74},{"t":1793462442,"packets":2,"bytes":150},{"t":1793462443,"packets":0,"bytes":0},{"t":1793462444,"packets":2,"bytes":150},{"t":1793462445,"packets":2,"bytes":152},{"t":1793462446,"packets":1,"bytes":76},{"t":1793462447,"packets":2,"bytes":152},{"t":1793462448,"packets":2,"bytes":152},{"t":1793462449,"packets":1,"bytes":74},{"t":1793462450,"packets":2,"bytes":150},{"t":1793462451,"packets":1,"bytes":75},{"t":1793462452,"packets":2,"bytes":149},{"t":1793462453,"packets":0,"bytes":0},{"t":1793462454,"packets":2,"bytes":151},{"t":1793462455,"packets":1,"bytes":76},{"t":1793462456,"packets":1,"bytes":75},{"t":1793462457,"packets":2,"bytes":151},{"t":1793462458,"packets":0,"bytes":0},{"t":1793462459,"packets":2,"bytes":150},{"t":1793462460,"packets":443,"bytes":24827},{"t":1793462461,"packets":159,"bytes":8924},{"t":1793462462,"packets":2,"bytes":151},{"t":1793462463,"packets":0,"bytes":0},{"t":1793462464,"packets":2,"bytes":152},{"t":1793462465,"packets":1,"bytes":76},{"t":1793462466,"packets":0,"bytes":0},{"t":1793462467,"packets":2,"bytes":152},{"t":1793462468,"packets":1,"bytes":76},{"t":1793462469,"packets":1,"bytes":76},{"t":1793462470,"packets":2,"bytes":152},{"t":1793462471,"packets":0,"bytes":0},{"t":1793462472,"packets":1,"bytes":76},{"t":1793462473,"packets":1,"bytes":76},{"t":1793462474,"packets":1,"bytes":76},{"t":1793462475,"packets":0,"bytes":0},{"t":1793462476,"packets":2,"bytes":152},{"t":1793462477,"packets":1,"bytes":76},{"t":1793462478,"packets":0,"bytes":0},{"t":1793462479,"packets":2,"bytes":151},{"t":1793462480,"packets":2,"bytes":150},{"t":1793462481,"packets":1,"bytes":75},{"t":1793462482,"packets":1,"bytes":75},{"t":1793462483,"packets":1,"bytes":75},{"t":1793462484,"packets":1,"bytes":75},{"t":1793462485,"packets":2,"bytes":150},{"t":1793462486,"packets":1,"bytes":75},{"t":1793462487,"packets":1,"bytes":75},{"t":1793462488,"packets":2,"bytes":151},{"t":1793462489,"packets":1,"bytes":76},{"t":1793462490,"packets":0,"bytes":0},{"t":1793462491,"packets":1,"bytes":76},{"t":1793462492,"packets":1,"bytes":75},{"t":1793462493,"packets":1,"bytes":75},{"t":1793462494,"packets":1,"bytes":76},{"t":1793462495,"packets":2,"bytes":151},{"t":1793462496,"packets":0,"bytes":0},{"t":1793462497,"packets":2,"bytes":152},{"t":1793462498,"packets":1,"bytes":76},{"t":1793462499,"packets":0,"bytes":0},{"t":1793462500,"packets":2,"bytes":152},{"t":1793462501,"packets":1,"bytes":76},{"t":1793462502,"packets":1,"bytes":76},{"t":1793462503,"packets":2,"bytes":152},{"t":1793462504,"packets":1,"bytes":75},{"t":1793462505,"packets":2,"bytes":151},{"t":1793462506,"packets":0,"bytes":0},{"t":1793462507,"packets":1,"bytes":75},{"t":1793462508,"packets":0,"bytes":0},{"t":1793462509,"packets":2,"bytes":84},{"t":1793462510,"packets":2,"bytes":180},{"t":1793462511,"packets":0,"bytes":0},{"t":1793462512,"packets":36,"bytes":15563},{"t":1793462513,"packets":0,"bytes":0},{"t":1793462514,"packets":38,"bytes":21090},{"t":1793462515,"packets":0,"bytes":0},{"t":1793462516,"packets":0,"bytes":0},{"t":1793462517,"packets":6,"bytes":452},{"t":1793462518,"packets":36,"bytes":21881},{"t":1793462519,"packets":26,"bytes":5050},{"t":1793462520,"packets":17,"bytes":5856},{"t":1793462521,"packets":18,"bytes":7640},{"t":1793462522,"packets":17,"bytes":4741},{"t":1793462523,"packets":15,"bytes":9990},{"t":1793462524,"packets":2,"bytes":84},{"t":1793462525,"packets":27,"bytes":11285},{"t":1793462526,"packets":0,"bytes":0},{"t":1793462527,"packets":0,"bytes":0},{"t":1793462528,"packets":0,"bytes":0},{"t":1793462529,"packets":62,"bytes":41177},{"t":1793462530,"packets":28,"bytes":18676},{"t":1793462531,"packets":0,"bytes":0},{"t":1793462532,"packets":30,"bytes":11054},{"t":1793462533,"packets":0,"bytes":0},{"t":1793462534,"packets":2,"bytes":166},{"t":1793462535,"packets":0,"bytes":0},{"t":1793462536,"packets":0,"bytes":0},{"t":1793462537,"packets":0,"bytes":0},{"t":1793462538,"packets":0,"bytes":0},{"t":1793462539,"packets":0,"bytes":0},{"t":1793462540,"packets":0,"bytes":0},{"t":1793462541,"packets":0,"bytes":0},{"t":1793462542,"packets":0,"bytes":0},{"t":1793462543,"packets":13,"bytes":4742},{"t":1793462544,"packets":109,"bytes":54057},{"t":1793462545,"packets":15,"bytes":7269},{"t":1793462546,"packets":0,"bytes":0},{"t":1793462547,"packets":0,"bytes":0},{"t":1793462548,"packets":0,"bytes":0},{"t":1793462549,"packets":6,"bytes":729},{"t":1793462550,"packets":47,"bytes":36966}],"markers":[{"t":1793462460.0,"end":1793462461.352961,"finding":"F1","category":"attack","title":"Port scan: 192.168.1.66 is checking which services are open on 192.168.1.20"},{"t":1793462435.0,"end":1793462549.924752,"finding":"F2","category":"fault","title":"DNS lookups are timing out"}]}},"redacted":false,"warnings":[],"analysis_seconds":0.046,"evidence":{"F2":"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","F1":"1MOyoQIABAAAAAAAAAAAAAAABAABAAAAvBDmagAAAAA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALERNQABABnLYwKgBQsCoARSx8wIdD86T5AAAAABgAgQAuLwAAAIEBbS8EOZqOhAAADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRE5AAEAGctfAqAFCwKgBFLHzB8FfjoWGAAAAAGACBABxtgAAAgQFtLwQ5mrJHgAAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxET0AAQAZy1sCoAULAqAEUsfMFSnDPO6UAAAAAYAIEAKzNAAACBAW0vBDmausrAAA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALERQQABABnLVwKgBQsCoARSx8wPr0K0qWAAAAABgAgQAX5sAAAIEBbS8EOZqtD8AADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRFFAAEAGctTAqAFCwKgBFLHzBa7EHjiOAAAAAGACBABcMQAAAgQFtLwQ5mrwUQAAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEUkAAQAZy08CoAULAqAEUsfMARuEg2QYAAAAAYAIEAKQeAAACBAW0vBDmaoBmAAA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALERTQABABnLSwKgBQsCoARSx8wNfiyg4+gAAAABgAgQAlwoAAAIEBbS8EOZq33cAADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRFRAAEAGctHAqAFCwKgBFLHzBg/t/5yHAAAAAGACBADN9QAAAgQFtLwQ5mqUiQAAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEVUAAQAZy0MCoAULAqAEUsfMHwNNuYLUAAAAAYAIEACKoAAACBAW0vBDmasudAAA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALERWQABABnLPwKgBQsCoARSx8wQTXeLnzgAAAABgAgQAFMgAAAIEBbS8EOZqXK8AADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRFdAAEAGcs7AqAFCwKgBFLHzAdbJBqy3AAAAAGACBADm9wAAAgQFtLwQ5mqrxgAAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEWEAAQAZyzcCoAULAqAEUsfMCCk4Vv3UAAAAAYAIEAE73AAACBAW0vBDmarXaAAA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALERZQABABnLMwKgBQsCoARSx8wGMuqrr6AAAAABgAgQAtmwAAAIEBbS8EOZq1uoAADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRFpAAEAGcsvAqAFCwKgBFLHzBoodnVpRAAAAAGACBADgEwAAAgQFtLwQ5mrcAQEAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEW0AAQAZyysCoAULAqAEUsfMDchDcbXgAAAAAYAIEANzFAAACBAW0vBDmapQUAQA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALERcQABABnLJwKgBQsCoARSx8wbWE6jlqAAAAABgAgQAXmUAAAIEBbS8EOZqNikBADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRF1AAEAGcsjAqAFCwKgBFLHzAv2ArJ5kAAAAAGACBAA8fgAAAgQFtLwQ5moaPgEAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEXkAAQAZyx8CoAULAqAEUsfMDIj6058YAAAAAYAIEADTvAAACBAW0vBDmarhUAQA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALERfQABABnLGwKgBQsCoARSx8wFilkUVhAAAAABgAgQAsWAAAAIEBbS8EOZqgWIBADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRGBAAEAGcsXAqAFCwKgBFLHzAhqS6rcTAAAAAGACBAASdAAAAgQFtLwQ5mqhbwEAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEYUAAQAZyxMCoAULAqAEUsfMFEZRH6PAAAAAAYAIEANxCAAACBAW0vBDmaq9/AQA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALERiQABABnLDwKgBQsCoARSx8wXpyqYRlAAAAABgAgQAfGgAAAIEBbS8EOZqCo0BADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRGNAAEAGcsLAqAFCwKgBFLHzBv2gF8puAAAAAGACBADtCAAAAgQFtLwQ5mrOnwEAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEZEAAQAZywcCoAULAqAEUsfMArduwh3gAAAAAYAIEAPq1AAACBAW0vBDmanyvAQA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALERlQABABnLAwKgBQsCoARSx8wddiv3cJwAAAABgAgQA8AkAAAIEBbS8EOZqxr4BADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRGZAAEAGcr/AqAFCwKgBFLHzA3//+pVOAAAAAGACBADFwwAAAgQFtLwQ5mqrzQEAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEZ0AAQAZyvsCoAULAqAEUsfMDgzg4iYEAAAAAYAIEAJlPAAACBAW0vBDmauLeAQA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALERoQABABnK9wKgBQsCoARSx8wGI8VXUEQAAAABgAgQAl5wAAAIEBbS8EOZqJvQBADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRGlAAEAGcrzAqAFCwKgBFLHzA3FBDVRsAAAAAGACBADFoQAAAgQFtLwQ5mq8AAIAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEakAAQAZyu8CoAULAqAEUsfMDR0hZMz0AAAAAYAIEAN+uAAACBAW0vBDmaigPAgA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALERrQABABnK6wKgBQsCoARSx8wa3HPdB7QAAAABgAgQA+PAAAAIEBbS8EOZqkh0CADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRGxAAEAGcrnAqAFCwKgBFLHzBGSgZSSpAAAAAGACBACVGQAAAgQFtLwQ5mr+NAIAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEbUAAQAZyuMCoAULAqAEUsfMF7KUqcVsAAAAAYAIEAEIaAAACBAW0vBDmasBBAgA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALERuQABABnK3wKgBQsCoARSx8wZ9yIRwMgAAAABgAgQAH1gAAAIEBbS8EOZqgFYCADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRG9AAEAGcrbAqAFCwKgBFLHzAmKkVIgeAAAAAGACBAAvtwAAAgQFtLwQ5mrTZQIAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEcEAAQAZytcCoAULAqAEUsfME8ztVtFMAAAAAYAIEAGnwAAACBAW0vBDmagp6AgA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALERxQABABnK0wKgBQsCoARSx8wEHDiMCYAAAAABgAgQATQIAAAIEBbS8EOZqgYoCADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRHJAAEAGcrPAqAFCwKgBFLHzBeRD7cc0AAAAAGACBABNhgAAAgQFtLwQ5mr7mgIAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEc0AAQAZyssCoAULAqAEUsfMCh/JgiCQAAAAAYAIEAOF/AAACBAW0vBDmalSvAgA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALER0QABABnKxwKgBQsCoARSx8wH0/uCQOwAAAABgAgQAzXsAAAIEBbS8EOZqeL8CADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRHVAAEAGcrDAqAFCwKgBFLHzAgNAbCruAAAAAGACBADxLgAAAgQFtLwQ5moQ0QIAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEdkAAQAZyr8CoAULAqAEUsfMBrxi28CwAAAAAYAIEAFP6AAACBAW0vBDmahnhAgA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALER3QABABnKuwKgBQsCoARSx8wWD4rBXuAAAAABgAgQAHqAAAAIEBbS8EOZqPPYCADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRHhAAEAGcq3AqAFCwKgBFLHzAZqVqNDDAAAAAGACBAD2hQAAAgQFtLwQ5mrfBAMAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEeUAAQAZyrMCoAULAqAEUsfMHupWITSoAAAAAYAIEAHQfAAACBAW0vBDmaogRAwA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALER6QABABnKrwKgBQsCoARSx8wSuV+6NAAAAAABgAgQAdO8AAAIEBbS8EOZq0SQDADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRHtAAEAGcqrAqAFCwKgBFLHzAprKto0AAAAAAGACBAAEOwAAAgQFtLwQ5mr8MgMAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEfEAAQAZyqcCoAULAqAEUsfME+5FrtmgAAAAAYAIEABG9AAACBAW0vBDmanQ/AwA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALER9QABABnKowKgBQsCoARSx8wfJMu1SSQAAAABgAgQA0YwAAAIEBbS8EOZq2U0DADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRH5AAEAGcqfAqAFCwKgBFLHzBHDXKwNAAAAAAGACBAB/sAAAAgQFtLwQ5mqaXQMAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEf0AAQAZypsCoAULAqAEUsfMGs8bZd0kAAAAAYAIEABm2AAACBAW0vBDmatRsAwA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALESAQABABnKlwKgBQsCoARSx8wNKxNXU6QAAAABgAgQAwYIAAAIEBbS8EOZqMoADADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRIFAAEAGcqTAqAFCwKgBFLHzB7ywQEfrAAAAAGACBABepAAAAgQFtLwQ5mqWjgMAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEgkAAQAZyo8CoAULAqAEUsfMEuGc82k0AAAAAYAIEABhKAAACBAW0vBDmapCdAwA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALESDQABABnKiwKgBQsCoARSx8wWB1G639gAAAABgAgQAzKUAAAIEBbS8EOZqX6sDADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRIRAAEAGcqHAqAFCwKgBFLHzBtxYkdFiAAAAAGACBAAtvAAAAgQFtLwQ5mrytwMAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEhUAAQAZyoMCoAULAqAEUsfMAli0LyrQAAAAAYAIEAGY2AAACBAW0vBDmagXOAwA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALESGQABABnKfwKgBQsCoARSx8wKwglWhPAAAAABgAgQAOEoAAAIEBbS8EOZq9OMDADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRIdAAEAGcp7AqAFCwKgBFLHzAwSda8j1AAAAAGACBAD1JgAAAgQFtLwQ5mqL+QMAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEiEAAQAZyncCoAULAqAEUsfMGsNgaKWsAAAAAYAIEAFZWAAACBAW0vBDmaqcFBAA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALESJQABABnKcwKgBQsCoARSx8wKGYycC2gAAAABgAgQA9gQAAAIEBbS8EOZqohkEADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRIpAAEAGcpvAqAFCwKgBFLHzAF2IvoB1AAAAAGACBABU+wAAAgQFtLwQ5mpmJQQAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEi0AAQAZymsCoAULAqAEUsfMB51DrLSsAAAAAYAIEAN6OAAACBAW0vBDmaq42BAA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALESMQABABnKZwKgBQsCoARSx8wQxkYRtTAAAAABgAgQAW4oAAAIEBbS8EOZqdkwEADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRI1AAEAGcpjAqAFCwKgBFLHzAx/7WEj4AAAAAGACBAAXHAAAAgQFtLwQ5moDXAQAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEjkAAQAZyl8CoAULAqAEUsfMBJuFbGIYAAAAAYAIEAGOEAAACBAW0vBDmak9uBAA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALESPQABABnKWwKgBQsCoARSx8wSzfVKqBAAAAABgAgQAMoIAAAIEBbS8EOZqa3sEADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRJBAAEAGcpXAqAFCwKgBFLHzAMhK5oX7AAAAAGACBACM4gAAAgQFtLwQ5mq7igQAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEkUAAQAZylMCoAULAqAEUsfMABFuWwKYAAAAAYAIEAEJLAAACBAW0vBDmanacBAA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALESSQABABnKTwKgBQsCoARSx8wHrFMJ/oQAAAABgAgQAyD0AAAIEBbS8EOZqgK4EADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRJNAAEAGcpLAqAFCwKgBFLHzAKknnC+WAAAAAGACBAAGsQAAAgQFtLwQ5mrcvQQAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxElEAAQAZykcCoAULAqAEUsfMGJo2M6GUAAAAAYAIEAOJzAAACBAW0vBDmaiTUBAA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALESVQABABnKQwKgBQsCoARSx8wKT6a2rCgAAAABgAgQAx0AAAAIEBbS8EOZq7+UEADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRJZAAEAGco/AqAFCwKgBFLHzB20GA5JEAAAAAGACBAC+1wAAAgQFtLwQ5moR9gQAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEl0AAQAZyjsCoAULAqAEUsfMArEqivBgAAAAAYAIEAFclAAACBAW0vBDman4MBQA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALESYQABABnKNwKgBQsCoARSx8wOvW7dQyQAAAABgAgQArlwAAAIEBbS8EOZqsxoFADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRJlAAEAGcozAqAFCwKgBFLHzBSnmu7pPAAAAAGACBAC4VwAAAgQFtLwQ5mrfKAUAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEmkAAQAZyi8CoAULAqAEUsfMFXqowPTwAAAAAYAIEAHHBAAACBAW0vBDmalE8BQA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALESbQABABnKKwKgBQsCoARSx8wVXlf/p1gAAAABgAgQA2V4AAAIEBbS8EOZqrVAFADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRJxAAEAGconAqAFCwKgBFLHzBp5sa/TUAAAAAGACBAD2rQAAAgQFtLwQ5mpnXQUAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEnUAAQAZyiMCoAULAqAEUsfMDjfjNM1gAAAAAYAIEAC7ZAAACBAW0vBDmaiVuBQA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALESeQABABnKHwKgBQsCoARSx8wYdtBZh1gAAAABgAgQAQoIAAAIEBbS8EOZqIYMFADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRJ9AAEAGcobAqAFCwKgBFLHzBFoDofn/AAAAAGACBABckQAAAgQFtLwQ5mp0mQUAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEoEAAQAZyhcCoAULAqAEUsfMDaeWgbX4AAAAAYAIEAAgEAAACBAW0vBDmavmoBQA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALEShQABABnKEwKgBQsCoARSx8wUAMlTi3AAAAABgAgQARFsAAAIEBbS8EOZqxrwFADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRKJAAEAGcoPAqAFCwKgBFLHzBk2+G3pSAAAAAGACBAAf0QAAAgQFtLwQ5mryywUAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEo0AAQAZygsCoAULAqAEUsfMCkca4n7sAAAAAYAIEAPWGAAACBAW0vBDmanTcBQA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALESkQABABnKBwKgBQsCoARSx8wN3JIjU1AAAAABgAgQAYbgAAAIEBbS8EOZqbPMFADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRKVAAEAGcoDAqAFCwKgBFLHzAazgvCYBAAAAAGACBABWIgAAAgQFtLwQ5mpXBwYAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEpkAAQAZyf8CoAULAqAEUsfMAX105BBYAAAAAYAIEAPzdAAACBAW0vBDmavsaBgA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALESnQABABnJ+wKgBQsCoARSx8wJEp4aIvAAAAABgAgQALAUAAAIEBbS8EOZqETEGADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRKhAAEAGcn3AqAFCwKgBFLHzAUxG5D0ZAAAAAGACBADZQgAAAgQFtLwQ5mqYQAYAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEqUAAQAZyfMCoAULAqAEUsfMC/0XnZ7YAAAAAYAIEAK3vAAACBAW0vBDmas1SBgA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALESqQABABnJ7wKgBQsCoARSx8wMjU0JMmwAAAABgAgQAu4sAAAIEBbS8EOZqvF8GADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRKtAAEAGcnrAqAFCwKgBFLHzAbyjxRqPAAAAAGACBACeewAAAgQFtLwQ5mogbAYAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxErEAAQAZyecCoAULAqAEUsfMFoD7PD3kAAAAAYAIEAAqkAAACBAW0vBDmat6CBgA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALEStQABABnJ4wKgBQsCoARSx8wEevwfbYwAAAABgAgQAwwIAAAIEBbS8EOZqFpoGADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRK5AAEAGcnfAqAFCwKgBFLHzAH2CNocIAAAAAGACBABU0AAAAgQFtLwQ5mpaqgYAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEr0AAQAZydsCoAULAqAEUsfMGtpbbY1sAAAAAYAIEAF2fAAACBAW0vBDmapy+BgA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALESwQABABnJ1wKgBQsCoARSx8wCYQ4FOtAAAAABgAgQAy74AAAIEBbS8EOZquNEGADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRLFAAEAGcnTAqAFCwKgBFLHzB3yZ/uFHAAAAAGACBADbyQAAAgQFtLwQ5mpM4AYAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEskAAQAZyc8CoAULAqAEUsfMCL43xEwwAAAAAYAIEALtfAAACBAW0vBDmaln0BgA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALESzQABABnJywKgBQsCoARSx8wUYoZXohQAAAABgAgQAz1gAAAIEBbS8EOZq6gkHADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRLRAAEAGcnHAqAFCwKgBFLHzAT6APFcVAAAAAGACBACF/AAAAgQFtLwQ5mqhGAcAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEtUAAQAZycMCoAULAqAEUsfMDSz5FCWwAAAAAYAIEABOQAAACBAW0vBDmatYrBwA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALES2QABABnJvwKgBQsCoARSx8wRNEKm5TAAAAABgAgQAkEkAAAIEBbS8EOZqET0HADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRLdAAEAGcm7AqAFCwKgBFLHzB5GwnViWAAAAAGACBABNxwAAAgQFtLwQ5mqpUgcAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEuEAAQAZybcCoAULAqAEUsfMDbaLMJ4EAAAAAYAIEAJDRAAACBAW0vBDmaiRlBwA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALES5QABABnJswKgBQsCoARSx8wWSSIJaTAAAAABgAgQAtisAAAIEBbS8EOZqpXQHADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRLpAAEAGcmvAqAFCwKgBFLHzASE92/6CAAAAAGACBAAhDQAAAgQFtLwQ5moBggcAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEu0AAQAZyasCoAULAqAEUsfMC2wCME4cAAAAAYAIEAEeeAAACBAW0vBDmatOPBwA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALES8QABABnJpwKgBQsCoARSx8wWtqpxm0gAAAABgAgQAR3AAAAIEBbS8EOZq36QHADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRL1AAEAGcmjAqAFCwKgBFLHzACl2x9pjAAAAAGACBAANOAAAAgQFtLwQ5mpvuQcAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEvkAAQAZyZ8CoAULAqAEUsfMB9XD2DaAAAAAAYAIEAN4AAAACBAW0vBDmaofKBwA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALES/QABABnJmwKgBQsCoARSx8wEXJYROUwAAAABgAgQA6Z0AAAIEBbS8EOZqrN8HADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRMBAAEAGcmXAqAFCwKgBFLHzAPBeNsQbAAAAAGACBAA7SgAAAgQFtLwQ5moT8QcAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEwUAAQAZyZMCoAULAqAEUsfMBleCwAQgAAAAAYAIEAHs+AAACBAW0vBDmagwDCAA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALETCQABABnJjwKgBQsCoARSx8wUlOMBOZgAAAABgAgQA0kAAAAIEBbS8EOZqRRAIADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRMNAAEAGcmLAqAFCwKgBFLHzBEHh6+F9AAAAAGACBACW4QAAAgQFtLwQ5moyHggAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxExEAAQAZyYcCoAULAqAEUsfMFdGDN/8cAAAAAYAIEAPiCAAACBAW0vBDmalkrCAA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALETFQABABnJgwKgBQsCoARSx8wI/8QQ4AQAAAABgAgQAM0cAAAIEBbS8EOZqV0EIADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRMZAAEAGcl/AqAFCwKgBFLHzBYniT4RUAAAAAGACBADyXgAAAgQFtLwQ5mq2WAgAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEx0AAQAZyXsCoAULAqAEUsfMDzifFTUsAAAAAYAIEAOWtAAACBAW0vBDmaoNuCAA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALETIQABABnJdwKgBQsCoARSx8wR98SwBhQAAAABgAgQAZ10AAAIEBbS8EOZqPHsIADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRMlAAEAGclzAqAFCwKgBFLHzAtLcCVxgAAAAAGACBAAjUAAAAgQFtLwQ5mooiAgAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEykAAQAZyW8CoAULAqAEUsfMGmxm02zgAAAAAYAIEAGMEAAACBAW0vBDmamyWCAA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALETLQABABnJawKgBQsCoARSx8wDxJfzmbQAAAABgAgQAUTEAAAIEBbS8EOZqZasIADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRMxAAEAGclnAqAFCwKgBFLHzBXjm6/X5AAAAAGACBAB8LgAAAgQFtLwQ5mpbuAgAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxEzUAAQAZyWMCoAULAqAEUsfMGy1sYjN0AAAAAYAIEAG/LAAACBAW0vBDmalvHCAA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALETOQABABnJXwKgBQsCoARSx8wAJuJ++igAAAABgAgQA51gAAAIEBbS8EOZq79MIADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRM9AAEAGclbAqAFCwKgBFLHzANIcFmGHAAAAAGACBADgHAAAAgQFtLwQ5mok6AgAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxE0EAAQAZyVcCoAULAqAEUsfMDYQpdgdMAAAAAYAIEAM76AAACBAW0vBDmagn3CAA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALETRQABABnJUwKgBQsCoARSx8wYFFZ176QAAAABgAgQAxwAAAAIEBbS8EOZq1AwJADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRNJAAEAGclPAqAFCwKgBFLHzB1FD0qn8AAAAAGACBABpbAAAAgQFtLwQ5morIgkAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxE00AAQAZyUsCoAULAqAEUsfMDWKYMKgEAAAAAYAIEAIsmAAACBAW0vBDmajcyCQA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALETUQABABnJRwKgBQsCoARSx8wTv6N77nAAAAABgAgQAdSEAAAIEBbS8EOZqgEUJADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRNVAAEAGclDAqAFCwKgBFLHzBOVz4xKvAAAAAGACBADTFAAAAgQFtLwQ5mo4WgkAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxE1kAAQAZyT8CoAULAqAEUsfMC4ztxF38AAAAAYAIEAAi5AAACBAW0vBDmavZvCQA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALETXQABABnJOwKgBQsCoARSx8wR7J5vZ5wAAAABgAgQAWI4AAAIEBbS8EOZq8oMJADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRNhAAEAGck3AqAFCwKgBFLHzBVj/V6ctAAAAAGACBACyrgAAAgQFtLwQ5mrplwkAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxE2UAAQAZyTMCoAULAqAEUsfMDul9ILnUAAAAAYAIEAM0UAAACBAW0vBDmasyuCQA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALETaQABABnJLwKgBQsCoARSx8wIIB1xPBwAAAABgAgQABiEAAAIEBbS8EOZqCsYJADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRNtAAEAGckrAqAFCwKgBFLHzB2yQ5JNCAAAAAGACBAAy+QAAAgQFtLwQ5mq41QkAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxE3EAAQAZyScCoAULAqAEUsfMEWFZOWCcAAAAAYAIEAKu+AAACBAW0vBDmauThCQA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALETdQABABnJIwKgBQsCoARSx8wCEf0n+lAAAAABgAgQA4CkAAAIEBbS8EOZqQPAJADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsRN5AAEAGckfAqAFCwKgBFLHzBcWaoNKzAAAAAGACBADrcgAAAgQFtLwQ5moCAwoAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxE30AAQAZyRsCoAULAqAEUsfMAwIerxfcAAAAAYAIEABApAAACBAW0vBDmaikVCgA6AAAAOgAAALgn6xS0HQgAJzpmnggARQAALETgQABABnJFwKgBQsCoARSx8wQNPsW1QAAAAABgAgQAZnkAAAIEBbS8EOZqWScKADoAAAA6AAAAuCfrFLQdCAAnOmaeCABFAAAsROFAAEAGckTAqAFCwKgBFLHzAuFrlvjkAAAAAGACBAD3LwAAAgQFtLwQ5mrmPAoAOgAAADoAAAC4J+sUtB0IACc6Zp4IAEUAACxE4kAAQAZyQ8CoAULAqAEUsfMFyCqnZdsAAAAAYAIEAMhBAAACBAW0"}}</script>
 <script>/* Faultline report renderer.
  * Security model: every value in the report is untrusted (it comes from packets).
  * Data is read from the embedded JSON data block and turned into DOM nodes with
@@ -568,20 +680,102 @@ body.expert .beginner-only { display: none !important; }
 
   doc.documentElement.setAttribute("data-status", status);
 
+  // ------------------------------------------------------------ glossary
+  // Plain-language definitions for jargon. Terms are matched in finding text
+  // (first occurrence per paragraph, beginner mode) and get a dotted underline
+  // with a tooltip. Everything is built with text nodes; the matched text is
+  // kept exactly as written.
+  var GLOSSARY = [
+    ["MITRE ATT&CK", "A public catalogue of the tricks attackers use, so a behaviour can be named precisely (for example T1557 is 'man-in-the-middle')."],
+    ["man-in-the-middle", "An attacker quietly sits between two devices, reading or changing what they send to each other."],
+    ["MAC address", "The hardware serial number of a network card, like dc:a6:32:13:af:16. It only matters on the local network."],
+    ["IP address", "The number a device uses to be reached on a network, like 192.168.1.15. Devices on your Wi-Fi usually start with 192.168 or 10."],
+    ["retransmissions", "A packet sent again because the first copy was lost or never acknowledged. A few are normal; many mean a bad link."],
+    ["retransmission", "A packet sent again because the first copy was lost or never acknowledged. A few are normal; many mean a bad link."],
+    ["zero window", "A device telling the other side 'stop, I cannot take more data right now'. Often a slow or overloaded program, not the network."],
+    ["port scan", "One device knocking on many doors (ports) of another to find out what services are running. Usually reconnaissance before an attack."],
+    ["SYN flood", "Thousands of half-opened connections sent at a server so it runs out of room for real visitors."],
+    ["NXDOMAIN", "A DNS reply meaning 'that name does not exist'. Normal for typos; suspicious in large numbers of random-looking names."],
+    ["SERVFAIL", "A DNS reply meaning 'I could not look that up'. The DNS server itself is having trouble."],
+    ["Wireshark", "The free tool experts use to read packet captures. Faultline gives you filters you can paste into it."],
+    ["handshake", "The short hello exchange two devices perform before talking (TCP uses SYN, SYN-ACK, ACK; TLS adds certificates and keys)."],
+    ["gateway", "The device that connects your local network to the internet, usually your router. Everything leaving the network goes through it."],
+    ["router", "The box that connects your local network to the internet and passes traffic between networks."],
+    ["spoofing", "Pretending to be another device by sending packets with its address."],
+    ["broadcast", "A message sent to every device on the local network at once."],
+    ["latency", "How long a packet takes to get to the other side and back. High latency makes everything feel slow."],
+    ["subnet", "The group of addresses that belong to one local network, for example everything starting 192.168.1."],
+    ["pcap", "A file of recorded packets (a packet capture). Faultline reads these."],
+    ["DHCP", "The service that hands out IP addresses to devices when they join a network. Normally only your router does this."],
+    ["DNS", "The phone book of the internet: turns names like example.com into IP addresses."],
+    ["ARP", "How devices on a local network find each other's hardware addresses. It has no security, so it is easy to lie in."],
+    ["ICMP", "Small control messages such as ping and 'destination unreachable'."],
+    ["HTTPS", "Web traffic protected by TLS encryption; nobody in between can read it."],
+    ["HTTP", "Plain, unencrypted web traffic. Anyone on the path can read it, including passwords."],
+    ["TCP", "The reliable way most apps send data: it numbers packets, acknowledges them and resends what is lost."],
+    ["UDP", "A fire-and-forget way to send data with no acknowledgements. Used by DNS, video and games."],
+    ["TLS", "The encryption layer behind HTTPS. A failed TLS handshake means the secure connection could not be set up."],
+    ["RST", "A TCP 'reset' packet: one side slams the connection shut. A refused connection or a forcibly closed one."],
+    ["SYN", "The first packet of a TCP connection, asking 'can we talk?'. Many unanswered SYNs mean nobody is listening or packets are lost."],
+    ["MTU", "The largest packet a link can carry. If a path cannot handle big packets and nobody says so, large transfers stall."],
+    ["TTL", "A countdown in every packet that stops it circling forever. It reaching zero means a routing loop."]
+  ];
+  var glossRe = null, glossMap = {};
+  (function () {
+    var parts = GLOSSARY.map(function (g) {
+      glossMap[g[0].toLowerCase()] = g[1];
+      return g[0].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    });
+    glossRe = new RegExp("(^|[^A-Za-z0-9_.:-])(" + parts.join("|") + ")(?![A-Za-z0-9_])", "gi");
+  })();
+  var termSeq = 0;
+  function termEl(word, def) {
+    var tipId = "gt-" + (++termSeq);
+    var tip = h("span", { "class": "tip", role: "tooltip", id: tipId }, def);
+    var el = h("span", { "class": "term", tabindex: "0", "aria-describedby": tipId }, word, tip);
+    function place() {
+      // keep the tooltip on screen
+      tip.classList.remove("left");
+      var r = tip.getBoundingClientRect();
+      if (r.right > window.innerWidth - 8) { tip.classList.add("left"); }
+    }
+    el.addEventListener("mouseenter", place);
+    el.addEventListener("focus", place);
+    el.addEventListener("keydown", function (e) { if (e.key === "Escape") { el.blur(); } });
+    return el;
+  }
+  function glossify(text, seen) {
+    var out = [], last = 0, m;
+    glossRe.lastIndex = 0;
+    while ((m = glossRe.exec(text)) !== null) {
+      var word = m[2], key = word.toLowerCase();
+      if (seen[key]) { continue; }
+      // "retransmission" vs "retransmissions": treat as one term
+      seen[key] = true;
+      var start = m.index + m[1].length;
+      if (start > last) { out.push(text.slice(last, start)); }
+      out.push(termEl(word, glossMap[key]));
+      last = start + word.length;
+    }
+    if (last < text.length) { out.push(text.slice(last)); }
+    return out;
+  }
+
   // --------------------------------------------------------- rich text
-  // Backticks become <code>; finding ids (F1, F2 ...) become jump links.
+  // Backticks become <code>; finding ids (F1, F2 ...) become jump links;
+  // jargon gets a glossary tooltip (first occurrence per paragraph).
   function rich(text) {
-    var out = [];
+    var out = [], seen = {};
     str(text).split("`").forEach(function (part, i) {
       if (i % 2 === 1) { out.push(h("code", null, part)); return; }
       var re = /\bF\d{1,4}\b/g, last = 0, m;
       while ((m = re.exec(part)) !== null) {
         if (!byId[m[0]]) { continue; }
-        if (m.index > last) { out.push(part.slice(last, m.index)); }
+        if (m.index > last) { out.push(glossify(part.slice(last, m.index), seen)); }
         out.push(jump(m[0], m[0]));
         last = m.index + m[0].length;
       }
-      if (last < part.length) { out.push(part.slice(last)); }
+      if (last < part.length) { out.push(glossify(part.slice(last), seen)); }
     });
     return out;
   }
@@ -712,6 +906,8 @@ body.expert .beginner-only { display: none !important; }
         var expert = b.getAttribute("data-mode") === "expert";
         doc.body.classList.toggle("expert", expert);
         modeBtns.forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+        // glossary tooltips are a beginner aid: not focusable in expert mode
+        Array.prototype.forEach.call(root.querySelectorAll(".term"), function (t) { t.setAttribute("tabindex", expert ? "-1" : "0"); });
       });
     });
     var tools = [
@@ -728,14 +924,30 @@ body.expert .beginner-only { display: none !important; }
         icon(I_DOWN), h("span", { "class": "label" }, "HTML")));
       tools.push(h("a", { "class": "btn primary", href: "/" }, "Analyze another capture"));
     }
-    var links = [["#verdict", "Verdict"], ["#fix-first", "Fix first"], ["#findings", "Findings"], ["#network", "Network"], ["#capture", "Capture"]];
+    var links = [["#verdict", "Verdict"], ["#fix-first", incidents.length ? "Fix first" : "Start here"], ["#findings", "Findings"], ["#network", "Network"], ["#capture", "Capture"]];
+    var mini = h("a", { "class": "mini-verdict", href: "#verdict", "aria-hidden": "true", tabindex: "-1" },
+      h("span", { "class": "dot" }), h("b", null, STATUS[status].word), h("span", { "class": "mini-head" }, headline()));
     return h("header", { "class": "topbar" },
       h("div", { "class": "wrap" },
-        h("a", { "class": "brand", href: "#verdict" }, brandMark(), "Faultline"),
+        h("a", { "class": "brand", href: "#verdict" }, brandMark(), h("span", { "class": "brand-name" }, "Faultline")),
+        mini,
         h("nav", { "class": "navlinks", "aria-label": "Report sections" },
           links.filter(function (l) { return l[0] !== "#fix-first" || hasFixFirst(); })
             .map(function (l) { return h("a", { href: l[0] }, l[1]); })),
         h("div", { "class": "tools" }, tools)));
+  }
+  function watchScroll() {
+    var heroEl = doc.getElementById("verdict");
+    if (!heroEl) { return; }
+    function set(on) { doc.body.classList.toggle("scrolled", on); }
+    if (window.IntersectionObserver) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { set(!e.isIntersecting); });
+      }, { rootMargin: "-120px 0px 0px 0px", threshold: 0 });
+      io.observe(heroEl);
+    } else {
+      window.addEventListener("scroll", function () { set(window.scrollY > heroEl.offsetHeight - 120); }, { passive: true });
+    }
   }
 
   // ------------------------------------------------------------- gauge
@@ -985,21 +1197,26 @@ body.expert .beginner-only { display: none !important; }
   }
   function fixFirst() {
     if (!hasFixFirst()) { return null; }
-    var items = incidents.slice();
+    var items = incidents.slice(), single = null;
     if (!items.length) {
+      // No linked chain of problems: feature the most important finding instead of
+      // dressing it up as an "incident".
       var top = findings.filter(function (f) { return cat(f.category) !== "info"; })[0];
-      items = [{ title: top.title, category: top.category, severity: top.severity, story: top.summary,
-        root_cause: top.id, findings: [top.id], first_fix: arr(top.fix).slice(0, 3) }];
+      single = { title: top.title, category: top.category, severity: top.severity, story: top.summary,
+        root_cause: top.id, findings: [top.id], first_fix: arr(top.fix).slice(0, 3), confidence: top.confidence };
     }
+    var others = single ? findings.filter(function (f) { return cat(f.category) !== "info"; }).length - 1 : 0;
     return h("section", { id: "fix-first", "class": "section" },
       h("div", { "class": "wrap" },
         h("div", { "class": "section-head" },
           h("div", null,
-            h("h2", null, "Fix this first"),
-            h("p", null, "Related problems are grouped into one story. Fixing the root cause usually clears the symptoms that follow from it."))),
-        h("div", { "class": "incidents" }, items.map(incidentEl))));
+            h("h2", null, single ? "Start with this" : "Fix this first"),
+            h("p", null, single ?
+              "The most important finding, with the first things to try." + (others > 0 ? " " + others + " other " + plural(others, "finding is", "findings are") + " listed below." : "") :
+              "Related problems are grouped into one story. Fixing the root cause usually clears the symptoms that follow from it."))),
+        h("div", { "class": "incidents" }, single ? incidentEl(single, true) : items.map(function (i) { return incidentEl(i, false); }))));
   }
-  function incidentEl(inc) {
+  function incidentEl(inc, single) {
     var k = cat(inc.category);
     var ids = arr(inc.findings).filter(function (id) { return byId[id]; });
     var rootId = byId[inc.root_cause] ? inc.root_cause : ids[0];
@@ -1008,11 +1225,13 @@ body.expert .beginner-only { display: none !important; }
     if (!steps.length && byId[rootId]) { steps = arr(byId[rootId].fix).slice(0, 3); }
     return h("article", { "class": "incident c-" + k },
       h("div", { "class": "incident-main" },
-        h("div", { "class": "row" }, pill(k), sevEl(inc.severity),
+        h("div", { "class": "row" }, pill(k), sevEl(inc.severity), single ? confEl(inc.confidence) : null,
+          single ? h("span", { "class": "fid-tag" }, str(rootId)) : null,
           ids.length > 1 ? h("span", { "class": "conf" }, ids.length + " linked findings") : null),
         h("h3", null, str(inc.title)),
         inc.story ? h("p", { "class": "story" }, rich(inc.story)) : null,
-        order.length ? h("ol", { "class": "chain", "aria-label": "Root cause, then symptoms" }, order.map(function (id, i) {
+        single ? h("p", { "class": "symlink" }, jump(rootId, "Read the full finding"), " ", h("span", null, "for the evidence and reasoning.")) : null,
+        !single && order.length ? h("ol", { "class": "chain", "aria-label": "Root cause, then symptoms" }, order.map(function (id, i) {
           var f = byId[id], fk = cat(f.category);
           return h("li", { "class": "c-" + fk }, h("button", { type: "button", "class": "node" + (i === 0 ? " root" : ""), onclick: function () { goto(id); } },
             h("small", null, h("b", null, str(id)), i === 0 ? " root cause" : " symptom"),
@@ -1028,10 +1247,36 @@ body.expert .beginner-only { display: none !important; }
   var cards = [];
   var chipEls = {};
   var currentFilter = "all";
+  var hostFilter = null;          // an IP from the network map, or null
+  var hostChip = null;            // "Involving 192.168.1.66  x" chip
+  var onHostFilterChange = null;  // the map re-highlights its node
+  function applyFilters() {
+    cards.forEach(function (c) {
+      var okCat = currentFilter === "all" || c.cat === currentFilter;
+      var okHost = !hostFilter || c.hosts.indexOf(hostFilter) !== -1;
+      c.el.hidden = !(okCat && okHost);
+    });
+    if (hostChip) {
+      hostChip.hidden = !hostFilter;
+      if (hostFilter) {
+        var n = cards.filter(function (c) { return !c.el.hidden; }).length;
+        hostChip.firstChild.textContent = "Involving " + hostFilter + " (" + n + ")";
+      }
+    }
+    if (onHostFilterChange) { onHostFilterChange(hostFilter); }
+  }
   function setFilter(k) {
     currentFilter = k;
     Object.keys(chipEls).forEach(function (c) { chipEls[c].setAttribute("aria-pressed", String(c === k)); });
-    cards.forEach(function (c) { c.el.hidden = !(k === "all" || c.cat === k); });
+    applyFilters();
+  }
+  function setHostFilter(ip, scroll) {
+    hostFilter = ip || null;
+    if (hostFilter) { setFilter("all"); } else { applyFilters(); }
+    if (scroll && hostFilter) {
+      var el = doc.getElementById("findings");
+      if (el) { el.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" }); }
+    }
   }
   function findingsSection() {
     var counts = { all: findings.length, attack: 0, fault: 0, misconfig: 0, info: 0 };
@@ -1044,6 +1289,9 @@ body.expert .beginner-only { display: none !important; }
       chipEls[d[0]] = b;
       return b;
     }));
+    hostChip = h("button", { type: "button", "class": "chip host", hidden: true, title: "Clear the device filter",
+      onclick: function () { setHostFilter(null); } }, h("span", null, ""), h("span", { "class": "x", "aria-hidden": "true" }, "×"), h("span", { "class": "sr-only" }, "clear device filter"));
+    chips.appendChild(hostChip);
     var list = h("div", { "class": "finding-list" });
     if (!findings.length) {
       list.appendChild(h("div", { "class": "empty" },
@@ -1052,7 +1300,7 @@ body.expert .beginner-only { display: none !important; }
     }
     findings.forEach(function (f, i) {
       var c = card(f, i === 0);
-      cards.push({ el: c.el, cat: cat(f.category), id: f.id, open: c.open });
+      cards.push({ el: c.el, cat: cat(f.category), id: f.id, open: c.open, hosts: arr(f.hosts).map(str) });
       list.appendChild(c.el);
     });
     return h("section", { id: "findings", "class": "section" },
@@ -1132,22 +1380,35 @@ body.expert .beginner-only { display: none !important; }
         h("button", { type: "button", "class": "btn", onclick: function () { copyText(filter, "Wireshark filter copied"); } }, icon(I_COPY), "Copy filter")));
     }
     var total = num(f.packet_total);
-    var rows = lines.slice(0, 50).map(function (l) {
+    var PREVIEW = 8, CAP = 200;
+    var rows = lines.slice(0, CAP).map(function (l, i) {
       var r = rel(l.ts);
-      return h("tr", null,
+      return h("tr", { hidden: i >= PREVIEW ? true : null, "class": i >= PREVIEW ? "extra" : null },
         h("td", { "class": "num" }, fmtInt(l.no)),
         h("td", { "class": "num mono" }, r === null ? "" : "+" + fmtClock(r, true)),
         h("td", { "class": "mono" }, str(l.summary)));
     });
-    var shown = rows.length;
+    var shown = rows.length, expanded = false;
+    var toggleBtn = null;
+    if (shown > PREVIEW) {
+      toggleBtn = h("button", { type: "button", "class": "btn small", "aria-expanded": "false", onclick: function () {
+        expanded = !expanded;
+        rows.forEach(function (r, i) { if (i >= PREVIEW) { r.hidden = !expanded; } });
+        toggleBtn.setAttribute("aria-expanded", String(expanded));
+        toggleBtn.firstChild.textContent = expanded ? "Show the first " + PREVIEW + " only" : "Show all " + fmtInt(shown) + " packets";
+      } }, h("span", null, "Show all " + fmtInt(shown) + " packets"), chevron());
+    }
+    var moreText = null;
+    if (total !== null && total > shown) {
+      moreText = "The table lists " + fmtInt(shown) + " of " + fmtInt(total) + " matching packets." + (pk.length > shown ? " The filter and the evidence file include " + fmtInt(pk.length) + "." : "");
+    }
     return h("div", { "class": "block evidence" },
       h("h4", null, "Evidence: the exact packets"),
       tools.length ? h("div", { "class": "evidence-tools" }, tools) : null,
       shown ? h("div", { "class": "table-scroll" }, h("table", null,
         h("thead", null, h("tr", null, h("th", { "class": "num", scope: "col" }, "No."), h("th", { "class": "num", scope: "col" }, "Time"), h("th", { scope: "col" }, "What happened"))),
         h("tbody", null, rows))) : null,
-      total !== null && total > shown ? h("p", { "class": "more" }, "Showing " + shown + " of " + fmtInt(total) + " matching packets." +
-        (pk.length > shown ? " The filter and the evidence file include " + fmtInt(pk.length) + "." : "")) : null);
+      toggleBtn || moreText ? h("div", { "class": "evidence-foot" }, toggleBtn, moreText ? h("p", { "class": "more" }, moreText) : null) : null);
   }
   function metricsEl(m) {
     m = obj(m);
@@ -1222,7 +1483,7 @@ body.expert .beginner-only { display: none !important; }
     var c = null;
     for (var i = 0; i < cards.length; i++) { if (cards[i].id === id) { c = cards[i]; } }
     if (!c) { return; }
-    if (c.el.hidden) { setFilter("all"); }
+    if (c.el.hidden) { hostFilter = null; setFilter("all"); }
     c.open(true);
     c.el.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "start" });
     c.el.classList.remove("flash");
@@ -1242,6 +1503,295 @@ body.expert .beginner-only { display: none !important; }
         h("span", { "class": "bar", "aria-hidden": "true" }, fillEl), h("span", { "class": "val" }, r.text));
     }));
   }
+  // ------------------------------------------------------------ network map
+  // An SVG picture of the network: the internet as a cloud on the left, the
+  // router in the middle, local devices on an arc to the right. Built from
+  // report.hosts, stats.conversations and the hosts named in findings.
+  var CAT_RANK = { attack: 3, fault: 2, misconfig: 1, info: 0 };
+  function networkMap() {
+    var MAX_DEVICES = 24, MAX_EXTERNAL = 6;
+    var W = 1000, H = 600;
+    var byIp = {}, fByHost = {};
+    hosts.forEach(function (x) { byIp[str(x.ip)] = x; });
+    findings.forEach(function (f) {
+      arr(f.hosts).forEach(function (x) { x = str(x); (fByHost[x] = fByHost[x] || []).push(f); });
+    });
+    function pk(x) { return (num(x.packets_sent) || 0) + (num(x.packets_recv) || 0); }
+    function worst(ip) {
+      var fs = fByHost[ip] || [], best = null;
+      fs.forEach(function (f) { var k = cat(f.category); if (k !== "info" && (best === null || CAT_RANK[k] > CAT_RANK[best])) { best = k; } });
+      return best;
+    }
+    function hasRole(x, r) { return arr(x.roles).indexOf(r) !== -1; }
+    function busySort(a, b) {
+      var fa = (fByHost[str(a.ip)] || []).length ? 1 : 0, fb = (fByHost[str(b.ip)] || []).length ? 1 : 0;
+      return fb - fa || pk(b) - pk(a);
+    }
+    var locals = hosts.filter(function (x) { return x.local !== false && str(x.ip); });
+    var externals = hosts.filter(function (x) { return x.local === false && str(x.ip); });
+    var gws = locals.filter(function (x) { return hasRole(x, "gateway"); }).sort(function (a, b) { return pk(b) - pk(a); });
+    var gw = gws[0] || null;
+    var devices = locals.filter(function (x) { return x !== gw; }).sort(busySort);
+    var shownDev = devices.slice(0, MAX_DEVICES), restDev = devices.slice(MAX_DEVICES);
+    externals.sort(busySort);
+    var shownExt = externals.slice(0, MAX_EXTERNAL), restExt = externals.slice(MAX_EXTERNAL);
+    if (!hosts.length) { return null; }
+
+    // ---- node positions
+    var nodes = {};   // ip -> node record
+    var list = [];
+    function add(ip, x, y, kind, host) {
+      var n = { ip: ip, x: x, y: y, kind: kind, host: host, edges: [], peers: {} };
+      nodes[ip] = n; list.push(n);
+      return n;
+    }
+    var CLOUD = { x: 118, y: H / 2 }, HUB = { x: 440, y: H / 2 };
+    var cloudNode = add("\u0000internet", CLOUD.x + 30, H - 62, "cloud", null);
+    var hubNode = gw ? add(str(gw.ip), HUB.x, HUB.y, "gateway", gw) : add("\u0000lan", HUB.x, HUB.y, "hub", null);
+    var devItems = shownDev.slice();
+    if (restDev.length) { devItems.push({ ip: "\u0000more", more: restDev }); }
+    var n = devItems.length;
+    devItems.forEach(function (x, i) {
+      var two = n > 10, outer = two && i % 2 === 1;
+      var rx = two ? (outer ? 420 : 300) : 330, ry = two ? (outer ? 235 : 165) : 205;
+      var span = n === 1 ? 0 : Math.min(200, 30 * (n - 1) + 40);
+      var deg = n === 1 ? 0 : -span / 2 + span * i / (n - 1);
+      var a = deg * Math.PI / 180;
+      var kind = x.more ? "more" : "device";
+      var node = add(x.more ? x.ip : str(x.ip), HUB.x + rx * Math.cos(a), HUB.y + ry * Math.sin(a), kind, x.more ? null : x);
+      if (x.more) { node.more = x.more; }
+    });
+    var m = shownExt.length;
+    shownExt.forEach(function (x, i) {
+      var yy = m === 1 ? CLOUD.y - 40 : 90 + (H - 250) * i / (m - 1);
+      add(str(x.ip), CLOUD.x + (i % 2 ? 62 : -2), yy, "external", x);
+    });
+    cloudNode.more = restExt;
+
+    // ---- edges (aggregated per node pair)
+    var edgeMap = {};
+    function target(ip) {
+      if (nodes[ip]) { return nodes[ip]; }
+      var hst = byIp[ip];
+      if (hst && hst.local === false) { return cloudNode; }
+      if (hst) { return restDev.indexOf(hst) !== -1 ? nodes["\u0000more"] : null; }
+      return /^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|fe80:|fd|fc)/i.test(ip) ? null : cloudNode;
+    }
+    function link(a, b, packets, bytes) {
+      if (!a || !b || a === b) { return; }
+      var key = a.ip < b.ip ? a.ip + "|" + b.ip : b.ip + "|" + a.ip;
+      var e = edgeMap[key];
+      if (!e) { e = edgeMap[key] = { a: a, b: b, packets: 0, bytes: 0, convs: 0 }; a.edges.push(e); b.edges.push(e); }
+      e.packets += packets; e.bytes += bytes; e.convs++;
+    }
+    var convs = arr(stats.conversations).filter(function (c) { return c && typeof c === "object"; });
+    convs.forEach(function (c) {
+      var a = str(c.a), b = str(c.b), p = num(c.packets) || 0, by = num(c.bytes) || 0;
+      var na = target(a), nb = target(b);
+      if (!na || !nb) { return; }
+      if (na !== nb) { na.peers[b] = true; nb.peers[a] = true; }
+      var aLocal = na.kind !== "cloud" && na.kind !== "external", bLocal = nb.kind !== "cloud" && nb.kind !== "external";
+      if (aLocal && bLocal) { link(na, nb, p, by); }
+      else if (aLocal !== bLocal) {
+        // local <-> internet traffic travels through the router
+        var loc = aLocal ? na : nb, ext = aLocal ? nb : na;
+        link(loc, hubNode, p, by);
+        link(hubNode, ext, p, by);
+      } else { link(na, nb, p, by); }
+    });
+    // every local device sits on the LAN: a faint link to the router if nothing else
+    list.forEach(function (nd) {
+      if ((nd.kind === "device" || nd.kind === "more") && !nd.edges.length) { link(nd, hubNode, 0, 0); }
+      if (nd.kind === "external" && !nd.edges.length) { link(nd, hubNode, 0, 0); }
+    });
+    if (!hubNode.edges.some(function (e) { return e.a === cloudNode || e.b === cloudNode; })) { link(hubNode, cloudNode, 0, 0); }
+    var edges = Object.keys(edgeMap).map(function (k) { return edgeMap[k]; });
+    var maxP = Math.max.apply(null, edges.map(function (e) { return e.packets; }).concat([1]));
+
+    // ---- drawing
+    var tip = h("div", { "class": "tooltip map-tip", "aria-hidden": "true" });
+    var box = h("div", { "class": "map-box" });
+    var svg = s("svg", { "class": "netmap", viewBox: "0 0 " + W + " " + H, role: "group",
+      "aria-label": "Network map: " + list.filter(function (x) { return x.kind === "device"; }).length + " local devices, " +
+        (gw ? "router " + str(gw.ip) : "no router identified") + ", " + externals.length + " internet hosts. Text version below." });
+    var gEdges = s("g", { "class": "edges" }), gNodes = s("g", { "class": "nodes" });
+    svg.appendChild(s("defs", null, s("radialGradient", { id: "fl-cloud" }, s("stop", { "class": "c0", offset: "0" }), s("stop", { "class": "c1", offset: "1" }))));
+    // the cloud behind the external hosts
+    svg.appendChild(s("ellipse", { "class": "cloud", cx: CLOUD.x + 30, cy: H / 2 + 10, rx: 122, ry: Math.min(275, 110 + 34 * Math.max(1, m)) }));
+    svg.appendChild(s("text", { "class": "cloud-label", x: CLOUD.x + 30, y: 30, "text-anchor": "middle" }, "Internet"));
+    if (hubNode.kind === "gateway" || n) {
+      svg.appendChild(s("text", { "class": "cloud-label", x: W - 24, y: 30, "text-anchor": "end" }, "Your local network"));
+    }
+    edges.forEach(function (e) {
+      var w = e.packets ? 1 + 5 * Math.log(1 + e.packets) / Math.log(1 + maxP) : 1;
+      var el = s("line", { "class": "edge" + (e.packets ? "" : " faint"), x1: e.a.x.toFixed(1), y1: e.a.y.toFixed(1), x2: e.b.x.toFixed(1), y2: e.b.y.toFixed(1), "stroke-width": w.toFixed(2) });
+      el.appendChild(s("title", null, e.a.kind === "cloud" ? "Internet" : e.a.ip, " ↔ ", e.b.kind === "cloud" ? "Internet" : e.b.ip, e.packets ? ": " + fmtInt(e.packets) + " packets, " + fmtBytes(e.bytes) : ""));
+      e.el = el;
+      gEdges.appendChild(el);
+    });
+    var ICON = {
+      gateway: "M-9 -2h18v8h-18z M-5 2h.1 M-1 2h.1 M-3 -2v-5 M3 -2v-5",
+      device: "M-7 -5h14v9h-14z M-9 6h18",
+      external: "M-6 -6h12v12h-12z M-6 -2h12 M-6 2h12",
+      hub: "M-8 0h16 M0 -8v16",
+      cloud: "",
+      more: "M-6 0h.1 M0 0h.1 M6 0h.1"
+    };
+    var RAD = { gateway: 28, device: 16, external: 12, hub: 24, more: 16, cloud: 0 };
+    var selected = null;
+    function labelOf(nd) {
+      if (nd.kind === "cloud") { return ""; }
+      if (nd.kind === "more") { return "+" + nd.more.length + " more"; }
+      return nd.ip;
+    }
+    function subLabel(nd) {
+      if (nd.kind === "gateway") { return "Router"; }
+      if (nd.kind === "hub") { return "Local network"; }
+      if (nd.kind === "more") { return plural(nd.more.length, "device", "devices"); }
+      var nm = nd.host ? arr(nd.host.names).map(str).filter(Boolean) : [];
+      return nm.length ? nm[0].slice(0, 28) : "";
+    }
+    function describe(nd) {
+      var parts = [];
+      if (nd.kind === "cloud") { return "The internet" + (restExt.length ? ": " + restExt.length + " more hosts" : ""); }
+      if (nd.kind === "more") { return nd.more.length + " quieter devices: " + nd.more.slice(0, 6).map(function (x) { return str(x.ip); }).join(", ") + (nd.more.length > 6 ? "…" : ""); }
+      parts.push(nd.ip);
+      var roles = nd.host ? arr(nd.host.roles).map(function (r) { return ({ gateway: "router", "dns-server": "DNS server", "dhcp-server": "DHCP server" })[str(r)] || str(r); }) : [];
+      if (roles.length) { parts.push(roles.join(", ")); }
+      var fs = fByHost[nd.ip] || [];
+      if (fs.length) { parts.push("involved in " + fs.map(function (f) { return str(f.id); }).join(", ")); }
+      return parts.join("; ");
+    }
+    function tooltipFor(nd) {
+      while (tip.firstChild) { tip.removeChild(tip.firstChild); }
+      if (nd.kind === "cloud") {
+        append(tip, [h("b", null, "The internet"), h("div", null, externals.length + " outside " + plural(externals.length, "host", "hosts") + " were contacted" + (restExt.length ? "; " + restExt.length + " not drawn individually" : "") + ".")]);
+        return;
+      }
+      if (nd.kind === "more") {
+        append(tip, [h("b", null, nd.more.length + " quieter devices"), h("div", null, nd.more.slice(0, 8).map(function (x) { return str(x.ip); }).join(", ") + (nd.more.length > 8 ? " …" : "")),
+          h("div", { "class": "hint" }, "All devices are listed in the table below.")]);
+        return;
+      }
+      if (nd.kind === "hub") { append(tip, [h("b", null, "Your local network"), h("div", null, "No router was identified in this capture.")]); return; }
+      var x = nd.host || {}, fs = fByHost[nd.ip] || [];
+      var macs = arr(x.macs).map(str), names = arr(x.names).map(str);
+      var roles = arr(x.roles).map(function (r) { return ({ gateway: "Router", "dns-server": "DNS server", "dhcp-server": "DHCP server" })[str(r)] || str(r); });
+      append(tip, [
+        h("b", null, nd.ip),
+        names.length ? h("div", { "class": "names" }, names.slice(0, 3).join(", ")) : null,
+        h("dl", null,
+          roles.length ? [h("dt", null, "Role"), h("dd", null, roles.join(", "))] : null,
+          macs.length ? [h("dt", null, "MAC"), h("dd", { "class": "mono" }, macs.slice(0, 3).join(" "), macs.length > 1 ? h("span", { "class": "warn" }, " (" + macs.length + " MACs)") : null)] : null,
+          h("dt", null, "Packets"), h("dd", null, fmtInt(x.packets_sent) + " sent, " + fmtInt(x.packets_recv) + " received"),
+          nd.kind === "external" ? [h("dt", null, "Where"), h("dd", null, "Outside your network")] : null),
+        fs.length ? h("ul", null, fs.slice(0, 5).map(function (f) { return h("li", { "class": "c-" + cat(f.category) }, str(f.id) + " " + str(f.title)); })) : h("div", { "class": "hint" }, "Not involved in any finding."),
+        fs.length ? h("div", { "class": "hint" }, selected === nd ? "Click again to show all findings" : "Click to show only these findings") : null
+      ]);
+    }
+    function showTip(nd) {
+      tooltipFor(nd);
+      box.appendChild(tip);
+      var bw = box.clientWidth || W, k = bw / W;
+      var tw = tip.offsetWidth || 220, th = tip.offsetHeight || 80;
+      var left = nd.x * k + (RAD[nd.kind] || 40) * k + 10, top = nd.y * k - th / 2;
+      if (left + tw > bw) { left = nd.x * k - (RAD[nd.kind] || 40) * k - tw - 10; }
+      top = clamp(top, 0, Math.max(0, box.clientHeight - th));
+      tip.style.left = Math.max(0, left) + "px";
+      tip.style.top = top + "px";
+      box.classList.add("hovering");
+      list.forEach(function (o) { if (o.el) { o.el.classList.toggle("peer", !!nd.peers[o.ip] || o.edges.some(function (e) { return (e.a === nd || e.b === nd) && (e.a === o || e.b === o); })); } });
+      edges.forEach(function (e) { e.el.classList.toggle("hot", e.a === nd || e.b === nd); });
+    }
+    function hideTip() {
+      box.classList.remove("hovering");
+      list.forEach(function (o) { if (o.el) { o.el.classList.remove("peer"); } });
+      edges.forEach(function (e) { e.el.classList.toggle("hot", selected !== null && (e.a === selected || e.b === selected)); });
+    }
+    list.forEach(function (nd) {
+      var k = nd.kind, r = RAD[k], fs = fByHost[nd.ip] || [], wc = worst(nd.ip);
+      var g = s("g", { "class": "node k-" + k + (wc ? " flag c-" + wc : ""), transform: "translate(" + nd.x.toFixed(1) + " " + nd.y.toFixed(1) + ")",
+        tabindex: "0", role: "button", "aria-label": describe(nd), "data-ip": k === "device" || k === "gateway" || k === "external" ? nd.ip : null });
+      if (k === "cloud") {
+        g.appendChild(s("circle", { "class": "body", r: 30 }));
+        g.appendChild(s("path", { "class": "glyph", d: "M-14 8a7 7 0 0 1 1-14a9 9 0 0 1 17-2a7 7 0 0 1 8 8a6 6 0 0 1-3 8z" }));
+        if (restExt.length) { g.appendChild(s("text", { "class": "count", x: 0, y: 44, "text-anchor": "middle" }, "+" + restExt.length + " more hosts")); }
+      } else {
+        g.appendChild(s("circle", { "class": "halo", r: r + 7 }));
+        g.appendChild(s("circle", { "class": "body", r: r }));
+        if (ICON[k]) { g.appendChild(s("path", { "class": "glyph", d: ICON[k], transform: k === "external" ? "scale(.75)" : (k === "gateway" ? "scale(1.25)" : null) })); }
+        var lab = s("text", { "class": "label", x: 0, y: r + 15, "text-anchor": "middle" }, labelOf(nd));
+        g.appendChild(lab);
+        var sub = subLabel(nd);
+        if (sub) { g.appendChild(s("text", { "class": "sublabel", x: 0, y: r + 28, "text-anchor": "middle" }, sub)); }
+        // role badges (DNS / DHCP) sit at the bottom right
+        var badges = [];
+        if (nd.host) {
+          if (hasRole(nd.host, "dns-server")) { badges.push(["DNS", "dns"]); }
+          if (hasRole(nd.host, "dhcp-server")) { badges.push(["DHCP", "dhcp"]); }
+          if (k !== "gateway" && hasRole(nd.host, "gateway")) { badges.push(["RTR", "rtr"]); }
+        }
+        badges.forEach(function (b, i) {
+          var bw = 8 + b[0].length * 6.2, bx = r * 0.55 + i * (bw + 3), by = r * 0.45;
+          var bg = s("g", { "class": "rbadge b-" + b[1] });
+          bg.appendChild(s("rect", { x: bx, y: by, width: bw, height: 14, rx: 4 }));
+          bg.appendChild(s("text", { x: bx + bw / 2, y: by + 10.5, "text-anchor": "middle" }, b[0]));
+          g.appendChild(bg);
+        });
+        if (fs.length) {
+          var fb = s("g", { "class": "fbadge" });
+          fb.appendChild(s("circle", { cx: -r * 0.72, cy: -r * 0.72, r: 9 }));
+          fb.appendChild(s("text", { x: -r * 0.72, y: -r * 0.72 + 3.6, "text-anchor": "middle" }, String(fs.length)));
+          g.appendChild(fb);
+        }
+      }
+      g.addEventListener("mouseenter", function () { showTip(nd); });
+      g.addEventListener("mouseleave", hideTip);
+      g.addEventListener("focus", function () { showTip(nd); });
+      g.addEventListener("blur", hideTip);
+      function activate() {
+        if (k === "cloud" || k === "hub") { return; }
+        if (k === "more") { var t = doc.getElementById("devices"); if (t) { t.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" }); } return; }
+        if (!fs.length) { toast(nd.ip + " is not involved in any finding."); return; }
+        setHostFilter(selected === nd ? null : nd.ip, true);
+      }
+      g.addEventListener("click", activate);
+      g.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(); } });
+      nd.el = g;
+      gNodes.appendChild(g);
+    });
+    svg.appendChild(gEdges); svg.appendChild(gNodes);
+    onHostFilterChange = function (ip) {
+      selected = ip && nodes[ip] ? nodes[ip] : null;
+      list.forEach(function (o) { if (o.el) { o.el.classList.toggle("selected", o === selected); } });
+      edges.forEach(function (e) { e.el.classList.toggle("hot", selected !== null && (e.a === selected || e.b === selected)); });
+      box.classList.toggle("has-selection", selected !== null);
+    };
+    append(box, [svg, tip]);
+
+    // ---- legend + text fallback
+    function lg(cls, text) { return h("li", { "class": cls }, h("i", { "aria-hidden": "true" }), text); }
+    var legend = h("ul", { "class": "map-legend", "aria-label": "Map legend" },
+      lg("l-router", "Router (gateway)"), lg("l-device", "Device on your network"), lg("l-ext", "Host on the internet"),
+      lg("l-attack", "Involved in an attack"), lg("l-fault", "Involved in a fault"), lg("l-misconfig", "Involved in a misconfiguration"),
+      lg("l-edge", "Thicker line = more traffic"), lg("l-badge", "DNS / DHCP: acts as that server"));
+    var textList = h("details", { "class": "map-text" },
+      h("summary", null, "Text version of this map"),
+      h("ul", null, list.filter(function (x) { return x.kind !== "cloud" && x.kind !== "hub"; }).map(function (x) {
+        return h("li", null, describe(x) + (x.kind === "device" ? " (local device)" : x.kind === "external" ? " (internet)" : ""));
+      }), restExt.length ? h("li", null, "Internet: " + restExt.length + " more hosts not drawn.") : null));
+    var deviceCount = locals.length, note = [];
+    note.push(fmtInt(deviceCount) + " local " + plural(deviceCount, "device", "devices"));
+    if (gw) { note.push("router " + str(gw.ip)); }
+    note.push(fmtInt(externals.length) + " internet " + plural(externals.length, "host", "hosts"));
+    var flagged = Object.keys(fByHost).filter(function (ip) { return worst(ip); }).length;
+    return h("div", { "class": "panel map-panel", id: "map" },
+      h("div", { "class": "map-head" },
+        h("h3", null, "Network map"),
+        h("p", null, note.join(", ") + ". " + (flagged ? flagged + " " + plural(flagged, "device is", "devices are") + " involved in a finding: hover for details, click to see its findings." : "No device is involved in a finding."))),
+      box, legend, textList);
+  }
+
   function networkSection() {
     var attackHosts = {};
     findings.forEach(function (f) {
@@ -1252,8 +1802,8 @@ body.expert .beginner-only { display: none !important; }
       return ((num(b.packets_sent) || 0) + (num(b.packets_recv) || 0)) - ((num(a.packets_sent) || 0) + (num(a.packets_recv) || 0));
     });
     var shown = hs.slice(0, 60);
-    var hostTable = h("div", { "class": "panel" },
-      h("h3", null, "Devices"),
+    var hostTable = h("div", { "class": "panel", id: "devices" },
+      h("h3", null, "All devices"),
       shown.length ? h("div", { "class": "table-scroll" }, h("table", { "class": "hosts" },
         h("thead", null, h("tr", null, ["Address", "Name", "Hardware (MAC)", "Role", "Sent", "Received", "Data"].map(function (t, i) {
           return h("th", { scope: "col", "class": i >= 4 ? "num" : null }, t);
@@ -1290,7 +1840,8 @@ body.expert .beginner-only { display: none !important; }
       h("div", { "class": "wrap" },
         h("div", { "class": "section-head" }, h("div", null,
           h("h2", null, "Who was talking"),
-          h("p", null, "Every device seen in the capture, what it does, and how much it sent."))),
+          h("p", null, "A picture of the network as seen in this capture, then every device, what it does, and how much it sent."))),
+        networkMap(),
         hostTable,
         h("div", { "class": "net-grid" },
           h("div", { "class": "panel" }, h("h3", null, "Protocols"), prow.length ? barsList(prow, false) : h("p", { "class": "more" }, "No protocol data.")),
@@ -1353,6 +1904,7 @@ body.expert .beginner-only { display: none !important; }
   var frag = doc.createDocumentFragment();
   append(frag, [topbar(), h("main", null, hero(), fixFirst(), findingsSection(), networkSection(), captureSection()), footer(), toastEl]);
   root.appendChild(frag);
+  watchScroll();
   if (chartRedraw) {
     chartRedraw();
     var rt = null;

@@ -54,6 +54,9 @@ def samples(tmp_path):
     (d / "labels.json").write_text(json.dumps({
         "mitm_rogue_dhcp.pcap": {"title": "Rogue DHCP <b>MITM</b>", "story": "Every website is wrong.",
                                  "expected": [{"kind": "dhcp.rogue_server", "category": "attack"}], "clean": False}}))
+    for extra in ("ip_conflict.pcap", "arp_spoofing.pcap", "dns_failure.pcap", "clean_office.pcap",
+                  "mitm_chain.pcap", "outage_vs_attack_mixed.pcap", "xss_payload.pcap"):
+        (d / extra).write_bytes(tiny_pcap())
     (tmp_path / "secret.pcap").write_bytes(tiny_pcap())
     return d
 
@@ -392,3 +395,84 @@ def test_real_size_upload_is_accepted():
     r = c.post("/analyze", data={"csrf_token": app.config["FAULTLINE_CSRF_TOKEN"], "capture": (_io.BytesIO(data), "lossy_link.pcap")},
                content_type="multipart/form-data")
     assert r.status_code == 200
+
+
+# --------------------------------------------------------------------------- compare
+
+
+def test_compare_get_two_samples(client, rec):
+    r = client.get("/compare?a=ip_conflict.pcap&b=arp_spoofing.pcap&redact=1")
+    assert r.status_code == 200
+    body = r.get_data(as_text=True)
+    assert "ip_conflict.pcap" in body and "arp_spoofing.pcap" in body
+    assert "What changed" in body and "Open full report" in body
+    assert "/sample/ip_conflict.pcap?redact=1" in body
+    assert "<script>alert" not in body and "<img src=x" not in body  # hostile fixture strings escaped
+    assert [c["name"] for c in rec.calls] == ["ip_conflict.pcap", "arp_spoofing.pcap"]
+    assert all(c["options"].redact is True for c in rec.calls)
+    assert_secure_headers(r)
+    nonce = re.search(r"style-src 'nonce-([^']+)'", r.headers["Content-Security-Policy"]).group(1)
+    assert f'<style nonce="{nonce}">' in body
+
+
+@pytest.mark.parametrize("qs", [
+    "", "a=ip_conflict.pcap", "b=ip_conflict.pcap", "a=ip_conflict.pcap&b=missing.pcap",
+    "a=../secret.pcap&b=ip_conflict.pcap", "a=ip_conflict.pcap&b=labels.json", "a=notes.txt&b=ip_conflict.pcap",
+    "a=%2e%2e/secret.pcap&b=ip_conflict.pcap",
+])
+def test_compare_get_rejects_bad_names(client, rec, qs):
+    r = client.get("/compare?" + qs)
+    assert r.status_code == 404
+    assert rec.calls == []
+    assert_secure_headers(r)
+
+
+def test_compare_post_requires_token(client, rec):
+    r = client.post("/compare", data={"capture_a": (io.BytesIO(tiny_pcap()), "a.pcap"), "capture_b": (io.BytesIO(tiny_pcap()), "b.pcap")},
+                    content_type="multipart/form-data")
+    assert r.status_code == 403 and rec.calls == []
+
+
+def test_compare_post_two_uploads(client, app, rec):
+    r = client.post("/compare", data={"csrf_token": token(app), "capture_a": (io.BytesIO(tiny_pcap()), "before.pcap"),
+                                      "capture_b": (io.BytesIO(gzip.compress(tiny_pcap())), "../after<b>.pcap.gz")},
+                    content_type="multipart/form-data")
+    assert r.status_code == 200, r.get_data(as_text=True)[:300]
+    body = r.get_data(as_text=True)
+    assert "before.pcap" in body and "after&lt;b&gt;.pcap.gz" in body and "<b>.pcap" not in body
+    assert [c["name"] for c in rec.calls] == ["before.pcap", "after<b>.pcap.gz"]
+    for c in rec.calls:
+        assert c["mode"] == 0o600 and not os.path.exists(c["path"])
+    assert_secure_headers(r)
+
+
+def test_compare_post_one_bad_file(client, app, rec):
+    r = client.post("/compare", data={"csrf_token": token(app), "capture_a": (io.BytesIO(tiny_pcap()), "a.pcap"),
+                                      "capture_b": (io.BytesIO(b"MZ not a capture at all" * 3), "b.pcap")},
+                    content_type="multipart/form-data")
+    assert r.status_code == 400
+    assert "not a packet capture" in r.get_data(as_text=True)
+    assert len(rec.calls) <= 1  # the second file is refused before any analysis of it
+    for c in rec.calls:
+        assert not os.path.exists(c["path"])
+    r = client.post("/compare", data={"csrf_token": token(app), "capture_a": (io.BytesIO(tiny_pcap()), "a.pcap")},
+                    content_type="multipart/form-data")
+    assert r.status_code == 400 and "Two files" in r.get_data(as_text=True)
+
+
+def test_compare_cross_origin_blocked(client, app, rec):
+    r = client.post("/compare", data={"csrf_token": token(app), "capture_a": (io.BytesIO(tiny_pcap()), "a.pcap"),
+                                      "capture_b": (io.BytesIO(tiny_pcap()), "b.pcap")},
+                    content_type="multipart/form-data", headers={"Origin": "http://evil.example"})
+    assert r.status_code == 403 and rec.calls == []
+
+
+def test_index_landing_features(client):
+    body = client.get("/").get_data(as_text=True)
+    assert 'data-filter="attack"' in body and "Hostile files" in body
+    assert "Start here" in body and "The full man-in-the-middle story" in body
+    assert "/compare?a=ip_conflict.pcap&amp;b=arp_spoofing.pcap" in body
+    assert "/compare?a=dns_failure.pcap&amp;b=clean_office.pcap" in body
+    assert 'data-badge="hostile"' in body  # xss_payload.pcap
+    assert "How Faultline works" in body
+    assert 'action="/compare"' in body
