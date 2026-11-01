@@ -331,6 +331,10 @@ The images in [`docs/proof/`](docs/proof) show the verification commands being r
 | **Fuzzing and secret scan** | **Public captures** |
 | <img src="docs/proof/real-terminal-fuzz.png" alt="Fuzzer and secret scanner in a Terminal window" width="440"> | <img src="docs/proof/public-captures.svg" alt="Validation on public Wireshark captures" width="440"> |
 
+**Captures from outside the project.** Two single-packet test files downloaded from the internet (one TCP connection request, one DNS lookup), run by the team in a Terminal window. Nothing in them is wrong, and Faultline says so, but it also says that one packet is too little traffic to judge a network instead of declaring it healthy:
+
+<img src="docs/proof/real-terminal-short-capture.png" alt="faultline analyze on two single-packet captures downloaded from the internet: nothing wrong, but too little traffic to judge" width="880">
+
 <details>
 <summary>Further recordings</summary>
 
