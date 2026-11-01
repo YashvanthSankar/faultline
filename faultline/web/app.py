@@ -271,8 +271,21 @@ def sample_gallery(samples_dir: Path) -> list[dict]:
 
 
 def create_app(*, max_upload_mb: int = 200, samples_dir: str | os.PathLike | None = None,
-               analyze_fn: AnalyzeFn | None = None) -> Flask:
+               analyze_fn: AnalyzeFn | None = None, hosted: bool = False) -> Flask:
+    """Build the dashboard.
+
+    ``hosted=True`` is for the public demo deployment (``api/index.py``): the page
+    wording says that uploads go to the demo server; the Host check is left to the
+    hosting platform; and the form token is derived from the ``FAULTLINE_SECRET``
+    environment variable so every serverless instance accepts it. The secret
+    lives only in the hosting platform's settings, never in the repository.
+    """
     app = Flask(__name__, static_folder=None)
+    csrf_token = secrets.token_urlsafe(32)
+    if hosted:
+        secret = os.environ.get("FAULTLINE_SECRET", "")
+        if len(secret) >= 32:
+            csrf_token = hmac.new(secret.encode("utf-8"), b"faultline-csrf-v1", "sha256").hexdigest()
     app.config.update(
         SECRET_KEY=secrets.token_bytes(32),  # generated per process, never stored
         MAX_CONTENT_LENGTH=int(max_upload_mb) * 1024 * 1024,
@@ -281,11 +294,13 @@ def create_app(*, max_upload_mb: int = 200, samples_dir: str | os.PathLike | Non
         JSON_SORT_KEYS=False,
         PROPAGATE_EXCEPTIONS=False,
         TRAP_HTTP_EXCEPTIONS=False,
-        FAULTLINE_CSRF_TOKEN=secrets.token_urlsafe(32),
-        FAULTLINE_ALLOWED_HOSTS=set(LOOPBACK_NAMES),  # None disables the Host check
+        FAULTLINE_CSRF_TOKEN=csrf_token,
+        FAULTLINE_ALLOWED_HOSTS=None if hosted else set(LOOPBACK_NAMES),  # None disables the Host check
+        FAULTLINE_HOSTED=hosted,
     )
     app.debug = False
     app.jinja_env.autoescape = True
+    app.jinja_env.globals["hosted"] = bool(hosted)
 
     samples_path = Path(samples_dir) if samples_dir is not None else DEFAULT_SAMPLES
     analyze = analyze_fn or _default_analyze

@@ -493,3 +493,27 @@ def test_index_landing_features(client):
     # app shell: sidebar navigation, sample library table with search + filter chips
     assert 'class="side"' in body and 'id="sample-search"' in body and 'class="samples"' in body
     assert 'style="' not in body  # CSP nonce on <style> only; no inline style attributes
+
+
+def test_hosted_mode_is_honest_about_uploads_and_accepts_any_host(monkeypatch):
+    monkeypatch.setenv("FAULTLINE_SECRET", "x" * 40)
+    app = create_app(max_upload_mb=4, hosted=True)
+    c = app.test_client()
+    r = c.get("/", headers={"Host": "faultline-demo.vercel.app"})
+    body = r.get_data(as_text=True)
+    assert r.status_code == 200
+    assert "Public demo" in body and "Nothing is sent to the internet" not in body
+    assert "never leaves this computer" not in body and "up to 4 MB" in body
+
+
+def test_hosted_form_token_is_stable_across_instances(monkeypatch):
+    monkeypatch.setenv("FAULTLINE_SECRET", "y" * 40)
+    a = create_app(hosted=True).config["FAULTLINE_CSRF_TOKEN"]
+    b = create_app(hosted=True).config["FAULTLINE_CSRF_TOKEN"]
+    assert a == b and len(a) == 64
+    assert create_app().config["FAULTLINE_CSRF_TOKEN"] != create_app().config["FAULTLINE_CSRF_TOKEN"]
+
+
+def test_local_mode_still_rejects_foreign_host():
+    r = create_app().test_client().get("/", headers={"Host": "evil.example"})
+    assert r.status_code == 400

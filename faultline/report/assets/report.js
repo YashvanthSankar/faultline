@@ -433,7 +433,7 @@
     });
     var foot = h("div", { "class": "side-foot" },
       h("p", null, "Faultline " + str(tool.version || "")),
-      h("p", null, redacted ? "Addresses redacted" : "Analysed offline"));
+      h("p", null, redacted ? "Addresses redacted" : "Analysed by Faultline"));
     return h("aside", { "class": "side", "aria-label": "Report sections" },
       h("a", { "class": "brand", href: "#overview", onclick: function (e) { e.preventDefault(); nav("overview"); } },
         brandMark(), h("span", { "class": "brand-name" }, "Faultline")),

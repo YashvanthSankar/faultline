@@ -138,6 +138,6 @@
   </div>
   {% endif %}
 
-  <p class="foot-note"><strong>Faultline runs offline.</strong> Both captures were analysed on this computer; uploads are deleted immediately.</p>
+  <p class="foot-note">{% if hosted %}<strong>Public demo.</strong> Both captures were analysed on this demo server; uploads are deleted immediately. Installed locally, Faultline runs fully offline.{% else %}<strong>Faultline runs offline.</strong> Both captures were analysed on this computer; uploads are deleted immediately.{% endif %}</p>
 </section>
 {% endblock %}

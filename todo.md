@@ -21,7 +21,7 @@ Deadline: **Sun 01/11/2026 21:00 IST**. Team **Moorthy Gang**: Yashvanth S (CS24
 ## Phase 2: Integrate and harden
 - [x] Benchmark: 34/34 detected, 34/34 correct verdicts, 0 false alarms, 4/4 clean quiet, 6/6 hostile handled
 - [x] Fuzz: 3,000 mutated captures, 0 crashes
-- [x] Fresh clone + `pip install -e .` + full test suite on Python 3.10 (369 passed)
+- [x] Fresh clone + `pip install -e .` + full test suite on Python 3.10 (372 passed)
 - [x] Fixed in verification: IP/MAC redaction leaks at sentence boundaries, 413 on real-size web uploads, `--no-color` position, non-regular-file message, deterministic gzip sample
 
 ## Phase 3: Ship

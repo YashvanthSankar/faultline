@@ -4,6 +4,8 @@ Faultline is an offline tool that reads a packet capture and answers one questio
 
 Built for the IIITDM Kancheepuram Cybersecurity Club 24-hour hackathon, Network track ("Diagnosing Network Problems from Packet Captures"), by team **Moorthy Gang**: Yashvanth S (CS24I1029).
 
+**Try it in the browser: https://faultline-pi.vercel.app** (public demo; see the [note on the hosted demo](#hosted-demo))
+
 [Quick start](#quick-start) · [Example output](#example-output) · [Demo video](#demo-video) · [Design](#design) · [Why no AI](#why-faultline-does-not-use-ai-or-machine-learning) · [How it works](#how-it-works) · [Evaluation](#evaluation) · [Security](#security) · [Limitations](#limitations)
 
 <img src="docs/proof/real-terminal-mitm.png" alt="macOS Terminal running faultline analyze on a man-in-the-middle capture" width="900">
@@ -28,7 +30,7 @@ Faultline treats this as a diagnosis problem rather than an alerting problem:
 | False alarms on the benchmark | 0 (including a 5,900-packet busy office capture with benign look-alikes) | `faultline bench` |
 | Public real-world captures (wiki.wireshark.org) diagnosed correctly | 22 of 22, no false alarms, including an idle (zombie) scan and a two-packet ACK probe | `python scripts/validate_public.py` |
 | Hostile or corrupted input | 6 of 6 malformed sample files handled; 0 crashes in 3,000 fuzzed captures | `python scripts/fuzz.py -n 3000 --seed 42` |
-| Automated tests | 369 passing on Python 3.10 and 3.12 | `pytest -q` |
+| Automated tests | 372 passing on Python 3.10 and 3.12 | `pytest -q` |
 
 The labelled benchmark uses captures produced by our own scenario lab, so it shows that the detectors behave as designed. The public captures are the independent check.
 
@@ -46,6 +48,14 @@ faultline analyze samples/lossy_link.pcap               # a fault: packet loss, 
 faultline analyze samples/mitm_chain.pcap --html report.html
 faultline web                                           # local dashboard at http://127.0.0.1:8765
 ```
+
+### Hosted demo
+
+The same dashboard runs at **https://faultline-pi.vercel.app**, so you can try it without installing anything: open any of the 39 bundled samples, compare two of them, or upload a capture of up to 4 MB. It is the code in this repository ([`api/index.py`](api/index.py)) in hosted mode, which differs from a local install in three ways, all stated on the page itself:
+
+- **Uploads go to the demo server.** Each upload is analysed in a temporary file that is deleted as soon as the report is ready; nothing is stored. For private captures, install Faultline and run it on your own computer, where nothing leaves the machine.
+- **4 MB upload limit**, Vercel's request size limit. The command line and the local dashboard handle large captures.
+- **Security settings.** The local dashboard accepts only requests addressed to 127.0.0.1. On the hosted demo that check is left to Vercel, and the form token is derived from a secret stored in the Vercel project settings, so every server instance accepts it. Requests from other websites, missing or wrong tokens, and files that are not captures are still refused.
 
 ## Example output
 
@@ -327,7 +337,7 @@ The images in [`docs/proof/`](docs/proof) show the verification commands being r
 
 | Analysis of an attack capture | Test suite and benchmark (339 tests at the time of this screenshot) |
 |---|---|
-| <img src="docs/proof/real-terminal-mitm.png" alt="faultline analyze samples/mitm_chain.pcap in a Terminal window" width="440"> | <img src="docs/proof/real-terminal-tests.png" alt="Test suite and benchmark in a Terminal window (taken when the suite had 339 tests; it now has 369, see tests.svg)" width="440"> |
+| <img src="docs/proof/real-terminal-mitm.png" alt="faultline analyze samples/mitm_chain.pcap in a Terminal window" width="440"> | <img src="docs/proof/real-terminal-tests.png" alt="Test suite and benchmark in a Terminal window (taken when the suite had 339 tests; it now has 372, see tests.svg)" width="440"> |
 | **Fuzzing and secret scan** | **Public captures** |
 | <img src="docs/proof/real-terminal-fuzz.png" alt="Fuzzer and secret scanner in a Terminal window" width="440"> | <img src="docs/proof/public-captures.svg" alt="Validation on public Wireshark captures" width="440"> |
 
@@ -353,7 +363,7 @@ The images in [`docs/proof/`](docs/proof) show the verification commands being r
 
 ```bash
 pip install -e ".[dev]"
-pytest -q                                   # 369 tests
+pytest -q                                   # 372 tests
 faultline bench                             # labelled benchmark
 python scripts/validate_public.py           # public captures (downloads about 1.5 MB once, cached in ~/.cache/faultline)
 python scripts/fuzz.py -n 3000 --seed 42    # fuzzing
@@ -399,7 +409,7 @@ faultline/
   lab/          packet builder and labelled scenarios
   bench.py, diff.py, cli.py
 samples/        39 labelled captures and labels.json
-tests/          369 tests
+tests/          372 tests
 scripts/        fuzz.py, check_secrets.py, validate_public.py, make_assets.py, make_proof.py, make_web_shots.py
 docs/           THINKING.md, DETECTORS.md, demo-script.md, images/, examples/, proof/
 ```
@@ -417,12 +427,13 @@ The analysis engine (reader, decoders, detectors, classification, correlation) u
 | [pytest](https://github.com/pytest-dev/pytest) | MIT | Tests (development only) |
 | [Playwright](https://github.com/microsoft/playwright-python) | Apache-2.0 | Optional: README screenshots and the dashboard scenes of the demo video; not needed to run Faultline |
 
-Tools and services used only to produce the documentation and the demo video. None of them is needed to install, run or test Faultline:
+Tools and services used only for the documentation, the demo video and the hosted demo. None of them is needed to install, run or test Faultline:
 
 | Tool or service | License / terms | Purpose |
 |---|---|---|
 | [VHS](https://github.com/charmbracelet/vhs) | MIT | Records the terminal scenes of the demo video from scripted real commands |
 | [FFmpeg](https://ffmpeg.org) | LGPL/GPL | Joins the video scenes and adds the narration |
+| [Vercel](https://vercel.com) | Hosting service | Runs the public demo at faultline-pi.vercel.app; not needed to run Faultline |
 | [Sarvam AI text-to-speech API](https://www.sarvam.ai) (bulbul:v3, speaker "aditya") | Commercial API | Narration voice of the demo video; the key is read from the `SARVAM_API_KEY` environment variable and is not stored in the repository |
 
 Not used by Faultline: Wireshark, tshark, pyshark, Scapy, dpkt, Zeek, Suricata, or any external API or network service. Faultline itself never connects to the network. Capture parsing, protocol decoding, detection and diagnosis are our own code.

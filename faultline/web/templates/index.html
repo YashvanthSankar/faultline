@@ -40,7 +40,7 @@
       </fieldset>
       <p class="form-error" id="form-error" role="alert" hidden></p>
       <div class="form-actions">
-        <p>The file is analysed on this computer and deleted as soon as the report is ready.</p>
+        <p>{% if hosted %}The file is sent to this demo server, analysed, and deleted as soon as the report is ready. Nothing is stored. For private captures, install Faultline and run it on your own computer.{% else %}The file is analysed on this computer and deleted as soon as the report is ready.{% endif %}</p>
         <button class="btn primary big" type="submit">Analyze capture</button>
       </div>
     </form>
@@ -54,7 +54,7 @@
         <li class="c-attack"><b>Under attack</b><span>Someone is spoofing, scanning or intercepting traffic.</span></li>
       </ul>
       <ol class="how" aria-label="How Faultline works">
-        <li><b>Drop a capture</b><span>From Wireshark, tcpdump or your router. It never leaves this computer.</span></li>
+        <li><b>Drop a capture</b><span>From Wireshark, tcpdump or your router. {% if hosted %}On this demo it is uploaded to the server; installed locally, it never leaves your computer.{% else %}It never leaves this computer.{% endif %}</span></li>
         <li><b>40 checks run</b><span>ARP, DHCP, DNS, TCP, ICMP and TLS behaviour, each weighed fault against attack.</span></li>
         <li><b>You get a verdict</b><span>What to fix first and the packets that prove it.</span></li>
       </ol>
@@ -176,7 +176,7 @@
     </svg>
     <h2 id="loading-step">Reading packets…</h2>
     <div class="progress" aria-hidden="true"><i></i></div>
-    <p>Large captures can take a minute. Everything stays on this computer.</p>
+    <p>{% if hosted %}Large captures can take a minute. The upload is deleted as soon as the report is ready.{% else %}Large captures can take a minute. Everything stays on this computer.{% endif %}</p>
     <p class="fname" id="loading-file"></p>
   </div>
 </div>

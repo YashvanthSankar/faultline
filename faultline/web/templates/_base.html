@@ -170,13 +170,13 @@ body.is-busy .stage { filter: blur(2px); }
     <nav><ul class="nav">{% block sidenav %}
       <li><a class="nav-item" href="/" aria-current="page"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 2v8M4.5 7 8 10.5 11.5 7M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="nav-label">New analysis</span></a></li>
     {% endblock %}</ul></nav>
-    <div class="side-foot"><p>Runs on this computer</p><p>Nothing is sent to the internet</p></div>
+    <div class="side-foot">{% if hosted %}<p>Public demo server</p><p>Uploads are deleted after analysis</p>{% else %}<p>Runs on this computer</p><p>Nothing is sent to the internet</p>{% endif %}</div>
   </aside>
   <div class="stage">
     <header class="topbar">
       {% block topbar %}
       <div class="crumb"><span class="crumb-label">Faultline</span><span class="crumb-name">Dashboard</span></div>
-      <div class="tools"><span class="trust"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2M3.5 7h9v6.5h-9z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Runs on this computer. Nothing is sent to the internet.</span></div>
+      <div class="tools"><span class="trust"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4.5 7V5a3.5 3.5 0 0 1 7 0v2M3.5 7h9v6.5h-9z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>{% if hosted %}Public demo: uploads are analysed on this server and deleted. For private captures, run Faultline on your own computer.{% else %}Runs on this computer. Nothing is sent to the internet.{% endif %}</span></div>
       {% endblock %}
     </header>
     <main class="views" id="main">

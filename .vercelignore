@@ -1,0 +1,13 @@
+.git
+.venv
+build
+docs
+tests
+scripts
+*.mp4
+__pycache__
+*.pyc
+.pytest_cache
+.env
+.env.*
+.vercel
