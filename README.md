@@ -28,7 +28,7 @@ Faultline treats this as a diagnosis problem rather than an alerting problem:
 | False alarms on the benchmark | 0 (including a 5,900-packet busy office capture with benign look-alikes) | `faultline bench` |
 | Public real-world captures (wiki.wireshark.org) diagnosed correctly | 22 of 22, no false alarms, including an idle (zombie) scan and a two-packet ACK probe | `python scripts/validate_public.py` |
 | Hostile or corrupted input | 6 of 6 malformed sample files handled; 0 crashes in 3,000 fuzzed captures | `python scripts/fuzz.py -n 3000 --seed 42` |
-| Automated tests | 368 passing on Python 3.10 and 3.12 | `pytest -q` |
+| Automated tests | 369 passing on Python 3.10 and 3.12 | `pytest -q` |
 
 The labelled benchmark uses captures produced by our own scenario lab, so it shows that the detectors behave as designed. The public captures are the independent check.
 
@@ -327,7 +327,7 @@ The images in [`docs/proof/`](docs/proof) show the verification commands being r
 
 | Analysis of an attack capture | Test suite and benchmark (339 tests at the time of this screenshot) |
 |---|---|
-| <img src="docs/proof/real-terminal-mitm.png" alt="faultline analyze samples/mitm_chain.pcap in a Terminal window" width="440"> | <img src="docs/proof/real-terminal-tests.png" alt="Test suite and benchmark in a Terminal window (taken when the suite had 339 tests; it now has 368, see tests.svg)" width="440"> |
+| <img src="docs/proof/real-terminal-mitm.png" alt="faultline analyze samples/mitm_chain.pcap in a Terminal window" width="440"> | <img src="docs/proof/real-terminal-tests.png" alt="Test suite and benchmark in a Terminal window (taken when the suite had 339 tests; it now has 369, see tests.svg)" width="440"> |
 | **Fuzzing and secret scan** | **Public captures** |
 | <img src="docs/proof/real-terminal-fuzz.png" alt="Fuzzer and secret scanner in a Terminal window" width="440"> | <img src="docs/proof/public-captures.svg" alt="Validation on public Wireshark captures" width="440"> |
 
@@ -349,7 +349,7 @@ The images in [`docs/proof/`](docs/proof) show the verification commands being r
 
 ```bash
 pip install -e ".[dev]"
-pytest -q                                   # 368 tests
+pytest -q                                   # 369 tests
 faultline bench                             # labelled benchmark
 python scripts/validate_public.py           # public captures (downloads about 1.5 MB once, cached in ~/.cache/faultline)
 python scripts/fuzz.py -n 3000 --seed 42    # fuzzing
@@ -395,7 +395,7 @@ faultline/
   lab/          packet builder and labelled scenarios
   bench.py, diff.py, cli.py
 samples/        39 labelled captures and labels.json
-tests/          368 tests
+tests/          369 tests
 scripts/        fuzz.py, check_secrets.py, validate_public.py, make_assets.py, make_proof.py, make_web_shots.py
 docs/           THINKING.md, DETECTORS.md, demo-script.md, images/, examples/, proof/
 ```

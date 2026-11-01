@@ -195,7 +195,7 @@
   var fileLine = document.getElementById("loading-file");
   var MAX = {{ max_upload_mb|int }} * 1024 * 1024;
   var EXT = /\.(pcapng|pcap|cap)(\.gz)?$/i;
-  var STEPS = ["Reading packets…", "Checking 38 kinds of problems…", "Weighing fault vs attack…", "Writing the report…"];
+  var STEPS = ["Reading packets…", "Checking 40 kinds of problems…", "Weighing fault vs attack…", "Writing the report…"];
   var timer = null;
 
   function showError(msg) { err.textContent = msg; err.hidden = !msg; }

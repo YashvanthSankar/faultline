@@ -222,6 +222,9 @@ def health_score(findings: list[Finding]) -> int:
     return int(max(0, min(100, round(100 - penalty))))
 
 
+SHORT_CAPTURE_PACKETS = 20  # below this, a clean result says the capture is too short to judge
+
+
 def overall_verdict(findings: list[Finding], packets: int, duration: float) -> dict:
     counts = {c.value: 0 for c in (Category.ATTACK, Category.FAULT, Category.MISCONFIG, Category.INFO)}
     for f in findings:
@@ -234,6 +237,8 @@ def overall_verdict(findings: list[Finding], packets: int, duration: float) -> d
     minor = [f for f in findings if f.severity >= Severity.LOW]
     score = health_score(findings)
     span = _human_duration(duration)
+    pk = f"{packets:,} packet{'' if packets == 1 else 's'}"
+    short = packets < SHORT_CAPTURE_PACKETS
 
     if attacks:
         top = attacks[0]
@@ -258,11 +263,18 @@ def overall_verdict(findings: list[Finding], packets: int, duration: float) -> d
     elif minor:
         status = "minor_issues"
         headline = "Mostly healthy, with a few minor issues."
-        summary = f"Nothing serious in {packets:,} packets over {span}; see the minor notes below."
+        summary = f"Nothing serious in {pk} over {span}; see the minor notes below."
+        if short:
+            summary += " The capture is very short, so a longer one may show more."
     else:
         status = "healthy"
         headline = "No faults or attacks found."
-        summary = f"We checked {packets:,} packets over {span} and found nothing wrong."
+        summary = f"We checked {pk} over {span} and found nothing wrong."
+        if short:
+            headline = "Nothing wrong, but too little traffic to judge."
+            summary = (f"The capture holds only {pk}, which is too little traffic for a reliable diagnosis. "
+                       "Nothing in it is wrong. For a real check, capture at least a minute of traffic while the "
+                       "problem is happening.")
     return {"status": status, "headline": headline, "summary": summary, "score": score, "counts": counts}
 
 

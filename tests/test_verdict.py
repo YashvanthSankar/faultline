@@ -98,3 +98,11 @@ def test_health_and_verdict_states():
     assert v["status"] == "faulty" and "no sign of an attack" in v["summary"]
     low = assess(mk("tls.deprecated", Category.MISCONFIG, Severity.LOW))
     assert overall_verdict(assign_ids([low]), 10, 1.0)["status"] == "minor_issues"
+
+
+def test_tiny_clean_capture_says_it_is_too_short_to_judge():
+    v = overall_verdict([], 1, 0.0)
+    assert v["status"] == "healthy" and "too little traffic" in v["headline"]
+    assert "only 1 packet," in v["summary"]
+    big = overall_verdict([], 500, 60.0)
+    assert big["headline"] == "No faults or attacks found." and "500 packets" in big["summary"]

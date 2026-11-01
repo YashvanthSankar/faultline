@@ -179,7 +179,7 @@ def print_report(con, data: dict, expert: bool = False) -> None:
                 style="bold cyan" if c["misconfig"] else "dim")
     dur = cap.get("duration") or 0
     body.append(
-        f"{cap['name']} · {cap['format']} · {cap['packets']:,} packets · {dur:.1f}s · analysed in {data.get('analysis_seconds', 0):.2f}s",
+        f"{cap['name']} · {cap['format']} · {cap['packets']:,} packet{'' if cap['packets'] == 1 else 's'} · {dur:.1f}s · analysed in {data.get('analysis_seconds', 0):.2f}s",
         style="dim",
     )
     if data.get("redacted"):
