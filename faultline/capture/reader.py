@@ -56,6 +56,7 @@ class Limits:
     max_block_bytes: int = 16 * 1024 * 1024  # pcapng block
     max_interfaces: int = 1024
     max_skipped_blocks: int = 100_000
+    max_empty_records: int = 10_000  # all-zero record headers (padding / garbage)
 
 
 @dataclass
@@ -249,6 +250,7 @@ class CaptureReader:
         self.info.format = "pcap" + (" (ns)" if resolution == 1e-9 else "")
         rec = struct.Struct(endian + "IIII")
         offset = 24
+        empty_run = 0
         while True:
             rh = _read_exact(fh, 16)
             if not rh:
@@ -274,6 +276,17 @@ class CaptureReader:
                 self.info.warn(f"file ends inside packet data at byte {offset} (capture was cut short)")
                 return
             offset += 16 + incl
+            if incl == 0 and orig == 0:
+                empty_run += 1
+                if empty_run > self.limits.max_empty_records:
+                    self.info.truncated = True
+                    self.info.warn(
+                        f"more than {self.limits.max_empty_records:,} consecutive empty records at byte {offset}; "
+                        "the rest of the file looks like padding or garbage, stopped reading here"
+                    )
+                    return
+                continue
+            empty_run = 0
             frame = self._emit(ts_s + ts_f * resolution, orig, linktype, data)
             if frame is None:
                 return

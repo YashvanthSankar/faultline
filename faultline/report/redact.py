@@ -32,6 +32,8 @@ from __future__ import annotations
 import hmac
 import hashlib
 import ipaddress
+
+from ..context import is_private
 import re
 import secrets
 from typing import Any
@@ -104,9 +106,9 @@ class Redactor:
         if isinstance(addr, ipaddress.IPv6Address):
             if addr.ipv4_mapped is not None:
                 return self.ip(str(addr.ipv4_mapped))
-            kind = "lan6-host" if (addr.is_private or addr.is_link_local or addr.is_site_local) else "inet6-host"
+            kind = "lan6-host" if (is_private(addr.compressed) or addr.is_site_local) else "inet6-host"
         else:
-            kind = "lan-host" if (addr.is_private or addr.is_link_local) else "inet-host"
+            kind = "lan-host" if is_private(addr.compressed) else "inet-host"
         return f"{kind}-{self._tag('ip', addr.compressed)}"
 
     def mac(self, text: str) -> str:

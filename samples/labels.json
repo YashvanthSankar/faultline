@@ -1,0 +1,477 @@
+{
+  "arp_spoofing.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "attack",
+        "kind": "arp.duplicate_ip"
+      }
+    ],
+    "malformed": false,
+    "must_not": [],
+    "story": "An unknown device keeps telling one PC that it is the router, and telling the router that it is that PC, so the PC's traffic flows through the intruder.",
+    "title": "ARP spoofing of the router (man-in-the-middle)"
+  },
+  "busy_but_healthy.pcap": {
+    "clean": true,
+    "expected": [],
+    "malformed": false,
+    "must_not": [
+      "tcp.retransmissions",
+      "tcp.refused",
+      "dns.errors",
+      "scan.port",
+      "arp.duplicate_ip",
+      "icmp.routing_loop"
+    ],
+    "story": "A busy afternoon with thousands of healthy flows, including harmless oddities like a lone retransmission, a typo'd domain and a traceroute.",
+    "title": "Busy but healthy"
+  },
+  "clean_office.pcap": {
+    "clean": true,
+    "expected": [],
+    "malformed": false,
+    "must_not": [],
+    "story": "An ordinary office: a laptop joins by DHCP, people browse, mail and docs sync, nothing is wrong.",
+    "title": "Clean office afternoon"
+  },
+  "cleartext_creds.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "misconfig",
+        "kind": "cred.cleartext"
+      }
+    ],
+    "malformed": false,
+    "must_not": [],
+    "story": "An admin logs in to the NAS over FTP, to the router over Telnet and to the printer's admin page over plain HTTP: anyone on the network could read those passwords.",
+    "title": "Passwords sent in plain text"
+  },
+  "connection_refused.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "misconfig",
+        "kind": "tcp.refused"
+      }
+    ],
+    "malformed": false,
+    "must_not": [
+      "scan.port",
+      "flood.syn"
+    ],
+    "story": "An application server keeps connecting to a database at 192.168.1.20:5432 whose service is stopped, so every attempt is refused with a reset.",
+    "title": "Database connection refused"
+  },
+  "dhcp_misconfig_two_routers.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "misconfig",
+        "kind": "dhcp.multiple_servers"
+      }
+    ],
+    "malformed": false,
+    "must_not": [
+      "dns.hijack",
+      "arp.spoofing"
+    ],
+    "story": "Someone plugged a home router into the office LAN with DHCP enabled; clients now receive two offers and the ones that take the 192.168.0.x lease lose internet and DNS.",
+    "title": "Second DHCP server from a home router"
+  },
+  "dhcp_no_server.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "fault",
+        "kind": "dhcp.no_server"
+      }
+    ],
+    "malformed": false,
+    "must_not": [
+      "dhcp.rogue",
+      "dhcp.multiple_servers",
+      "dhcp.starvation"
+    ],
+    "story": "The DHCP server is down: laptops broadcast DISCOVERs with growing backoff, get no offer, and fall back to 169.254.x.x link-local addresses.",
+    "title": "No DHCP server"
+  },
+  "dns_failure.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "fault",
+        "kind": "dns.timeout"
+      },
+      {
+        "category": "fault",
+        "kind": "dns.errors"
+      }
+    ],
+    "malformed": false,
+    "must_not": [
+      "dns.hijack",
+      "dns.tunneling"
+    ],
+    "story": "The office DNS resolver at 192.168.1.1 stops responding: lookups time out and are retried, some fail with SERVFAIL, and a few only answer after seconds, so web pages hang.",
+    "title": "Resolver stops answering"
+  },
+  "dns_hijack.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "attack",
+        "kind": "dns.hijack"
+      }
+    ],
+    "malformed": false,
+    "must_not": [],
+    "story": "Whenever someone looks up the bank's login site, a forged answer pointing to a device inside the office arrives before the real one, so people are silently sent to the intruder.",
+    "title": "DNS hijacking: forged answers for the bank"
+  },
+  "dns_tunnel.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "attack",
+        "kind": "dns.tunneling"
+      }
+    ],
+    "malformed": false,
+    "must_not": [],
+    "story": "One PC sends hundreds of lookups for long random-looking names under one domain, at a steady rhythm: the typical sign of malware smuggling data out through DNS.",
+    "title": "Data hidden inside DNS lookups (DNS tunnelling)"
+  },
+  "high_latency.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "fault",
+        "kind": "latency.high_rtt"
+      }
+    ],
+    "malformed": false,
+    "must_not": [
+      "latency.slow_server",
+      "tcp.retransmissions"
+    ],
+    "story": "Every connection takes 600 to 900 ms just to complete its handshake because the uplink is a very high-latency satellite path; the servers themselves answer quickly.",
+    "title": "Satellite-grade latency"
+  },
+  "host_sweep.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "attack",
+        "kind": "scan.host_sweep"
+      }
+    ],
+    "malformed": false,
+    "must_not": [],
+    "story": "An unknown device asks for every address from .1 to .254, pings each device that answers, then checks which ones have Windows file sharing (port 445) open.",
+    "title": "Network sweep: mapping every device"
+  },
+  "ip_conflict.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "misconfig",
+        "kind": "arp.duplicate_ip"
+      }
+    ],
+    "malformed": false,
+    "must_not": [
+      "arp.spoofing",
+      "dns.hijack",
+      "dhcp.rogue"
+    ],
+    "story": "A printer with a static address and a guest laptop configured by hand both use 192.168.1.23; both answer ARP for it and both send their own normal traffic, so connections to either are unreliable.",
+    "title": "Two devices share 192.168.1.23"
+  },
+  "lossy_link.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "fault",
+        "kind": "tcp.retransmissions"
+      }
+    ],
+    "malformed": false,
+    "must_not": [
+      "scan.port",
+      "flood.syn"
+    ],
+    "story": "A laptop on a flaky Wi-Fi link downloads a large file and loses 5 to 8 percent of the segments in both directions, so TCP keeps retransmitting.",
+    "title": "Lossy Wi-Fi link"
+  },
+  "malformed/bad_magic.pcap": {
+    "clean": false,
+    "expected": [],
+    "malformed": true,
+    "must_not": [],
+    "story": "4 KiB of random bytes with a .pcap name.",
+    "title": "Not a capture"
+  },
+  "malformed/compressed_padding.pcap.gz": {
+    "clean": false,
+    "expected": [],
+    "malformed": true,
+    "must_not": [],
+    "story": "A tiny gzip that expands to a valid pcap header followed by 50 MB of zero bytes; the reader must stop at its decompression cap.",
+    "title": "Decompression bomb-ish"
+  },
+  "malformed/corrupt_packets.pcap": {
+    "clean": false,
+    "expected": [],
+    "malformed": true,
+    "must_not": [],
+    "story": "A well-formed pcap whose frames have broken headers: bad IHL, TCP data offset past the end, a DNS compression pointer loop, a DHCP option running off the end, a truncated ARP and random garbage.",
+    "title": "Corrupt packets inside a valid file"
+  },
+  "malformed/huge_caplen.pcap": {
+    "clean": false,
+    "expected": [],
+    "malformed": true,
+    "must_not": [],
+    "story": "A record header that claims a 2 GiB packet; the reader must not try to allocate it.",
+    "title": "Absurd record length"
+  },
+  "malformed/truncated.pcap": {
+    "clean": false,
+    "expected": [],
+    "malformed": true,
+    "must_not": [],
+    "story": "A valid capture that was cut off in the middle of its last record (for example a crashed sniffer).",
+    "title": "Truncated capture"
+  },
+  "malformed/zero_length.pcap": {
+    "clean": false,
+    "expected": [],
+    "malformed": true,
+    "must_not": [],
+    "story": "A zero-byte file.",
+    "title": "Empty file"
+  },
+  "mitm_chain.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "attack",
+        "kind": "dhcp.multiple_servers"
+      },
+      {
+        "category": "attack",
+        "kind": "dns.hijack"
+      },
+      {
+        "category": "misconfig",
+        "kind": "cred.cleartext"
+      }
+    ],
+    "malformed": false,
+    "must_not": [],
+    "story": "A rogue DHCP server makes a laptop use it as router and DNS server, then answers the bank's name with its own address and collects the password sent over plain HTTP.",
+    "title": "Man-in-the-middle chain: rogue DHCP \u2192 fake DNS \u2192 stolen login"
+  },
+  "mtu_blackhole.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "misconfig",
+        "kind": "mtu.blackhole"
+      }
+    ],
+    "malformed": false,
+    "must_not": [
+      "mtu.frag_needed",
+      "latency.slow_server"
+    ],
+    "story": "A VPN path silently drops every full-size 1460-byte packet and sends no ICMP, so small packets flow but the server's big data segments are retransmitted again and again and the connection stalls.",
+    "title": "Path MTU black hole"
+  },
+  "mtu_frag_needed.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "misconfig",
+        "kind": "mtu.frag_needed"
+      }
+    ],
+    "malformed": false,
+    "must_not": [
+      "mtu.blackhole"
+    ],
+    "story": "The office router tells a laptop that its 1460-byte packets do not fit the 1400-byte VPN tunnel (ICMP fragmentation needed), after which the laptop sends smaller packets.",
+    "title": "Fragmentation needed on a VPN path"
+  },
+  "outage_vs_attack_mixed.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "fault",
+        "kind": "dns.timeout"
+      },
+      {
+        "category": "attack",
+        "kind": "scan.port"
+      }
+    ],
+    "malformed": false,
+    "must_not": [],
+    "story": "The DNS server stops answering (a genuine fault) while, unrelated, an unknown device scans the file server (an attack): two different problems that look like one to users.",
+    "title": "An outage and an attack at the same time"
+  },
+  "pcapng_office.pcapng": {
+    "clean": true,
+    "expected": [],
+    "malformed": false,
+    "must_not": [],
+    "story": "A short healthy office capture saved in pcapng format.",
+    "title": "Clean office (pcapng)"
+  },
+  "port_scan.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "attack",
+        "kind": "scan.port"
+      }
+    ],
+    "malformed": false,
+    "must_not": [
+      "tcp.refused"
+    ],
+    "story": "An unknown device quickly knocks on 1,024 ports of the office file server (plus stealth FIN/NULL/Xmas and UDP probes) to find which services are open.",
+    "title": "Port scan against the file server"
+  },
+  "rogue_dhcp.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "attack",
+        "kind": "dhcp.multiple_servers"
+      }
+    ],
+    "malformed": false,
+    "must_not": [],
+    "story": "An unknown device answers address requests faster than the real router and hands out itself as the router and DNS server, so new laptops send all their traffic through it.",
+    "title": "Rogue DHCP server"
+  },
+  "routing_loop.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "fault",
+        "kind": "icmp.routing_loop"
+      }
+    ],
+    "malformed": false,
+    "must_not": [
+      "scan.port",
+      "icmp.redirect"
+    ],
+    "story": "Packets to 198.51.100.99 bounce between the office router and a second router until their TTL runs out, so the same packet is seen over and over and the sender gets ICMP time exceeded.",
+    "title": "Routing loop between two routers"
+  },
+  "server_down_timeouts.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "fault",
+        "kind": "tcp.syn_timeout"
+      },
+      {
+        "category": "fault",
+        "kind": "arp.unanswered"
+      }
+    ],
+    "malformed": false,
+    "must_not": [
+      "scan.port",
+      "arp.scan"
+    ],
+    "story": "A web service at 198.51.100.7 is down so connection attempts time out with exponential backoff, and the office printer at 192.168.1.50 no longer answers ARP.",
+    "title": "Server down, printer unplugged"
+  },
+  "slow_server.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "fault",
+        "kind": "latency.slow_server"
+      }
+    ],
+    "malformed": false,
+    "must_not": [
+      "latency.high_rtt",
+      "tcp.retransmissions"
+    ],
+    "story": "The network is fine (25 ms handshakes) but the API server takes 2 to 6 seconds to send the first byte of every response.",
+    "title": "Slow application server"
+  },
+  "syn_flood.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "attack",
+        "kind": "flood.syn"
+      }
+    ],
+    "malformed": false,
+    "must_not": [],
+    "story": "Thousands of connection requests per second from random, spoofed internet addresses overwhelm the intranet web server, so real staff can't open it.",
+    "title": "SYN flood against the intranet server"
+  },
+  "tls_failures.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "misconfig",
+        "kind": "tls.failure"
+      }
+    ],
+    "malformed": false,
+    "must_not": [],
+    "story": "Every attempt to open the legacy intranet site is aborted by the browser because the site's certificate has expired.",
+    "title": "Secure connections failing: expired certificate"
+  },
+  "web_bruteforce.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "attack",
+        "kind": "http.errors"
+      }
+    ],
+    "malformed": false,
+    "must_not": [],
+    "story": "One device tries to log in to the intranet 45 times in a row and is refused every time: a password-guessing attack.",
+    "title": "Password guessing against the intranet login"
+  },
+  "xss_payload.pcap": {
+    "clean": true,
+    "expected": [],
+    "hostile_strings": true,
+    "malformed": false,
+    "must_not": [],
+    "story": "Normal traffic, except that names inside DNS, DHCP, HTTP and TLS packets contain HTML/JavaScript; reports must show them as plain text and never run them.",
+    "title": "Hostile text inside packets (XSS test)"
+  },
+  "zero_window.pcap": {
+    "clean": false,
+    "expected": [
+      {
+        "category": "fault",
+        "kind": "tcp.zero_window"
+      }
+    ],
+    "malformed": false,
+    "must_not": [
+      "tcp.retransmissions",
+      "latency.high_rtt"
+    ],
+    "story": "A slow laptop downloading an update keeps running out of receive buffer, advertising a zero window and stalling the transfer for seconds at a time.",
+    "title": "Receiver stalls (zero window)"
+  }
+}

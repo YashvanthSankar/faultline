@@ -28,12 +28,17 @@ def is_private(ip: str | None) -> bool:
         a = ipaddress.ip_address(ip)
     except ValueError:
         return False
-    if a.version == 4 and a in _CGNAT:
-        return True
-    return a.is_private or a.is_link_local or a.is_loopback
+    # NB: deliberately *not* ``a.is_private``: Python counts documentation and
+    # benchmarking ranges (192.0.2/24, 198.51.100/24, 203.0.113/24, 2001:db8::/32,
+    # 198.18/15 ...) as "private", but on the wire those are routed like public
+    # addresses. "Inside" means RFC 1918, CGNAT, ULA, link-local or loopback only.
+    nets = _LOCAL_V4 if a.version == 4 else _LOCAL_V6
+    return any(a in n for n in nets)
 
 
-_CGNAT = ipaddress.ip_network("100.64.0.0/10")
+_LOCAL_V4 = tuple(ipaddress.ip_network(n) for n in (
+    "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "100.64.0.0/10", "169.254.0.0/16", "127.0.0.0/8", "0.0.0.0/8"))
+_LOCAL_V6 = tuple(ipaddress.ip_network(n) for n in ("fc00::/7", "fe80::/10", "::1/128", "::/128"))
 
 
 @lru_cache(maxsize=65536)
