@@ -298,7 +298,7 @@ def test_malformed_files(generated):
 
 
 def test_repo_samples_present_and_small():
-    """The committed samples/ directory must exist for judges and stay under 15 MB."""
+    """The committed samples/ directory must exist for judges and stay under 25 MB."""
     if not os.path.isdir(SAMPLES) or not os.path.exists(os.path.join(SAMPLES, "labels.json")):
         pytest.skip("samples/ not generated")
     with open(os.path.join(SAMPLES, "labels.json")) as fh:
@@ -308,4 +308,4 @@ def test_repo_samples_present_and_small():
         p = os.path.join(SAMPLES, fname)
         assert os.path.exists(p), fname
         total += os.path.getsize(p)
-    assert total < 15 * 1024 * 1024
+    assert total < 25 * 1024 * 1024

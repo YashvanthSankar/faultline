@@ -857,7 +857,7 @@ class DnsDetector(Detector):
                 if len(names) < 20:
                     names.append(u["q"]["qname"])
         priv_groups = [g for g in groups if portal is None or g[0] != portal[0]]
-        if priv_groups and (len(all_priv_domains) >= 3 or linked or races or unexpected) and not own_domain_like:
+        if priv_groups and (len(all_priv_domains) >= 3 or linked or races or unexpected) and (linked or not own_domain_like):
             ip, e, doms = max(priv_groups, key=lambda g: len(g[2]))
             ind.append(Indicator(f"Public websites resolved to a local address: {', '.join(sorted(e['names'])[:3])} "
                                  f"→ {ip}", A, 1.0))

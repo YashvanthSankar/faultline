@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src &#x27;none&#x27;; script-src &#x27;sha256-dtVXJClDF5Ho99ex5cM8N5N6ggix5v3qR6zgnEI3koM=&#x27;; style-src &#x27;sha256-35Ebjexa3i5wA7nlM9qO4n0eiUVCSTSyu6w2QqJTOJU=&#x27;; img-src data:; font-src &#x27;none&#x27;; connect-src &#x27;none&#x27;; object-src &#x27;none&#x27;; media-src &#x27;none&#x27;; frame-src &#x27;none&#x27;; worker-src &#x27;none&#x27;; manifest-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="generator" content="Faultline">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Crect%20x%3D%221%22%20y%3D%221%22%20width%3D%2222%22%20height%3D%2222%22%20rx%3D%226%22%20fill%3D%22%23131c2a%22%20stroke%3D%22%23ece7dc%22%20stroke-width%3D%221.4%22%2F%3E%3Cpath%20d%3D%22M3.5%2013h4l2-6%203%2010%202.4-7%201.6%203h4%22%20fill%3D%22none%22%20stroke%3D%22%23ff6a5c%22%20stroke-width%3D%221.9%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E">
+<title>Under attack: mitm_chain.pcap | Faultline</title>
+<style>/* Faultline report: one stylesheet for the exported report and the dashboard. */
+:root {
+  --bg: #131c2a;
+  --bg-deep: #0f1723;
+  --surface: #1a2433;
+  --surface-2: #212d3f;
+  --line: #2e3c52;
+  --line-soft: #253246;
+  --text: #ece7dc;
+  --muted: #a6b0bf;
+  --faint: #76839a;
+  --attack: #ff6a5c;
+  --fault: #f4b43e;
+  --misconfig: #78aeff;
+  --ok: #4fd19a;
+  --info: #a9b4c4;
+  --focus: #ffd98a;
+  --status: var(--info);
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --display: "Avenir Next", "Avenir", "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  color-scheme: dark;
+}
+[data-status="under_attack"] { --status: var(--attack); }
+[data-status="faulty"] { --status: var(--fault); }
+[data-status="minor_issues"] { --status: var(--misconfig); }
+[data-status="healthy"] { --status: var(--ok); }
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.55 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+code, .mono { font-family: var(--mono); font-size: .88em; }
+code {
+  background: var(--bg-deep);
+  border: 1px solid var(--line-soft);
+  border-radius: 5px;
+  padding: .05em .4em;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+noscript p { padding: 24px; }
+
+/* ---------- top bar ---------- */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  background: rgba(19, 28, 42, .92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line-soft);
+}
+.topbar .wrap { display: flex; align-items: center; gap: 22px; height: 56px; }
+.brand { display: flex; align-items: center; gap: 9px; font: 700 17px/1 var(--display); letter-spacing: -.01em; text-decoration: none; }
+.brand svg { display: block; }
+.navlinks { display: flex; gap: 2px; margin-right: auto; }
+.navlinks a { white-space: nowrap; text-decoration: none; color: var(--muted); font-size: 14px; padding: 6px 10px; border-radius: 6px; }
+.navlinks a:hover { color: var(--text); background: var(--surface); }
+.tools { display: flex; align-items: center; gap: 8px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 1px solid var(--line); background: var(--surface);
+  border-radius: 8px; padding: 7px 12px; font-size: 14px; cursor: pointer;
+  text-decoration: none; white-space: nowrap; line-height: 1.2;
+}
+.btn:hover { background: var(--surface-2); border-color: #3c4d68; }
+.btn.primary { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 600; }
+.btn.primary:hover { background: #fff; }
+.btn svg { flex: none; }
+.segmented { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; padding: 2px; background: var(--bg-deep); }
+.segmented button { border: 0; background: none; border-radius: 6px; padding: 5px 11px; font-size: 13.5px; color: var(--muted); cursor: pointer; }
+.segmented button[aria-pressed="true"] { background: var(--surface-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--line); }
+
+/* ---------- verdict hero ---------- */
+.hero { padding: 34px 0 10px; position: relative; }
+.hero::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 420px; pointer-events: none;
+  background: radial-gradient(900px 340px at 12% -10%, color-mix(in srgb, var(--status) 16%, transparent), transparent 70%);
+}
+.hero-grid { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 264px; gap: 40px; align-items: start; }
+.status-word {
+  margin: 0;
+  font: 800 clamp(52px, 7.4vw, 92px)/.95 var(--display);
+  letter-spacing: -.035em;
+  color: var(--status);
+  display: flex; align-items: center; gap: .22em;
+}
+.status-word .glyph { flex: none; width: .62em; height: .62em; }
+.headline { margin: 16px 0 0; font: 600 clamp(20px, 2.1vw, 26px)/1.3 var(--display); letter-spacing: -.01em; max-width: 34ch; }
+.summary { margin: 10px 0 0; color: var(--muted); max-width: 68ch; font-size: 16.5px; }
+.counts { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 0; padding: 0; list-style: none; }
+.count {
+  display: flex; align-items: baseline; gap: 8px;
+  padding: 8px 14px 8px 12px; border-radius: 10px;
+  background: var(--surface); border: 1px solid var(--line-soft);
+  text-decoration: none;
+}
+button.count { cursor: pointer; }
+button.count:hover { border-color: var(--line); background: var(--surface-2); }
+.count b { font: 700 24px/1 var(--display); }
+.count span { color: var(--muted); font-size: 14px; }
+.count::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--c); align-self: center; }
+.count.zero { opacity: .55; }
+.c-attack { --c: var(--attack); }
+.c-fault { --c: var(--fault); }
+.c-misconfig { --c: var(--misconfig); }
+.c-info { --c: var(--info); }
+.c-ok { --c: var(--ok); }
+
+.hero-side { display: flex; flex-direction: column; align-items: stretch; gap: 14px; }
+.gauge { width: 100%; max-width: 264px; display: block; }
+.gauge .track { stroke: var(--line); }
+.gauge .tick { stroke: var(--faint); }
+.gauge .value { stroke: var(--status); }
+.gauge .num { fill: var(--text); font: 800 54px var(--display); letter-spacing: -.03em; }
+.gauge .lbl { fill: var(--muted); font: 500 13px var(--sans); }
+.gauge .end { fill: var(--faint); font: 500 11px var(--mono); }
+.meta { display: grid; grid-template-columns: auto 1fr; gap: 3px 14px; margin: 0; font-size: 13.5px; }
+.meta dt { color: var(--faint); }
+.meta dd { margin: 0; color: var(--text); overflow-wrap: anywhere; }
+.notice {
+  position: relative; margin: 20px 0 0; padding: 10px 14px; border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--fault) 45%, transparent);
+  background: color-mix(in srgb, var(--fault) 9%, transparent);
+  font-size: 14px; display: flex; gap: 10px; align-items: baseline;
+}
+.notice a { color: var(--fault); }
+.privacy { border-color: color-mix(in srgb, var(--ok) 45%, transparent); background: color-mix(in srgb, var(--ok) 8%, transparent); }
+
+/* ---------- seismogram timeline ---------- */
+.seismo { position: relative; margin: 26px 0 0; padding: 14px 16px 12px; background: var(--bg-deep); border: 1px solid var(--line-soft); border-radius: 14px; }
+.seismo-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 6px; }
+.seismo-head h2 { margin: 0; font: 600 15px/1.2 var(--display); }
+.seismo-head p { margin: 0; color: var(--faint); font-size: 13px; }
+.chart { position: relative; min-height: 150px; }
+.chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.chart .grid { stroke: var(--line-soft); stroke-width: 1; }
+.chart .axis { fill: var(--faint); font: 11px var(--mono); }
+.chart .trace { fill: none; stroke: var(--text); stroke-width: 1.6; stroke-linejoin: round; }
+.chart .fill { fill: url(#fl-trace-fill); }
+.chart stop.s0 { stop-color: var(--status); stop-opacity: .26; }
+.chart stop.s1 { stop-color: var(--status); stop-opacity: 0; }
+.k-attack { fill: var(--attack); stroke: var(--attack); --c: var(--attack); }
+.k-fault { fill: var(--fault); stroke: var(--fault); --c: var(--fault); }
+.k-misconfig { fill: var(--misconfig); stroke: var(--misconfig); --c: var(--misconfig); }
+.k-info { fill: var(--info); stroke: var(--info); --c: var(--info); }
+.chart .band { stroke: none; }
+.chart .stem { stroke-width: 1; opacity: .55; fill: none; }
+.chart .pin rect { stroke: var(--bg-deep); stroke-width: 2; }
+.chart .band { opacity: .07; }
+.chart .band.hot { opacity: .2; }
+.chart .lane { opacity: .85; }
+.chart .lane.hot { opacity: 1; stroke: var(--text); stroke-width: 1; }
+.chart .pin { cursor: pointer; }
+.chart .pin-label { font: 700 11px var(--sans); fill: var(--bg-deep); stroke: none; pointer-events: none; }
+.chart .cursor { stroke: var(--focus); stroke-width: 1; opacity: 0; pointer-events: none; }
+.chart.hovering .cursor { opacity: .8; }
+.tooltip {
+  position: absolute; top: 0; z-index: 3; pointer-events: none; opacity: 0;
+  min-width: 170px; max-width: 280px; padding: 8px 10px; border-radius: 8px;
+  background: var(--surface-2); border: 1px solid var(--line); font-size: 12.5px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .35);
+}
+.chart.hovering .tooltip { opacity: 1; }
+.tooltip b { font-family: var(--mono); font-weight: 600; }
+.tooltip ul { margin: 4px 0 0; padding: 0; list-style: none; }
+.tooltip li { display: flex; gap: 6px; align-items: baseline; color: var(--muted); }
+.tooltip li::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 2px; background: var(--c); transform: translateY(-1px); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 0; padding: 0; list-style: none; }
+.legend button {
+  display: inline-flex; align-items: center; gap: 7px; max-width: 360px;
+  border: 1px solid var(--line-soft); background: var(--surface); border-radius: 999px;
+  padding: 3px 11px 3px 4px; font-size: 12.5px; color: var(--muted); cursor: pointer;
+}
+.legend button:hover { color: var(--text); border-color: var(--line); }
+.legend .fid { font: 600 11px/1 var(--mono); color: var(--bg); background: var(--c); border-radius: 999px; padding: 4px 6px; }
+.legend .ltxt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .chart .trace.draw { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); animation: draw 1.6s cubic-bezier(.3, .6, .2, 1) .15s forwards; }
+  .chart .fill.draw { opacity: 0; animation: fade .8s ease 1.1s forwards; }
+  .gauge .value.draw { animation: sweep 1.3s cubic-bezier(.3, .6, .2, 1) .2s backwards; }
+  .card-body { animation: fade .22s ease; }
+}
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sweep { from { stroke-dashoffset: var(--arc); } }
+
+/* ---------- sections ---------- */
+.section { padding: 46px 0 6px; }
+.section-head { display: flex; align-items: end; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 18px; }
+.section-head h2, .h2 { margin: 0; font: 700 28px/1.15 var(--display); letter-spacing: -.02em; }
+.section-head p { margin: 4px 0 0; color: var(--muted); max-width: 70ch; }
+h3 { font: 600 19px/1.3 var(--display); letter-spacing: -.01em; margin: 0; }
+h4 { margin: 0 0 6px; font: 600 14.5px/1.3 var(--display); color: var(--text); }
+
+/* pills */
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; line-height: 1; padding: 5px 9px; border-radius: 999px; color: var(--c); background: color-mix(in srgb, var(--c) 14%, transparent); border: 1px solid color-mix(in srgb, var(--c) 35%, transparent); white-space: nowrap; }
+.sev { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.pips { display: inline-flex; gap: 2px; }
+.pips i { width: 4px; height: 11px; border-radius: 1px; background: var(--line); }
+.pips i.on { background: var(--c, var(--text)); }
+.conf { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.fid-tag { font: 600 12px var(--mono); color: var(--faint); }
+
+/* ---------- fix this first ---------- */
+.incidents { display: grid; gap: 16px; }
+.incident {
+  position: relative; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 0;
+  border-radius: 16px; overflow: hidden;
+  background: var(--surface); border: 1px solid var(--line-soft);
+}
+.incident::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--c); }
+.incident-main { padding: 22px 24px 22px 28px; }
+.incident-main .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+.incident-main p.story { color: var(--muted); margin: 10px 0 16px; max-width: 64ch; }
+.chain { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0; margin: 0; padding: 0; list-style: none; }
+.chain li { display: flex; align-items: center; }
+.chain li + li::before {
+  content: ""; width: 34px; height: 2px; flex: none; margin: 0 2px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--c) 70%, transparent), var(--line));
+}
+.node {
+  display: flex; flex-direction: column; gap: 2px; align-items: flex-start; text-align: left;
+  max-width: 250px; padding: 8px 12px; border-radius: 10px; cursor: pointer;
+  background: var(--bg-deep); border: 1px solid var(--line);
+}
+.node:hover { border-color: var(--c); }
+.node small { font-size: 11.5px; color: var(--faint); }
+.node small b { color: var(--c); font-weight: 600; }
+.node span { font-size: 13.5px; line-height: 1.3; }
+.node.root { border-color: color-mix(in srgb, var(--c) 60%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 12%, transparent); }
+.incident-fix { padding: 22px 24px; background: var(--surface-2); border-left: 1px solid var(--line-soft); }
+.steps { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 10px; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; }
+.steps li::before {
+  content: counter(s); display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+  font: 700 12.5px/1 var(--display); color: var(--bg); background: var(--text); margin-top: 1px;
+}
+
+/* ---------- findings ---------- */
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 6px 13px; font-size: 14px; color: var(--muted); cursor: pointer; display: inline-flex; gap: 7px; align-items: center; }
+.chip:hover { color: var(--text); }
+.chip[aria-pressed="true"] { color: var(--bg); background: var(--text); border-color: var(--text); }
+.chip .n { font: 600 12px var(--mono); opacity: .8; }
+.chip[disabled] { opacity: .4; cursor: default; }
+.finding-list { display: grid; gap: 12px; }
+.card {
+  position: relative; border-radius: 12px; background: var(--surface); border: 1px solid var(--line-soft);
+  scroll-margin-top: 76px;
+}
+.card::before { content: ""; position: absolute; left: -1px; top: 14px; bottom: 14px; width: 3px; border-radius: 2px; background: var(--c); }
+.card.flash { animation: flash 1.4s ease; }
+@keyframes flash { 0%, 40% { box-shadow: 0 0 0 2px var(--c); } 100% { box-shadow: 0 0 0 0 transparent; } }
+.card-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 18px; padding: 18px 22px; }
+.card-tags { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+.card-head p { margin: 5px 0 0; color: var(--muted); max-width: 78ch; }
+.toggle {
+  align-self: start; border: 1px solid var(--line); background: var(--bg-deep); border-radius: 8px;
+  padding: 7px 12px; font-size: 13.5px; cursor: pointer; display: inline-flex; gap: 7px; align-items: center; color: var(--muted);
+}
+.toggle:hover { color: var(--text); }
+.toggle svg { transition: transform .2s ease; }
+.toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+.symlink { display: inline-flex; gap: 6px; align-items: center; margin-top: 8px; font-size: 13.5px; color: var(--muted); }
+.linkish { background: none; border: 0; padding: 0; color: var(--text); text-decoration: underline; text-decoration-color: var(--faint); text-underline-offset: 3px; cursor: pointer; font-size: inherit; }
+.linkish:hover { text-decoration-color: var(--text); }
+.card-body { border-top: 1px solid var(--line-soft); padding: 20px 22px 22px; display: grid; gap: 22px; }
+.card-body[hidden] { display: none; }
+.cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px 28px; }
+.cols-right { display: grid; gap: 20px; align-content: start; }
+.block p { margin: 0; color: var(--text); }
+.block p + p { margin-top: 8px; }
+.analogy { color: var(--muted) !important; padding-left: 12px; border-left: 2px solid var(--line); font-style: italic; }
+.ordered { margin: 0; padding: 0; list-style: none; counter-reset: s; display: grid; gap: 8px; }
+.ordered li { counter-increment: s; display: grid; grid-template-columns: 22px 1fr; gap: 8px; }
+.ordered li::before { content: counter(s) "."; font: 600 14px var(--display); color: var(--faint); text-align: right; }
+
+/* reasoning */
+.reason { background: var(--bg-deep); border: 1px solid var(--line-soft); border-radius: 12px; padding: 16px 18px; }
+.reason > p.lead { margin: 0 0 12px; color: var(--muted); font-size: 14.5px; }
+.scorebar { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: var(--line-soft); }
+.scorebar i { display: block; height: 100%; background: var(--c); min-width: 0; }
+.scorebar i + i { box-shadow: -2px 0 0 var(--bg-deep); }
+.scorekey { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 8px 0 14px; padding: 0; list-style: none; font-size: 13px; color: var(--muted); }
+.scorekey li { display: flex; align-items: center; gap: 6px; }
+.scorekey li::before { content: ""; width: 9px; height: 9px; border-radius: 2px; background: var(--c); }
+.scorekey li.win { color: var(--text); font-weight: 600; }
+.hyps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.hyp h5 { margin: 0 0 6px; font: 600 13px var(--sans); color: var(--c); display: flex; gap: 8px; align-items: center; }
+.hyp ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.hyp li { display: grid; grid-template-columns: 34px 1fr; gap: 8px; font-size: 14px; align-items: baseline; }
+.dots { display: inline-flex; gap: 3px; }
+.dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+.dots i.on { background: var(--c); }
+.dots i.half { background: linear-gradient(90deg, var(--c) 50%, var(--line) 50%); }
+.whynot { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.whynot li { border-top: 1px dashed var(--line); padding-top: 10px; font-size: 14px; }
+.whynot b { font-weight: 600; }
+.whynot p { margin: 3px 0 0; color: var(--muted); }
+
+/* evidence */
+.evidence-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
+.filter { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.filter code { font-size: 12.5px; max-width: 520px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: bottom; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line-soft); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+th { text-align: left; font-weight: 600; color: var(--muted); font-size: 12.5px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--bg-deep); white-space: nowrap; }
+td { padding: 7px 12px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.mono { font-family: var(--mono); font-size: 12.5px; overflow-wrap: anywhere; }
+.evidence td.mono { white-space: pre-wrap; }
+.more { margin: 8px 0 0; font-size: 13px; color: var(--faint); }
+.hostlist { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.hostlist li { font: 12.5px var(--mono); background: var(--bg-deep); border: 1px solid var(--line-soft); border-radius: 6px; padding: 3px 7px; overflow-wrap: anywhere; }
+.mitre { display: inline-flex; gap: 8px; align-items: center; font-size: 13.5px; padding: 6px 10px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--attack) 35%, transparent); background: color-mix(in srgb, var(--attack) 7%, transparent); }
+.mitre b { font-family: var(--mono); font-weight: 600; color: var(--attack); }
+.tech { font: 13px/1.6 var(--mono); color: var(--muted); background: var(--bg-deep); border: 1px solid var(--line-soft); border-radius: 10px; padding: 12px 14px; margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.metrics { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 6px 16px; margin: 10px 0 0; font-size: 13px; }
+.metrics div { display: flex; flex-direction: column; }
+.metrics dt { color: var(--faint); font-family: var(--mono); font-size: 11.5px; }
+.metrics dd { margin: 0; overflow-wrap: anywhere; }
+body:not(.expert) .expert-only { display: none !important; }
+body.expert .beginner-only { display: none !important; }
+.empty { padding: 34px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 14px; }
+.empty h3 { color: var(--ok); margin-bottom: 6px; }
+
+/* ---------- network ---------- */
+.net-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; margin-top: 18px; }
+.panel { background: var(--surface); border: 1px solid var(--line-soft); border-radius: 12px; padding: 18px 20px; }
+.panel h3 { font-size: 16px; margin-bottom: 12px; }
+.hosts td:first-child { white-space: nowrap; }
+.badge { display: inline-block; font-family: var(--sans); white-space: nowrap; font-size: 11.5px; font-weight: 600; padding: 2px 7px; margin: 0 4px 3px 0; border-radius: 5px; background: var(--surface-2); border: 1px solid var(--line); color: var(--text); }
+.badge.r-gateway { border-color: color-mix(in srgb, var(--ok) 55%, transparent); color: var(--ok); }
+.badge.r-dns-server { border-color: color-mix(in srgb, var(--misconfig) 55%, transparent); color: var(--misconfig); }
+.badge.r-dhcp-server { border-color: color-mix(in srgb, var(--fault) 55%, transparent); color: var(--fault); }
+.badge.flag { border-color: color-mix(in srgb, var(--attack) 55%, transparent); color: var(--attack); }
+.ext { color: var(--faint); font-size: 12px; }
+.bars { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.bars li { display: grid; grid-template-columns: 120px minmax(0, 1fr) 84px; gap: 10px; align-items: center; font-size: 13.5px; }
+.bars .lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bars .lbl.mono { font-size: 12.5px; }
+.bars .bar { height: 8px; border-radius: 999px; background: var(--line-soft); overflow: hidden; }
+.bars .bar i { display: block; height: 100%; border-radius: 999px; background: var(--text); opacity: .75; }
+.bars .val { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; font-size: 12.5px; }
+
+/* ---------- capture ---------- */
+.capture-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 18px; }
+.kv { display: grid; grid-template-columns: 150px 1fr; gap: 7px 16px; margin: 0; font-size: 14px; }
+.kv dt { color: var(--faint); }
+.kv dd { margin: 0; overflow-wrap: anywhere; }
+.warnlist { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: 14px; }
+.warnlist li { padding: 9px 12px; border-radius: 8px; background: color-mix(in srgb, var(--fault) 8%, transparent); border: 1px solid color-mix(in srgb, var(--fault) 30%, transparent); overflow-wrap: anywhere; }
+
+/* ---------- footer, toast ---------- */
+.footer { margin-top: 56px; padding: 26px 0 40px; border-top: 1px solid var(--line-soft); color: var(--faint); font-size: 13.5px; }
+.footer .wrap { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.footer strong { color: var(--muted); font-weight: 600; }
+.toast {
+  position: fixed; left: 50%; bottom: 26px; z-index: 50; transform: translate(-50%, 20px); opacity: 0;
+  background: var(--text); color: var(--bg); font-weight: 600; font-size: 14px;
+  padding: 10px 16px; border-radius: 10px; transition: opacity .2s ease, transform .2s ease; pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1380px) { [data-embedded="1"] .navlinks { display: none; } [data-embedded="1"] .tools { margin-left: auto; } }
+@media (max-width: 980px) {
+  .navlinks { display: none; }
+  .hero-grid { grid-template-columns: 1fr; gap: 20px; }
+  .hero-side { flex-direction: row; align-items: center; }
+  .gauge { max-width: 200px; }
+  .incident { grid-template-columns: 1fr; }
+  .incident-fix { border-left: 0; border-top: 1px solid var(--line-soft); }
+  .cols, .net-grid, .capture-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .wrap { padding: 0 16px; }
+  .tools .label { display: none; }
+  .card-head { grid-template-columns: 1fr; }
+  .hero-side { flex-direction: column; }
+  .bars li { grid-template-columns: 90px minmax(0, 1fr) 70px; }
+  .kv { grid-template-columns: 1fr; }
+}
+
+/* ---------- print (light) ---------- */
+@media print {
+  :root {
+    --bg: #fff; --bg-deep: #f5f6f8; --surface: #fff; --surface-2: #f7f7f9; --line: #c9ced8; --line-soft: #dde1e8;
+    --text: #141a24; --muted: #3e4756; --faint: #5d6778;
+    --attack: #c62f22; --fault: #a8650a; --misconfig: #1f5fc4; --ok: #137a4c; --info: #5d6778;
+    color-scheme: light;
+  }
+  body { font-size: 11.5pt; background: #fff; }
+  .topbar, .toggle, .chips, .btn, .legend, .toast, .tooltip, .no-print { display: none !important; }
+  .hero::before { display: none; }
+  .card-body[hidden] { display: grid !important; }
+  .expert-only { display: revert !important; }
+  .incident, .reason, .block, tr { break-inside: avoid; box-shadow: none; }
+  .section { padding-top: 22px; }
+  .chart .trace { stroke: #141a24; }
+  .gauge .value, .chart .trace, .chart .fill { animation: none !important; stroke-dashoffset: 0 !important; opacity: 1 !important; }
+  .chart .trace { stroke-dasharray: none !important; }
+  .chart .pin-label { fill: #fff; }
+  .section-head, h2, h3, h4 { break-after: avoid; page-break-after: avoid; }
+  .steps li::before { color: #fff; background: #141a24; }
+  a { text-decoration: none; }
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<noscript><p>This report needs JavaScript to display. The raw data is embedded in this file as JSON.</p></noscript>
+<script type="application/json" id="faultline-data">{"tool":{"name":"Faultline","version":"1.0.0"},"generated_at":"2026-11-01T13:48:54+05:30","capture":{"name":"mitm_chain.pcap","format":"pcap","compressed":false,"file_bytes":366543,"packets":802,"bytes_captured":353687,"linktypes":[1],"first_ts":1793462400.492697,"last_ts":1793462509.587781,"duration":109.09508395195007,"truncated":false,"limited":false,"warnings":[],"sha256":"d9ba7c204bf3657907421c7fa01989bb09dac34453bbd653c7a4be8e0bd547cb","malformed_packets":0},"verdict":{"status":"under_attack","headline":"Rogue DHCP server on the network (192.168.1.66).","summary":"We found 2 signs of malicious activity. This is not an ordinary outage: restarting the router will not fix it. Separately, 1 genuine fault or misconfiguration also need attention.","score":52,"counts":{"attack":2,"fault":0,"misconfig":1,"info":0}},"findings":[{"id":"F1","kind":"dhcp.multiple_servers","category":"attack","severity":4,"severity_name":"critical","confidence":0.99,"title":"Rogue DHCP server on the network (192.168.1.66)","summary":"An unauthorised DHCP server 192.168.1.66 (08:00:27:3a:66:9e) sent 2 DHCP messages telling devices to use router 192.168.1.66 and DNS 192.168.1.66.","explanation":"When a device joins a network it shouts 'can someone give me an address?' (DHCP) and trusts the first answer. A second server, 192.168.1.66, is answering too, and it tells devices to send their traffic and name lookups through a device that is not your real router. That lets it watch or redirect everything those devices do, while the addresses it hands out look completely normal.","analogy":"Like a fake receptionist at the hotel entrance handing out room keys and directions that lead to their own office.","cause":"A rogue DHCP server at 08:00:27:3a:66:9e (an attacker's laptop or a tool like yersinia, ettercap or bettercap).","fix":["Find the port: look up 08:00:27:3a:66:9e in the switch MAC address table (`show mac address-table address 08:00:27:3a:66:9e`) or the router's client list, and disconnect it.","Enable DHCP snooping on the switch, trusting only the uplink to your real DHCP server.","On affected devices, renew the lease (`ipconfig /release` then `ipconfig /renew`, or reconnect Wi-Fi) and check with `ipconfig /all` that the gateway is 192.168.1.1.","Treat traffic from affected devices as possibly intercepted: change important passwords."],"technical":"Legitimate server (most ACKs / gateway match / first seen): 192.168.1.1 (3c:84:6a:12:34:01): subnet 192.168.1.0/24, router 192.168.1.1, DNS 192.168.1.1, 1 offers / 0 ACKs. Other server: 192.168.1.66 (08:00:27:3a:66:9e): subnet 192.168.1.0/24, router 192.168.1.66, DNS 192.168.1.66, 1 offers / 1 ACKs; same subnet: True; contested transactions: 1, other server won 1; median offer latency 1.5 ms vs 32.1 ms.","mitre":"T1557.003 DHCP Spoofing","hosts":["192.168.1.66","192.168.1.1"],"packets":[101,102,104],"packet_total":3,"first_ts":1793462410.001474,"last_ts":1793462410.045148,"metrics":{"legit_server":"192.168.1.1","legit_mac":"3c:84:6a:12:34:01","legit_routers":["192.168.1.1"],"legit_dns":["192.168.1.1"],"legit_subnet":"192.168.1.0/24","other_server":"192.168.1.66","other_mac":"08:00:27:3a:66:9e","other_routers":["192.168.1.66"],"other_dns":["192.168.1.66"],"other_subnet":"192.168.1.0/24","same_subnet":true,"other_offers":1,"other_acks":1,"other_clients":["8c:85:90:18:c8:39"],"races":1,"other_wins":1,"other_median_latency_ms":1.47,"legit_median_latency_ms":32.07},"indicators":[{"text":"192.168.1.66 (08:00:27:3a:66:9e) hands out addresses in the same subnet as the real server (192.168.1.0/24), so its leases look normal","supports":"attack","weight":1.5},{"text":"It names itself (192.168.1.66) as the router instead of 192.168.1.1","supports":"attack","weight":2.5},{"text":"It points clients' DNS at a local device (192.168.1.66) instead of 192.168.1.1","supports":"attack","weight":2.0},{"text":"It answered first in 1 of 1 races with the real server (1 ms vs 32 ms)","supports":"attack","weight":1.5},{"text":"1 client accepted its leases","supports":"attack","weight":0.5},{"text":"Clients then used 192.168.1.66 as their DNS server","supports":"attack","weight":1.5}],"scores":{"attack":10.0,"misconfig":0.0},"alternatives":[{"category":"misconfig","title":"A second router is handing out addresses (192.168.1.66)","score":0.0,"why_not":"Nothing in the traffic pointed to a misconfiguration. The stronger evidence: It names itself (192.168.1.66) as the router instead of 192.168.1.1; It points clients' DNS at a local device (192.168.1.66) instead of 192.168.1.1."}],"symptom_of":null,"incident":"I1","evidence_lines":[{"no":101,"ts":1793462410.001474,"rel":9.508777,"summary":"DHCP OFFER xid=0x0e2f9d37 client 8c:85:90:18:c8:39 offer 192.168.1.150 192.168.1.66 → 255.255.255.255"},{"no":102,"ts":1793462410.032073,"rel":9.539376,"summary":"DHCP OFFER xid=0x0e2f9d37 client 8c:85:90:18:c8:39 offer 192.168.1.40 192.168.1.1 → 255.255.255.255"},{"no":104,"ts":1793462410.045148,"rel":9.552451,"summary":"DHCP ACK xid=0x0e2f9d37 client 8c:85:90:18:c8:39 offer 192.168.1.150 192.168.1.66 → 255.255.255.255"}]},{"id":"F2","kind":"dns.hijack","category":"attack","severity":4,"severity_name":"critical","confidence":0.95,"title":"DNS answers are being forged","summary":"Someone is sending fake DNS answers for intranet-portal.example-bank.com, login.example-bank.com, pointing them to 192.168.1.66.","explanation":"DNS is the internet's phone book: it turns names into addresses. Here a device is answering name lookups with fake addresses before (or instead of) the real server, so you may land on a copy of a website built to steal passwords, or have your traffic secretly routed through the attacker.","analogy":"Like someone swapping the numbers in your phone book so your calls to the bank reach a fraudster.","cause":"DNS spoofing from 192.168.1.66 (08:00:27:3a:66:9e), typically combined with ARP spoofing or a rogue DHCP server (tools such as ettercap dns_spoof, bettercap, dnschef).","fix":["Find and disconnect 192.168.1.66 (08:00:27:3a:66:9e): look up its MAC in the switch MAC table or router client list.","Check what real DNS says: `nslookup intranet-portal.example-bank.com 1.1.1.1` and compare with what your device got.","Flush DNS caches on affected devices (`ipconfig /flushdns`; macOS `sudo dscacheutil -flushcache`).","Check for ARP spoofing / rogue DHCP (`arp -a`, `ipconfig /all`); enable DHCP snooping and Dynamic ARP Inspection.","Use encrypted DNS (DoH/DoT) and HTTPS; treat credentials entered meanwhile as exposed."],"technical":"Conflicting answers to one transaction: 0; answers from unqueried servers: 0; private answers for public domains: 192.168.1.66 ← 1 domains. Forged IPs: 192.168.1.66; legit IPs: -; forging MAC: 08:00:27:3a:66:9e (192.168.1.66).","mitre":"T1557 Adversary-in-the-Middle","hosts":["192.168.1.66"],"packets":[114,309,396],"packet_total":3,"first_ts":null,"last_ts":null,"metrics":{"races":0,"unexpected_server":0,"domains":["intranet-portal.example-bank.com","login.example-bank.com"],"forged_ips":["192.168.1.66"],"legit_ips":[],"forger_mac":"08:00:27:3a:66:9e","forger_ip":"192.168.1.66","portal_ip":null,"fast_forgeries":0},"indicators":[{"text":"Public websites resolved to a local address: intranet-portal.example-bank.com, login.example-bank.com → 192.168.1.66","supports":"attack","weight":1.0},{"text":"The fake address 192.168.1.66 is the DNS server handed out by a second (rogue) DHCP server, answering with its own address, not the router","supports":"attack","weight":2.0},{"text":"No lookup received two conflicting answers","supports":"misconfig","weight":0.5}],"scores":{"attack":3.5,"misconfig":0.5},"alternatives":[{"category":"misconfig","title":"Captive portal or split-horizon DNS is redirecting names","score":0.5,"why_not":"Some signs pointed this way (No lookup received two conflicting answers), but they were outweighed. The stronger evidence: The fake address 192.168.1.66 is the DNS server handed out by a second (rogue) DHCP server, answering with its own address, not the router; Public websites resolved to a local address: intranet-portal.example-bank.com, login.example-bank.com → 192.168.1.66."}],"symptom_of":"F1","incident":"I1","evidence_lines":[{"no":114,"ts":1793462422.741435,"rel":22.248738,"summary":"DNS response 0xc64d login.example-bank.com NOERROR → 192.168.1.66 (192.168.1.66 → 192.168.1.150)"},{"no":309,"ts":1793462445.278062,"rel":44.785365,"summary":"DNS response 0xc68a login.example-bank.com NOERROR → 192.168.1.66 (192.168.1.66 → 192.168.1.150)"},{"no":396,"ts":1793462458.175116,"rel":57.682419,"summary":"DNS response 0xc697 intranet-portal.example-bank.com NOERROR → 192.168.1.66 (192.168.1.66 → 192.168.1.150)"}]},{"id":"F3","kind":"cred.cleartext","category":"misconfig","severity":3,"severity_name":"high","confidence":0.93,"title":"Passwords are being sent unencrypted (HTTP Basic to 192.168.1.66:80)","summary":"3 logins to the HTTP Basic server 192.168.1.66:80 sent the username and password as readable text.","explanation":"HTTP Basic is an old protocol that sends your login exactly as typed, without encryption. Anyone who can capture traffic on the way (as this capture just did) could read and reuse the password. Faultline only detected that a login happened; it never stores or shows the password itself.","analogy":"Like writing your PIN on a postcard: every postman on the way can read it.","cause":"The HTTP Basic service on 192.168.1.66:80 accepts logins without TLS/SSH encryption.","fix":["Serve the site over HTTPS only (redirect port 80 to 443) so the login header is encrypted.","Prefer a proper login form or token over HTTP Basic, and enable HSTS.","Change the passwords that were used here: they must be considered exposed (1 device logged in: 192.168.1.150).","Check the server's logs for logins from unknown addresses."],"technical":"3 packets flagged as HTTP Basic credentials to 192.168.1.66:80 over 3 TCP sessions from 1 clients (192.168.1.150) between 35.4 s; peak 3 sessions / 0 credential packets per 60 s from one client. Secret not retained.","mitre":null,"hosts":["192.168.1.66","192.168.1.150"],"packets":[118,313,400],"packet_total":3,"first_ts":1793462422.752399,"last_ts":1793462458.186058,"metrics":{"protocol":"HTTP Basic","server":"192.168.1.66:80","packets":3,"sessions":3,"clients":["192.168.1.150"],"server_public":false,"peak_sessions_per_min":3,"peak_packets_per_min":0},"indicators":[{"text":"3 login messages for HTTP Basic to 192.168.1.66:80 travelled without encryption (3 sessions, 1 client)","supports":"misconfig","weight":2.5},{"text":"Risk: anyone who can see this traffic (shared Wi-Fi, a compromised switch, the ISP) can read the password as plain text","supports":"misconfig","weight":1.0}],"scores":{"misconfig":4.0},"alternatives":[],"symptom_of":"F1","incident":"I1","evidence_lines":[{"no":118,"ts":1793462422.752399,"rel":22.259702,"summary":"TCP 192.168.1.150:51986 → 192.168.1.66:80 [PA] seq=758325241 ack=1837729202 win=2047 len=197 HTTP POST login.example-bank.com/login"},{"no":313,"ts":1793462445.289296,"rel":44.796599,"summary":"TCP 192.168.1.150:51992 → 192.168.1.66:80 [PA] seq=3767526892 ack=2116577429 win=2047 len=197 HTTP POST login.example-bank.com/login"},{"no":400,"ts":1793462458.186058,"rel":57.693361,"summary":"TCP 192.168.1.150:51995 → 192.168.1.66:80 [PA] seq=2865701666 ack=657587985 win=2047 len=207 HTTP POST intranet-portal.example-bank.com/login"}]}],"incidents":[{"id":"I1","title":"Man-in-the-middle attack","category":"attack","severity":4,"severity_name":"critical","story":"A device on your network put itself between your users and the internet (Rogue DHCP server on the network (192.168.1.66)). Because their traffic now flows through it, it can read or change what they see (DNS answers are being forged; Passwords are being sent unencrypted (HTTP Basic to 192.168.1.66:80)).","root_cause":"F1","findings":["F1","F2","F3"],"hosts":["192.168.1.66","192.168.1.1","192.168.1.150"],"first_ts":1793462410.001474,"last_ts":1793462458.186058,"first_fix":["Find the port: look up 08:00:27:3a:66:9e in the switch MAC address table (`show mac address-table address 08:00:27:3a:66:9e`) or the router's client list, and disconnect it.","Enable DHCP snooping on the switch, trusting only the uplink to your real DHCP server.","On affected devices, renew the lease (`ipconfig /release` then `ipconfig /renew`, or reconnect Wi-Fi) and check with `ipconfig /all` that the gateway is 192.168.1.1."]}],"hosts":[{"ip":"192.168.1.15","macs":["dc:a6:32:13:af:16"],"first_ts":1793462410.448118,"last_ts":1793462477.503096,"packets_sent":61,"packets_recv":70,"bytes_sent":7782,"roles":[],"names":[],"local":true},{"ip":"192.168.1.30","macs":["28:d2:44:16:be:2b"],"first_ts":1793462441.816954,"last_ts":1793462492.374434,"packets_sent":56,"packets_recv":66,"bytes_sent":6834,"roles":[],"names":[],"local":true},{"ip":"192.168.1.20","macs":["b8:27:eb:14:b4:1d"],"first_ts":1793462463.148873,"last_ts":1793462485.959212,"packets_sent":41,"packets_recv":54,"bytes_sent":4522,"roles":[],"names":[],"local":true},{"ip":"192.168.1.12","macs":["a4:83:e7:12:ac:0f"],"first_ts":1793462400.492697,"last_ts":1793462460.138176,"packets_sent":43,"packets_recv":50,"bytes_sent":5963,"roles":[],"names":[],"local":true},{"ip":"192.168.1.45","macs":["e4:5f:01:19:cd:40"],"first_ts":1793462429.526468,"last_ts":1793462507.907898,"packets_sent":40,"packets_recv":40,"bytes_sent":4661,"roles":[],"names":[],"local":true},{"ip":"192.168.1.11","macs":["3c:22:fb:11:ab:08"],"first_ts":1793462406.98847,"last_ts":1793462506.324996,"packets_sent":32,"packets_recv":36,"bytes_sent":3970,"roles":[],"names":[],"local":true},{"ip":"192.168.1.1","macs":["3c:84:6a:12:34:01"],"first_ts":1793462400.493807,"last_ts":1793462508.817926,"packets_sent":30,"packets_recv":29,"bytes_sent":3178,"roles":["dhcp-server","dns-server","gateway"],"names":[],"local":true},{"ip":"192.168.1.31","macs":["f0:18:98:17:bf:32"],"first_ts":1793462426.327787,"last_ts":1793462465.505873,"packets_sent":27,"packets_recv":29,"bytes_sent":3620,"roles":[],"names":[],"local":true},{"ip":"192.168.1.66","macs":["08:00:27:3a:66:9e"],"first_ts":1793462410.001474,"last_ts":1793462458.195731,"packets_sent":22,"packets_recv":23,"bytes_sent":2737,"roles":["dhcp-server","dns-server","gateway"],"names":[],"local":true},{"ip":"192.168.1.150","macs":["8c:85:90:18:c8:39"],"first_ts":1793462411.045148,"last_ts":1793462458.195731,"packets_sent":23,"packets_recv":20,"bytes_sent":2220,"roles":[],"names":[],"local":true},{"ip":"192.168.1.60","macs":["9c:b6:d0:1b:dc:4e"],"first_ts":1793462503.556192,"last_ts":1793462504.198064,"packets_sent":15,"packets_recv":17,"bytes_sent":1656,"roles":[],"names":[],"local":true},{"ip":"192.168.1.55","macs":["c8:e2:65:1a:d7:47"],"first_ts":1793462429.444174,"last_ts":1793462457.537279,"packets_sent":13,"packets_recv":13,"bytes_sent":1830,"roles":[],"names":[],"local":true},{"ip":"192.168.1.10","macs":["f4:5c:89:10:aa:01"],"first_ts":1793462508.802642,"last_ts":1793462509.587781,"packets_sent":12,"packets_recv":13,"bytes_sent":1695,"roles":[],"names":[],"local":true},{"ip":"0.0.0.0","macs":["8c:85:90:18:c8:39"],"first_ts":1793462410.0,"last_ts":1793462410.041972,"packets_sent":2,"packets_recv":0,"bytes_sent":684,"roles":[],"names":["intern-laptop"],"local":true},{"ip":"203.0.113.80","macs":[],"first_ts":1793462447.140452,"last_ts":1793462472.524078,"packets_sent":62,"packets_recv":49,"bytes_sent":63646,"roles":[],"names":[],"local":false},{"ip":"203.0.113.81","macs":[],"first_ts":1793462406.998995,"last_ts":1793462437.551327,"packets_sent":57,"packets_recv":51,"bytes_sent":44134,"roles":[],"names":[],"local":false},{"ip":"203.0.113.25","macs":[],"first_ts":1793462441.830223,"last_ts":1793462460.138176,"packets_sent":58,"packets_recv":45,"bytes_sent":59097,"roles":[],"names":[],"local":false},{"ip":"198.51.100.5","macs":[],"first_ts":1793462431.595812,"last_ts":1793462507.907898,"packets_sent":52,"packets_recv":49,"bytes_sent":35619,"roles":[],"names":[],"local":false},{"ip":"198.51.100.60","macs":[],"first_ts":1793462426.351779,"last_ts":1793462470.187897,"packets_sent":40,"packets_recv":36,"bytes_sent":30399,"roles":[],"names":[],"local":false},{"ip":"93.184.216.34","macs":[],"first_ts":1793462447.141292,"last_ts":1793462509.587781,"packets_sent":39,"packets_recv":36,"bytes_sent":28261,"roles":[],"names":[],"local":false},{"ip":"198.51.100.44","macs":[],"first_ts":1793462400.511464,"last_ts":1793462477.285081,"packets_sent":22,"packets_recv":21,"bytes_sent":13489,"roles":[],"names":[],"local":false},{"ip":"198.51.100.20","macs":[],"first_ts":1793462466.424195,"last_ts":1793462466.966813,"packets_sent":24,"packets_recv":19,"bytes_sent":26148,"roles":[],"names":[],"local":false},{"ip":"203.0.113.123","macs":[],"first_ts":1793462428.43592,"last_ts":1793462492.374434,"packets_sent":5,"packets_recv":5,"bytes_sent":450,"roles":[],"names":[],"local":false}],"stats":{"protocols":{"TCP":547,"TLS":134,"DNS":68,"ARP":26,"HTTP":12,"UDP":10,"DHCP":5},"top_talkers":[{"ip":"203.0.113.80","packets":62,"bytes":63646,"local":false},{"ip":"203.0.113.25","packets":58,"bytes":59097,"local":false},{"ip":"203.0.113.81","packets":57,"bytes":44134,"local":false},{"ip":"198.51.100.5","packets":52,"bytes":35619,"local":false},{"ip":"198.51.100.60","packets":40,"bytes":30399,"local":false},{"ip":"93.184.216.34","packets":39,"bytes":28261,"local":false},{"ip":"198.51.100.20","packets":24,"bytes":26148,"local":false},{"ip":"198.51.100.44","packets":22,"bytes":13489,"local":false},{"ip":"192.168.1.15","packets":61,"bytes":7782,"local":true},{"ip":"192.168.1.30","packets":56,"bytes":6834,"local":true}],"conversations":[{"a":"192.168.1.20","b":"203.0.113.80","proto":"TCP","packets":77,"bytes":52255},{"a":"192.168.1.30","b":"203.0.113.25","proto":"TCP","packets":57,"bytes":34882},{"a":"192.168.1.15","b":"198.51.100.60","proto":"TCP","packets":36,"bytes":11981},{"a":"192.168.1.15","b":"198.51.100.20","proto":"TCP","packets":35,"bytes":22244},{"a":"192.168.1.30","b":"198.51.100.5","proto":"TCP","packets":33,"bytes":9539},{"a":"192.168.1.11","b":"203.0.113.81","proto":"TCP","packets":30,"bytes":17173},{"a":"192.168.1.12","b":"203.0.113.25","proto":"TCP","packets":28,"bytes":16539},{"a":"192.168.1.150","b":"192.168.1.66","proto":"TCP","packets":27,"bytes":1830},{"a":"192.168.1.45","b":"198.51.100.5","proto":"TCP","packets":24,"bytes":5024},{"a":"192.168.1.15","b":"93.184.216.34","proto":"TCP","packets":24,"bytes":10662},{"a":"192.168.1.60","b":"198.51.100.5","proto":"TCP","packets":24,"bytes":10764},{"a":"192.168.1.12","b":"203.0.113.81","proto":"TCP","packets":22,"bytes":9512},{"a":"192.168.1.31","b":"198.51.100.60","proto":"TCP","packets":22,"bytes":10107},{"a":"192.168.1.12","b":"198.51.100.44","proto":"TCP","packets":17,"bytes":5690},{"a":"192.168.1.10","b":"93.184.216.34","proto":"TCP","packets":17,"bytes":5559}],"timeline":{"start":1793462400.492697,"bucket_seconds":1,"series":[{"t":1793462400,"packets":27,"bytes":10520},{"t":1793462401,"packets":0,"bytes":0},{"t":1793462402,"packets":0,"bytes":0},{"t":1793462403,"packets":0,"bytes":0},{"t":1793462404,"packets":0,"bytes":0},{"t":1793462405,"packets":0,"bytes":0},{"t":1793462406,"packets":5,"bytes":338},{"t":1793462407,"packets":56,"bytes":31632},{"t":1793462408,"packets":11,"bytes":6267},{"t":1793462409,"packets":0,"bytes":0},{"t":1793462410,"packets":9,"bytes":1972},{"t":1793462411,"packets":2,"bytes":166},{"t":1793462412,"packets":0,"bytes":0},{"t":1793462413,"packets":0,"bytes":0},{"t":1793462414,"packets":0,"bytes":0},{"t":1793462415,"packets":0,"bytes":0},{"t":1793462416,"packets":2,"bytes":84},{"t":1793462417,"packets":0,"bytes":0},{"t":1793462418,"packets":0,"bytes":0},{"t":1793462419,"packets":0,"bytes":0},{"t":1793462420,"packets":0,"bytes":0},{"t":1793462421,"packets":0,"bytes":0},{"t":1793462422,"packets":13,"bytes":1303},{"t":1793462423,"packets":0,"bytes":0},{"t":1793462424,"packets":0,"bytes":0},{"t":1793462425,"packets":0,"bytes":0},{"t":1793462426,"packets":32,"bytes":14948},{"t":1793462427,"packets":0,"bytes":0},{"t":1793462428,"packets":2,"bytes":180},{"t":1793462429,"packets":30,"bytes":7438},{"t":1793462430,"packets":0,"bytes":0},{"t":1793462431,"packets":16,"bytes":4450},{"t":1793462432,"packets":0,"bytes":0},{"t":1793462433,"packets":2,"bytes":168},{"t":1793462434,"packets":21,"bytes":9662},{"t":1793462435,"packets":4,"bytes":264},{"t":1793462436,"packets":0,"bytes":0},{"t":1793462437,"packets":22,"bytes":6657},{"t":1793462438,"packets":0,"bytes":0},{"t":1793462439,"packets":0,"bytes":0},{"t":1793462440,"packets":0,"bytes":0},{"t":1793462441,"packets":13,"bytes":3456},{"t":1793462442,"packets":40,"bytes":33640},{"t":1793462443,"packets":0,"bytes":0},{"t":1793462444,"packets":0,"bytes":0},{"t":1793462445,"packets":13,"bytes":1303},{"t":1793462446,"packets":0,"bytes":0},{"t":1793462447,"packets":46,"bytes":15098},{"t":1793462448,"packets":0,"bytes":0},{"t":1793462449,"packets":0,"bytes":0},{"t":1793462450,"packets":0,"bytes":0},{"t":1793462451,"packets":0,"bytes":0},{"t":1793462452,"packets":0,"bytes":0},{"t":1793462453,"packets":0,"bytes":0},{"t":1793462454,"packets":2,"bytes":84},{"t":1793462455,"packets":2,"bytes":180},{"t":1793462456,"packets":18,"bytes":6797},{"t":1793462457,"packets":6,"bytes":440},{"t":1793462458,"packets":13,"bytes":1333},{"t":1793462459,"packets":32,"bytes":20857},{"t":1793462460,"packets":4,"bytes":264},{"t":1793462461,"packets":0,"bytes":0},{"t":1793462462,"packets":0,"bytes":0},{"t":1793462463,"packets":38,"bytes":20845},{"t":1793462464,"packets":0,"bytes":0},{"t":1793462465,"packets":2,"bytes":180},{"t":1793462466,"packets":45,"bytes":28846},{"t":1793462467,"packets":31,"bytes":13473},{"t":1793462468,"packets":0,"bytes":0},{"t":1793462469,"packets":23,"bytes":11006},{"t":1793462470,"packets":4,"bytes":264},{"t":1793462471,"packets":50,"bytes":38336},{"t":1793462472,"packets":9,"bytes":3994},{"t":1793462473,"packets":2,"bytes":190},{"t":1793462474,"packets":0,"bytes":0},{"t":1793462475,"packets":0,"bytes":0},{"t":1793462476,"packets":24,"bytes":7930},{"t":1793462477,"packets":30,"bytes":13992},{"t":1793462478,"packets":0,"bytes":0},{"t":1793462479,"packets":0,"bytes":0},{"t":1793462480,"packets":0,"bytes":0},{"t":1793462481,"packets":0,"bytes":0},{"t":1793462482,"packets":0,"bytes":0},{"t":1793462483,"packets":16,"bytes":4456},{"t":1793462484,"packets":0,"bytes":0},{"t":1793462485,"packets":2,"bytes":84},{"t":1793462486,"packets":0,"bytes":0},{"t":1793462487,"packets":0,"bytes":0},{"t":1793462488,"packets":0,"bytes":0},{"t":1793462489,"packets":0,"bytes":0},{"t":1793462490,"packets":2,"bytes":166},{"t":1793462491,"packets":0,"bytes":0},{"t":1793462492,"packets":2,"bytes":180},{"t":1793462493,"packets":0,"bytes":0},{"t":1793462494,"packets":0,"bytes":0},{"t":1793462495,"packets":0,"bytes":0},{"t":1793462496,"packets":0,"bytes":0},{"t":1793462497,"packets":0,"bytes":0},{"t":1793462498,"packets":0,"bytes":0},{"t":1793462499,"packets":0,"bytes":0},{"t":1793462500,"packets":0,"bytes":0},{"t":1793462501,"packets":0,"bytes":0},{"t":1793462502,"packets":0,"bytes":0},{"t":1793462503,"packets":30,"bytes":15024},{"t":1793462504,"packets":4,"bytes":264},{"t":1793462505,"packets":0,"bytes":0},{"t":1793462506,"packets":2,"bytes":204},{"t":1793462507,"packets":16,"bytes":4456},{"t":1793462508,"packets":13,"bytes":3784},{"t":1793462509,"packets":14,"bytes":6512}],"markers":[{"t":1793462410.001474,"end":1793462410.045148,"finding":"F1","category":"attack","title":"Rogue DHCP server on the network (192.168.1.66)"},{"t":1793462422.752399,"end":1793462458.186058,"finding":"F3","category":"misconfig","title":"Passwords are being sent unencrypted (HTTP Basic to 192.168.1.66:80)"}]}},"redacted":false,"warnings":[],"analysis_seconds":0.021,"evidence":{"F1":"1MOyoQIABAAAAAAAAAAAAAAABAABAAAAihDmasIFAABWAQAAVgEAAP///////wgAJzpmnggARQABSG2IQABAEQozwKgBQv////8AQwBEATTrdwIBBgAOL503AAAAAAAAAADAqAGWwKgBQgAAAACMhZAYyDkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY4JTYzUBAjYEwKgBQgEE////AAMEwKgBQgYEwKgBQjMEAAAOEDoEAAAHCDsEAAAMTv8AAAAAAAAAAAAAAAAAAIoQ5mpJfQAAVgEAAFYBAAD///////88hGoSNAEIAEUAAUgiPUAAQBFVv8CoAQH/////AEMARAE0gmgCAQYADi+dNwAAAAAAAAAAwKgBKMCoAQEAAAAAjIWQGMg5AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGOCU2M1AQI2BMCoAQEBBP///wADBMCoAQEGBMCoAQEzBAABUYA6BAAAqMA7BAABJ1D/AAAAAAAAAAAAAAAAAACKEOZqXLAAAFYBAABWAQAA////////CAAnOmaeCABFAAFIbYlAAEARCjLAqAFC/////wBDAEQBNOh3AgEGAA4vnTcAAAAAAAAAAMCoAZbAqAFCAAAAAIyFkBjIOQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABjglNjNQEFNgTAqAFCAQT///8AAwTAqAFCBgTAqAFCMwQAAA4QOgQAAAcIOwQAAAxO/wAAAAAAAAAAAAAAAAAA","F2":"1MOyoQIABAAAAAAAAAAAAAAABAABAAAAlhDmajtQCwBiAAAAYgAAAIyFkBjIOQgAJzpmnggARQAAVG2LQABAEUjlwKgBQsCoAZYANcsQAEDe0cZNgYAAAQABAAAAAAVsb2dpbgxleGFtcGxlLWJhbmsDY29tAAABAAHADAABAAEAAAA8AATAqAFCrRDmai4+BABiAAAAYgAAAIyFkBjIOQgAJzpmnggARQAAVG2SQABAEUjewKgBQsCoAZYANcsVAEDej8aKgYAAAQABAAAAAAVsb2dpbgxleGFtcGxlLWJhbmsDY29tAAABAAHADAABAAEAAAA8AATAqAFCuhDmagysAgBsAAAAbAAAAIyFkBjIOQgAJzpmnggARQAAXm2YQABAEUjOwKgBQsCoAZYANcsZAEqlisaXgYAAAQABAAAAAA9pbnRyYW5ldC1wb3J0YWwMZXhhbXBsZS1iYW5rA2NvbQAAAQABwAwAAQABAAAAPAAEwKgBQg==","F3":"1MOyoQIABAAAAAAAAAAAAAAABAABAAAAlhDmag97CwAHAQAABwEAAAgAJzpmnoyFkBjIOQgARQAA+Y0uQABABiiowKgBlsCoAULLEgBQLTMf+W2JhbKAGAf/vO8AAAEBCApKtzDsSsIk7lBPU1QgL2xvZ2luIEhUVFAvMS4xDQpIb3N0OiBsb2dpbi5leGFtcGxlLWJhbmsuY29tDQpVc2VyLUFnZW50OiBNb3ppbGxhLzUuMCAoWDExOyBMaW51eCB4ODZfNjQpIEZhdWx0bGluZS1MYWIvMS4wDQpBY2NlcHQ6ICovKg0KQ29ubmVjdGlvbjoga2VlcC1hbGl2ZQ0KQXV0aG9yaXphdGlvbjogQmFzaWMgWVd4cFkyVTZhSFZ1ZEdWeU1nPT0NCg0KrRDmahBqBAAHAQAABwEAAAgAJzpmnoyFkBjIOQgARQAA+Y02QABABiigwKgBlsCoAULLGABQ4I/l7H4oaJWAGAf/vNEAAAEBCApcWk46Pb6WRlBPU1QgL2xvZ2luIEhUVFAvMS4xDQpIb3N0OiBsb2dpbi5leGFtcGxlLWJhbmsuY29tDQpVc2VyLUFnZW50OiBNb3ppbGxhLzUuMCAoWDExOyBMaW51eCB4ODZfNjQpIEZhdWx0bGluZS1MYWIvMS4wDQpBY2NlcHQ6ICovKg0KQ29ubmVjdGlvbjoga2VlcC1hbGl2ZQ0KQXV0aG9yaXphdGlvbjogQmFzaWMgWVd4cFkyVTZhSFZ1ZEdWeU1nPT0NCg0KuhDmasrWAgARAQAAEQEAAAgAJzpmnoyFkBjIOQgARQABA409QABABiiPwKgBlsCoAULLGwBQqs8jIicx/xGAGAf/zvYAAAEBCAp4svxZZxxpFVBPU1QgL2xvZ2luIEhUVFAvMS4xDQpIb3N0OiBpbnRyYW5ldC1wb3J0YWwuZXhhbXBsZS1iYW5rLmNvbQ0KVXNlci1BZ2VudDogTW96aWxsYS81LjAgKFgxMTsgTGludXggeDg2XzY0KSBGYXVsdGxpbmUtTGFiLzEuMA0KQWNjZXB0OiAqLyoNCkNvbm5lY3Rpb246IGtlZXAtYWxpdmUNCkF1dGhvcml6YXRpb246IEJhc2ljIFlXeHBZMlU2YUhWdWRHVnlNZz09DQoNCg=="}}</script>
+<script>/* Faultline report renderer.
+ * Security model: every value in the report is untrusted (it comes from packets).
+ * Data is read from the embedded JSON data block and turned into DOM nodes with
+ * createElement / textContent only. No HTML string is ever parsed. */
+(function () {
+  "use strict";
+
+  var SVGNS = "http://www.w3.org/2000/svg";
+  var doc = document;
+  var root = doc.getElementById("app");
+  var R = null;
+  try { R = JSON.parse(doc.getElementById("faultline-data").textContent); } catch (e) { R = null; }
+  if (!root) { return; }
+  if (!R || typeof R !== "object" || Array.isArray(R)) {
+    root.textContent = "This report could not be read. The embedded data is damaged.";
+    return;
+  }
+  var EMBEDDED = doc.documentElement.getAttribute("data-embedded") === "1";
+  var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ------------------------------------------------------------------ utils
+  function str(v) { return v === null || v === undefined ? "" : String(v); }
+  function arr(v) { return Array.isArray(v) ? v : []; }
+  function obj(v) { return v && typeof v === "object" && !Array.isArray(v) ? v : {}; }
+  function num(v) { return typeof v === "number" && isFinite(v) ? v : null; }
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+  var SAFE_ATTR = /^(class|id|role|tabindex|title|type|for|colspan|scope|hidden|disabled|lang|dir|href|target|rel|download|aria-[a-z-]+|data-[a-z-]+|viewBox|width|height|x|y|x1|x2|y1|y2|cx|cy|r|rx|d|points|transform|text-anchor|dominant-baseline|offset|gradientTransform|pathLength|preserveAspectRatio|focusable|fill|stroke|stroke-width|stroke-linecap|stroke-linejoin)$/;
+
+  function setAttrs(el, attrs) {
+    if (!attrs) { return; }
+    Object.keys(attrs).forEach(function (k) {
+      var v = attrs[k];
+      if (v === null || v === undefined || v === false) { return; }
+      if (k === "text") { el.textContent = str(v); return; }
+      if (k.slice(0, 2) === "on" && typeof v === "function") { el.addEventListener(k.slice(2), v); return; }
+      if (!SAFE_ATTR.test(k)) { return; }
+      if (k === "href") {
+        v = str(v);
+        if (!(v.charAt(0) === "#" || v === "/" || v.slice(0, 5) === "blob:")) { return; }
+      }
+      el.setAttribute(k, v === true ? "" : str(v));
+    });
+  }
+  function append(el, kids) {
+    for (var i = 0; i < kids.length; i++) {
+      var k = kids[i];
+      if (k === null || k === undefined || k === false) { continue; }
+      if (Array.isArray(k)) { append(el, k); continue; }
+      el.appendChild(typeof k === "object" && k.nodeType ? k : doc.createTextNode(str(k)));
+    }
+    return el;
+  }
+  function h(tag, attrs) {
+    var el = doc.createElement(tag);
+    setAttrs(el, attrs);
+    return append(el, Array.prototype.slice.call(arguments, 2));
+  }
+  function s(tag, attrs) {
+    var el = doc.createElementNS(SVGNS, tag);
+    setAttrs(el, attrs);
+    return append(el, Array.prototype.slice.call(arguments, 2));
+  }
+  function fmtInt(v) { v = num(v); return v === null ? "?" : Math.round(v).toLocaleString("en-US"); }
+  function fmtBytes(v) {
+    v = num(v); if (v === null) { return "?"; }
+    var u = ["B", "KB", "MB", "GB", "TB"], i = 0;
+    while (v >= 1000 && i < u.length - 1) { v /= 1000; i++; }
+    return (i === 0 ? String(Math.round(v)) : v.toFixed(v < 10 ? 1 : 0)) + " " + u[i];
+  }
+  function fmtDur(sec) {
+    sec = num(sec); if (sec === null) { return "?"; }
+    if (sec < 1) { return Math.round(sec * 1000) + " ms"; }
+    if (sec < 60) { return sec.toFixed(sec < 10 ? 1 : 0) + " s"; }
+    var m = Math.floor(sec / 60), sx = Math.round(sec % 60);
+    if (m < 60) { return m + " min" + (sx ? " " + sx + " s" : ""); }
+    var hr = Math.floor(m / 60); m = m % 60;
+    return hr + " h" + (m ? " " + m + " min" : "");
+  }
+  function pad(n, w) { n = String(n); while (n.length < w) { n = "0" + n; } return n; }
+  function fmtClock(sec, ms) {
+    sec = Math.max(0, num(sec) || 0);
+    var hr = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), sx = Math.floor(sec % 60);
+    var out = (hr ? hr + ":" + pad(m, 2) : String(m)) + ":" + pad(sx, 2);
+    if (ms) { out += "." + pad(Math.floor((sec % 1) * 1000), 3); }
+    return out;
+  }
+  function fmtDate(ts) {
+    ts = num(ts); if (ts === null) { return "?"; }
+    try { return new Date(ts * 1000).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "medium" }); }
+    catch (e) { return new Date(ts * 1000).toISOString(); }
+  }
+  function plural(n, one, many) { return n === 1 ? one : many; }
+  function safeFileStem(v) {
+    var x = str(v).replace(/\.(pcapng|pcap|cap)(\.gz)?$/i, "").replace(/[^A-Za-z0-9._-]+/g, "-").replace(/^[.-]+/, "").slice(0, 60);
+    return x || "capture";
+  }
+
+  // ----------------------------------------------------------- vocabulary
+  var CAT = {
+    attack: { one: "Attack", many: "attacks", chip: "Attacks", hyp: "Points to an attack" },
+    fault: { one: "Fault", many: "faults", chip: "Faults", hyp: "Points to a fault" },
+    misconfig: { one: "Misconfiguration", many: "misconfigs", chip: "Misconfigs", hyp: "Points to a misconfiguration" },
+    info: { one: "Note", many: "notes", chip: "Notes", hyp: "Neutral" }
+  };
+  function cat(c) { return CAT.hasOwnProperty(c) ? c : "info"; }
+  var STATUS = {
+    under_attack: { word: "Under attack", share: "UNDER ATTACK" },
+    faulty: { word: "Faulty", share: "FAULTY" },
+    minor_issues: { word: "Minor issues", share: "MINOR ISSUES" },
+    healthy: { word: "Healthy", share: "HEALTHY" }
+  };
+  var SEV = ["Info", "Low", "Medium", "High", "Critical"];
+  function sevIdx(v) { v = num(v); return v === null ? 0 : clamp(Math.round(v), 0, 4); }
+
+  // ------------------------------------------------------------ the data
+  var tool = obj(R.tool), capture = obj(R.capture), verdict = obj(R.verdict), stats = obj(R.stats);
+  var findings = arr(R.findings).filter(function (f) { return f && typeof f === "object"; });
+  var incidents = arr(R.incidents).filter(function (i) { return i && typeof i === "object"; });
+  var hosts = arr(R.hosts).filter(function (x) { return x && typeof x === "object"; });
+  var evidence = obj(R.evidence);
+  var redacted = R.redacted === true;
+  var status = STATUS.hasOwnProperty(verdict.status) ? verdict.status : "healthy";
+  var byId = {};
+  findings.forEach(function (f) { if (typeof f.id === "string") { byId[f.id] = f; } });
+  var t0 = num(capture.first_ts);
+  var tl = obj(stats.timeline);
+  if (t0 === null) { t0 = num(tl.start); }
+  if (t0 === null) { t0 = 0; }
+  function rel(ts) { ts = num(ts); return ts === null ? null : ts - t0; }
+
+  doc.documentElement.setAttribute("data-status", status);
+
+  // --------------------------------------------------------- rich text
+  // Backticks become <code>; finding ids (F1, F2 ...) become jump links.
+  function rich(text) {
+    var out = [];
+    str(text).split("`").forEach(function (part, i) {
+      if (i % 2 === 1) { out.push(h("code", null, part)); return; }
+      var re = /\bF\d{1,4}\b/g, last = 0, m;
+      while ((m = re.exec(part)) !== null) {
+        if (!byId[m[0]]) { continue; }
+        if (m.index > last) { out.push(part.slice(last, m.index)); }
+        out.push(jump(m[0], m[0]));
+        last = m.index + m[0].length;
+      }
+      if (last < part.length) { out.push(part.slice(last)); }
+    });
+    return out;
+  }
+  function jump(id, label) {
+    return h("button", { type: "button", "class": "linkish", onclick: function () { goto(id); } }, label);
+  }
+
+  // ------------------------------------------------------------- icons
+  function chevron() {
+    return s("svg", { width: 12, height: 12, viewBox: "0 0 12 12", "aria-hidden": "true", focusable: "false" },
+      s("path", { d: "M2 4.5 6 8.5 10 4.5", fill: "none", stroke: "currentColor", "stroke-width": 1.6, "stroke-linecap": "round", "stroke-linejoin": "round" }));
+  }
+  function icon(d) {
+    return s("svg", { width: 14, height: 14, viewBox: "0 0 16 16", "aria-hidden": "true", focusable: "false" },
+      s("path", { d: d, fill: "none", stroke: "currentColor", "stroke-width": 1.6, "stroke-linecap": "round", "stroke-linejoin": "round" }));
+  }
+  var I_DOWN = "M8 2v8M4.5 7 8 10.5 11.5 7M3 13.5h10";
+  var I_COPY = "M5.5 5.5h7v8h-7zM3.5 10.5v-8h7";
+  var I_SHARE = "M8 10V2.5M5 5.5 8 2.5l3 3M3.5 9v4.5h9V9";
+  function brandMark() {
+    return s("svg", { width: 24, height: 24, viewBox: "0 0 24 24", "aria-hidden": "true", focusable: "false" },
+      s("rect", { x: 1, y: 1, width: 22, height: 22, rx: 6, fill: "none", stroke: "currentColor", "stroke-width": 1.4, "class": "brand-box" }),
+      s("path", { d: "M3.5 13h4l2-6 3 10 2.4-7 1.6 3h4", fill: "none", stroke: "currentColor", "stroke-width": 1.9, "stroke-linecap": "round", "stroke-linejoin": "round", "class": "brand-trace" }));
+  }
+  function statusGlyph() {
+    var p = {
+      under_attack: "M12 3 22 20H2z M12 9.5v5 M12 17.2v.2",
+      faulty: "M2 12h6l2-4 4 8 2-4h6",
+      minor_issues: "M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18z M12 8v.2 M12 11v6",
+      healthy: "M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18z M7.5 12.5l3 3 6-6.5"
+    }[status];
+    return s("svg", { "class": "glyph", viewBox: "0 0 24 24", "aria-hidden": "true", focusable: "false" },
+      s("path", { d: p, fill: "none", stroke: "currentColor", "stroke-width": 2.2, "stroke-linecap": "round", "stroke-linejoin": "round" }));
+  }
+
+  // ---------------------------------------------------------- feedback
+  var toastEl = h("div", { "class": "toast", role: "status", "aria-live": "polite" });
+  var toastTimer = null;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove("show"); }, 2200);
+  }
+  function copyText(text, okMsg) {
+    function fallback() {
+      var ta = h("textarea", { "aria-hidden": "true" });
+      ta.value = text;
+      ta.style.position = "fixed"; ta.style.opacity = "0"; ta.style.top = "0";
+      doc.body.appendChild(ta); ta.select();
+      var ok = false;
+      try { ok = doc.execCommand("copy"); } catch (e) { ok = false; }
+      ta.remove();
+      toast(ok ? okMsg : "Copy failed. Select the text and press Ctrl+C.");
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { toast(okMsg); }, fallback);
+    } else { fallback(); }
+  }
+  function download(filename, mime, data) {
+    var blob = new Blob([data], { type: mime });
+    var url = URL.createObjectURL(blob);
+    var a = h("a", { href: url, download: filename, hidden: true });
+    doc.body.appendChild(a);
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 1500);
+  }
+  function b64bytes(b64) {
+    if (typeof b64 !== "string" || !/^[A-Za-z0-9+/=\s]+$/.test(b64)) { return null; }
+    try {
+      var bin = atob(b64.replace(/\s+/g, "")), out = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) { out[i] = bin.charCodeAt(i); }
+      return out;
+    } catch (e) { return null; }
+  }
+  function downloadEvidence(f) {
+    var bytes = b64bytes(evidence[f.id]);
+    if (!bytes) { toast("Evidence file is not available."); return; }
+    var id = str(f.id).replace(/[^A-Za-z0-9_-]/g, "") || "finding";
+    download(id + "-evidence.pcap", "application/vnd.tcpdump.pcap", bytes);
+    toast("Saved " + id + "-evidence.pcap");
+  }
+  function exportHtml() {
+    var clone = doc.documentElement.cloneNode(true);
+    clone.removeAttribute("data-embedded");
+    clone.removeAttribute("data-status");
+    var app = clone.querySelector("#app");
+    while (app && app.firstChild) { app.removeChild(app.firstChild); }
+    var b = clone.querySelector("body");
+    if (b) { b.removeAttribute("class"); }
+    Array.prototype.forEach.call(clone.querySelectorAll("body > :not(#app):not(script):not(noscript)"), function (n) { n.remove(); });
+    return "<!DOCTYPE html>\n" + clone.outerHTML;
+  }
+
+  // ------------------------------------------------------- share summary
+  function shareText() {
+    var L = [];
+    L.push("Faultline verdict for " + str(capture.name || "capture") + ": " + STATUS[status].share +
+      " (health " + (num(verdict.score) === null ? "?" : Math.round(verdict.score)) + "/100)");
+    if (verdict.headline) { L.push(str(verdict.headline)); }
+    if (verdict.summary) { L.push(""); L.push(str(verdict.summary)); }
+    if (incidents.length) {
+      L.push(""); L.push("Fix this first:");
+      incidents.forEach(function (inc) {
+        L.push("- " + str(inc.title));
+        arr(inc.first_fix).forEach(function (step, i) { L.push("    " + (i + 1) + ". " + str(step).replace(/`/g, "")); });
+      });
+    }
+    if (findings.length) {
+      L.push(""); L.push("Findings:");
+      findings.forEach(function (f) {
+        L.push("- [" + CAT[cat(f.category)].one + ", " + SEV[sevIdx(f.severity)].toLowerCase() + "] " + str(f.id) + " " + str(f.title));
+      });
+    }
+    L.push("");
+    L.push("Generated offline by Faultline " + str(tool.version) + (redacted ? " (addresses redacted)" : "") + ".");
+    return L.join("\n");
+  }
+
+  // ------------------------------------------------------------ top bar
+  function topbar() {
+    var modeBtns = [
+      h("button", { type: "button", "aria-pressed": "true", "data-mode": "beginner" }, "Beginner"),
+      h("button", { type: "button", "aria-pressed": "false", "data-mode": "expert" }, "Expert")
+    ];
+    modeBtns.forEach(function (b) {
+      b.addEventListener("click", function () {
+        var expert = b.getAttribute("data-mode") === "expert";
+        doc.body.classList.toggle("expert", expert);
+        modeBtns.forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      });
+    });
+    var tools = [
+      h("div", { "class": "segmented", role: "group", "aria-label": "Explanation level" }, modeBtns),
+      h("button", { type: "button", "class": "btn", onclick: function () { copyText(shareText(), "Summary copied to the clipboard"); } },
+        icon(I_SHARE), h("span", { "class": "label" }, "Share summary"))
+    ];
+    if (EMBEDDED) {
+      tools.push(h("button", { type: "button", "class": "btn", title: "Download the report as JSON",
+        onclick: function () { download("faultline-" + safeFileStem(capture.name) + ".json", "application/json", JSON.stringify(R, null, 2)); } },
+        icon(I_DOWN), h("span", { "class": "label" }, "JSON")));
+      tools.push(h("button", { type: "button", "class": "btn", title: "Download this report as a single HTML file",
+        onclick: function () { download("faultline-" + safeFileStem(capture.name) + ".html", "text/html", exportHtml()); } },
+        icon(I_DOWN), h("span", { "class": "label" }, "HTML")));
+      tools.push(h("a", { "class": "btn primary", href: "/" }, "Analyze another capture"));
+    }
+    var links = [["#verdict", "Verdict"], ["#fix-first", "Fix first"], ["#findings", "Findings"], ["#network", "Network"], ["#capture", "Capture"]];
+    return h("header", { "class": "topbar" },
+      h("div", { "class": "wrap" },
+        h("a", { "class": "brand", href: "#verdict" }, brandMark(), "Faultline"),
+        h("nav", { "class": "navlinks", "aria-label": "Report sections" },
+          links.filter(function (l) { return l[0] !== "#fix-first" || hasFixFirst(); })
+            .map(function (l) { return h("a", { href: l[0] }, l[1]); })),
+        h("div", { "class": "tools" }, tools)));
+  }
+
+  // ------------------------------------------------------------- gauge
+  function gauge(score) {
+    var sc = clamp(num(score) === null ? 0 : num(score), 0, 100);
+    var cx = 120, cy = 116, r = 92, a0 = 135, sweep = 270;
+    function pt(deg, rr) { var a = deg * Math.PI / 180; return [cx + rr * Math.cos(a), cy + rr * Math.sin(a)]; }
+    var p0 = pt(a0, r), p1 = pt(a0 + sweep, r);
+    var d = "M" + p0[0].toFixed(2) + " " + p0[1].toFixed(2) + " A" + r + " " + r + " 0 1 1 " + p1[0].toFixed(2) + " " + p1[1].toFixed(2);
+    var ticks = [];
+    for (var i = 0; i <= 10; i++) {
+      var deg = a0 + sweep * i / 10, q0 = pt(deg, r + 9), q1 = pt(deg, r + (i % 5 === 0 ? 17 : 13));
+      ticks.push(s("line", { "class": "tick", x1: q0[0].toFixed(2), y1: q0[1].toFixed(2), x2: q1[0].toFixed(2), y2: q1[1].toFixed(2), "stroke-width": i % 5 === 0 ? 1.6 : 1 }));
+    }
+    var val = s("path", { "class": "value draw", d: d, fill: "none", "stroke-width": 12, "stroke-linecap": "round", pathLength: 100 });
+    val.style.strokeDasharray = sc + " 100";
+    val.style.setProperty("--arc", String(sc));
+    if (sc === 0) { val.style.strokeOpacity = "0"; }
+    var e0 = pt(a0, r + 26), e1 = pt(a0 + sweep, r + 26);
+    return s("svg", { "class": "gauge", viewBox: "0 0 240 214", role: "img", "aria-label": "Health score " + Math.round(sc) + " out of 100" },
+      ticks,
+      s("path", { "class": "track", d: d, fill: "none", "stroke-width": 12, "stroke-linecap": "round" }),
+      val,
+      s("text", { "class": "num", x: cx, y: cy + 14, "text-anchor": "middle" }, String(Math.round(sc))),
+      s("text", { "class": "lbl", x: cx, y: cy + 38, "text-anchor": "middle" }, "health score"),
+      s("text", { "class": "end", x: e0[0].toFixed(1), y: (e0[1] + 4).toFixed(1), "text-anchor": "middle" }, "0"),
+      s("text", { "class": "end", x: e1[0].toFixed(1), y: (e1[1] + 4).toFixed(1), "text-anchor": "middle" }, "100"));
+  }
+
+  // -------------------------------------------------------------- hero
+  function headline() {
+    // The big status word is already shown; drop a repeated "Under attack:" prefix.
+    var t = str(verdict.headline).trim(), w = STATUS[status].word;
+    if (t.toLowerCase().indexOf(w.toLowerCase() + ":") === 0) { t = t.slice(w.length + 1).trim(); }
+    return t ? t.charAt(0).toUpperCase() + t.slice(1) : "Analysis complete.";
+  }
+  function hero() {
+    var counts = obj(verdict.counts);
+    var countEls = ["attack", "fault", "misconfig", "info"].map(function (k) {
+      var n = num(counts[k]);
+      if (n === null) { n = findings.filter(function (f) { return cat(f.category) === k; }).length; }
+      if (k === "info" && n === 0) { return null; }
+      var label = n === 1 ? CAT[k].one.toLowerCase() : CAT[k].many;
+      if (k === "misconfig") { label = n === 1 ? "misconfig" : "misconfigs"; }
+      return h("li", null, h("button", {
+        type: "button", "class": "count c-" + k + (n === 0 ? " zero" : ""), disabled: n === 0 ? true : null,
+        onclick: function () { setFilter(k); var el = doc.getElementById("findings"); if (el) { el.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth" }); } }
+      }, h("b", null, String(n)), h("span", null, label)));
+    });
+    var meta = h("dl", { "class": "meta" },
+      h("dt", null, "Capture"), h("dd", null, str(capture.name) || "unnamed"),
+      h("dt", null, "Duration"), h("dd", null, fmtDur(capture.duration)),
+      h("dt", null, "Packets"), h("dd", null, fmtInt(capture.packets)),
+      h("dt", null, "Started"), h("dd", null, fmtDate(capture.first_ts)));
+    var notices = [];
+    var capWarn = arr(capture.warnings).concat(arr(R.warnings));
+    if (capture.truncated === true || capture.limited === true) {
+      notices.push(h("p", { "class": "notice" },
+        h("span", null, capture.truncated === true ? "This capture file is incomplete, so the results cover only the part that could be read." :
+          "This capture hit a safety limit, so only part of it was analysed."), " ",
+        h("a", { href: "#capture" }, "Capture details")));
+    } else if (capWarn.length) {
+      notices.push(h("p", { "class": "notice" }, h("span", null, capWarn.length + " " + plural(capWarn.length, "note", "notes") + " from reading the file."), " ", h("a", { href: "#capture" }, "Capture details")));
+    }
+    if (redacted) {
+      notices.push(h("p", { "class": "notice privacy" }, h("span", null, "Privacy mode: IP and MAC addresses are replaced with consistent pseudonyms, and evidence downloads are turned off, so this report is safe to share.")));
+    }
+    return h("section", { id: "verdict", "class": "hero", "aria-labelledby": "verdict-word" },
+      h("div", { "class": "wrap" },
+        h("div", { "class": "hero-grid" },
+          h("div", { "class": "hero-text" },
+            h("p", { "class": "status-word", id: "verdict-word" }, statusGlyph(), STATUS[status].word),
+            h("h1", { "class": "headline" }, headline()),
+            verdict.summary ? h("p", { "class": "summary" }, rich(verdict.summary)) : null,
+            h("ul", { "class": "counts", "aria-label": "Findings by type" }, countEls)),
+          h("div", { "class": "hero-side" }, gauge(verdict.score), meta)),
+        notices,
+        timeline()));
+  }
+
+  // ---------------------------------------------------------- timeline
+  var chartRedraw = null;
+  function niceStep(raw) {
+    var steps = [1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600, 7200, 14400, 21600, 43200, 86400];
+    for (var i = 0; i < steps.length; i++) { if (steps[i] >= raw) { return steps[i]; } }
+    return Math.ceil(raw / 86400) * 86400;
+  }
+  function niceMax(v) {
+    if (v <= 0) { return 1; }
+    var p = Math.pow(10, Math.floor(Math.log10(v))), m = v / p;
+    return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 2.5 ? 2.5 : m <= 5 ? 5 : 10) * p;
+  }
+  function timeline() {
+    var series = arr(tl.series).filter(function (p) { return p && num(p.t) !== null; });
+    var markers = arr(tl.markers).filter(function (m) { return m && num(m.t) !== null; });
+    var bucket = num(tl.bucket_seconds) || 1;
+    var box = h("div", { "class": "chart" });
+    var tip = h("div", { "class": "tooltip", "aria-hidden": "true" });
+    var fig = h("figure", { "class": "seismo", id: "timeline" },
+      h("div", { "class": "seismo-head" },
+        h("h2", null, "Timeline"),
+        h("p", null, "Packets per second across the capture. Coloured bands show when each finding was happening.")),
+      box,
+      markers.length ? h("ul", { "class": "legend", "aria-label": "Jump to a finding" }, markers.map(function (m) {
+        var k = cat(m.category), f = byId[m.finding];
+        return h("li", null, h("button", { type: "button", "class": "c-" + k, onclick: function () { goto(m.finding); } },
+          h("span", { "class": "fid" }, str(m.finding)),
+          h("span", { "class": "ltxt" }, str(m.title || (f && f.title))),
+          h("span", { "class": "sr-only" }, ", starts at " + fmtClock(rel(m.t)))));
+      })) : null);
+    if (!series.length) {
+      box.appendChild(h("p", { "class": "more" }, "No timing data in this capture."));
+      return fig;
+    }
+    var start = num(tl.start); if (start === null) { start = series[0].t; }
+    var endT = series[series.length - 1].t + bucket;
+    var span = Math.max(num(capture.duration) || 0, endT - start, 1e-6);
+    var maxV = niceMax(Math.max.apply(null, series.map(function (p) { return (num(p.packets) || 0) / bucket; })));
+    var firstDraw = true;
+
+    function draw() {
+      var W = Math.max(320, box.clientWidth || 900), H = 150 + (markers.length ? markers.length * 6 + 8 : 0);
+      box.style.height = H + "px";
+      var lanes = [], laneOf = [];
+      var padL = 44, padR = 10, laneH = 6, lanesH = markers.length ? markers.length * laneH + 8 : 0, padB = 20 + lanesH;
+      function xRaw(t) { return (t - start) / span; }
+      markers.forEach(function (m, i) {
+        var px = padL + xRaw(m.t) * (W - padL - padR), lane = 0;
+        while (lane < lanes.length && px - lanes[lane] < 26) { lane++; }
+        if (lane > 2) { lane = 2; }
+        lanes[lane] = px; laneOf[i] = lane;
+      });
+      var padT = 12 + Math.min(lanes.length, 3) * 21;
+      var w = W - padL - padR, hh = H - padT - padB;
+      function x(t) { return padL + clamp(xRaw(t), 0, 1) * w; }
+      function y(v) { return padT + hh - clamp(v / maxV, 0, 1) * hh; }
+      while (box.firstChild) { box.removeChild(box.firstChild); }
+      var svg = s("svg", { viewBox: "0 0 " + W + " " + H, width: W, height: H, role: "img",
+        "aria-label": "Packets per second over " + fmtDur(span) + ", with " + markers.length + " finding markers" });
+      svg.appendChild(s("defs", null, s("linearGradient", { id: "fl-trace-fill", x1: 0, y1: 0, x2: 0, y2: 1 },
+        s("stop", { "class": "s0", offset: "0" }), s("stop", { "class": "s1", offset: "1" }))));
+      [0, 0.5, 1].forEach(function (f) {
+        var yy = y(maxV * f);
+        svg.appendChild(s("line", { "class": "grid", x1: padL, x2: W - padR, y1: yy, y2: yy }));
+        svg.appendChild(s("text", { "class": "axis", x: padL - 8, y: yy + 4, "text-anchor": "end" }, fmtInt(maxV * f) + "/s"));
+      });
+      var step = niceStep(span / Math.max(2, Math.floor(w / 110)));
+      for (var tk = 0; tk <= span + 1e-9; tk += step) {
+        svg.appendChild(s("text", { "class": "axis", x: x(start + tk), y: padT + hh + lanesH + 16, "text-anchor": tk === 0 ? "start" : "middle" }, fmtClock(tk)));
+      }
+      // bands (behind the trace)
+      markers.forEach(function (m, i) {
+        var x0 = x(m.t), x1 = x(num(m.end) !== null ? m.end : m.t), k = cat(m.category);
+        svg.appendChild(s("rect", { "class": "band k-" + k, "data-f": str(m.finding), x: x0, y: padT, width: Math.max(3, x1 - x0), height: hh }));
+        svg.appendChild(s("rect", { "class": "lane k-" + k, "data-f": str(m.finding), x: x0, y: padT + hh + 6 + i * laneH, width: Math.max(4, x1 - x0), height: laneH - 2, rx: 2 }));
+      });
+      var pts = series.map(function (p) { return [x(p.t + bucket / 2), y((num(p.packets) || 0) / bucket)]; });
+      var line = "M" + pts.map(function (p) { return p[0].toFixed(1) + " " + p[1].toFixed(1); }).join(" L");
+      var area = line + " L" + pts[pts.length - 1][0].toFixed(1) + " " + (padT + hh) + " L" + pts[0][0].toFixed(1) + " " + (padT + hh) + " Z";
+      var fill = s("path", { "class": "fill" + (firstDraw ? " draw" : ""), d: area });
+      var trace = s("path", { "class": "trace" + (firstDraw ? " draw" : ""), d: line });
+      svg.appendChild(fill); svg.appendChild(trace);
+      // pins
+      markers.forEach(function (m, i) {
+        var px = x(m.t), py = 12 + laneOf[i] * 21, k = cat(m.category);
+        var g = s("g", { "class": "pin k-" + k });
+        g.appendChild(s("title", null, str(m.finding) + ": " + str(m.title)));
+        g.appendChild(s("line", { "class": "stem", x1: px, x2: px, y1: py + 8, y2: padT + hh }));
+        var lbl = str(m.finding).slice(0, 4), pw = 10 + lbl.length * 7;
+        g.appendChild(s("rect", { x: px - pw / 2, y: py - 9, width: pw, height: 18, rx: 9 }));
+        g.appendChild(s("text", { "class": "pin-label", x: px, y: py + 4, "text-anchor": "middle" }, lbl));
+        g.addEventListener("click", function () { goto(m.finding); });
+        svg.appendChild(g);
+      });
+      var cursor = s("line", { "class": "cursor", x1: 0, x2: 0, y1: padT, y2: padT + hh });
+      svg.appendChild(cursor);
+      var hit = s("rect", { x: padL, y: padT, width: w, height: hh + lanesH, fill: "transparent" });
+      hit.style.cursor = "crosshair";
+      svg.appendChild(hit);
+      function at(ev) {
+        var rect = svg.getBoundingClientRect();
+        var px = (ev.clientX - rect.left) * (W / rect.width);
+        var t = start + clamp((px - padL) / w, 0, 1) * span;
+        var idx = clamp(Math.floor((t - start) / bucket), 0, series.length - 1);
+        var active = markers.filter(function (m) {
+          var e = num(m.end) !== null ? m.end : m.t;
+          return t >= m.t - bucket / 2 && t <= e + bucket / 2;
+        });
+        return { px: px, t: t, p: series[idx], active: active };
+      }
+      hit.addEventListener("mousemove", function (ev) {
+        var a = at(ev);
+        box.classList.add("hovering");
+        cursor.setAttribute("x1", a.px); cursor.setAttribute("x2", a.px);
+        while (tip.firstChild) { tip.removeChild(tip.firstChild); }
+        append(tip, [h("b", null, "+" + fmtClock(a.t - start)), h("div", null, fmtInt((num(a.p.packets) || 0) / bucket) + " packets/s")]);
+        if (a.active.length) {
+          tip.appendChild(h("ul", null, a.active.slice(0, 5).map(function (m) {
+            return h("li", { "class": "c-" + cat(m.category) }, str(m.finding) + " " + str(m.title));
+          })));
+        }
+        Array.prototype.forEach.call(svg.querySelectorAll(".band, .lane"), function (b) {
+          b.classList.toggle("hot", a.active.some(function (m) { return str(m.finding) === b.getAttribute("data-f"); }));
+        });
+        box.appendChild(tip);
+        var bw = box.clientWidth, tw = tip.offsetWidth || 200;
+        var left = a.px * (bw / W) + 14;
+        if (left + tw > bw) { left = a.px * (bw / W) - tw - 14; }
+        tip.style.left = Math.max(0, left) + "px";
+        tip.style.top = (padT - 4) + "px";
+        hit.style.cursor = a.active.length ? "pointer" : "crosshair";
+      });
+      hit.addEventListener("mouseleave", function () {
+        box.classList.remove("hovering");
+        Array.prototype.forEach.call(svg.querySelectorAll(".hot"), function (b) { b.classList.remove("hot"); });
+      });
+      hit.addEventListener("click", function (ev) {
+        var a = at(ev);
+        if (a.active.length) { goto(a.active[a.active.length - 1].finding); }
+      });
+      box.appendChild(svg);
+      box.appendChild(tip);
+      if (firstDraw && !REDUCED && trace.getTotalLength) {
+        try { trace.style.setProperty("--len", String(Math.ceil(trace.getTotalLength()))); } catch (e) { /* ignore */ }
+      }
+      firstDraw = false;
+    }
+    chartRedraw = draw;
+    return fig;
+  }
+
+  // ------------------------------------------------------- severity bits
+  function sevEl(v) {
+    var n = sevIdx(v), pips = [];
+    for (var i = 1; i <= 4; i++) { pips.push(h("i", { "class": i <= n ? "on" : null })); }
+    return h("span", { "class": "sev" }, h("span", { "class": "pips", "aria-hidden": "true" }, pips), SEV[n]);
+  }
+  function pill(c) { c = cat(c); return h("span", { "class": "pill c-" + c }, CAT[c].one); }
+  function confEl(v) {
+    v = num(v); if (v === null) { return null; }
+    return h("span", { "class": "conf" }, Math.round(clamp(v, 0, 1) * 100) + "% confident");
+  }
+
+  // ---------------------------------------------------------- fix first
+  function hasFixFirst() {
+    return incidents.length > 0 || findings.some(function (f) { return cat(f.category) !== "info"; });
+  }
+  function fixFirst() {
+    if (!hasFixFirst()) { return null; }
+    var items = incidents.slice();
+    if (!items.length) {
+      var top = findings.filter(function (f) { return cat(f.category) !== "info"; })[0];
+      items = [{ title: top.title, category: top.category, severity: top.severity, story: top.summary,
+        root_cause: top.id, findings: [top.id], first_fix: arr(top.fix).slice(0, 3) }];
+    }
+    return h("section", { id: "fix-first", "class": "section" },
+      h("div", { "class": "wrap" },
+        h("div", { "class": "section-head" },
+          h("div", null,
+            h("h2", null, "Fix this first"),
+            h("p", null, "Related problems are grouped into one story. Fixing the root cause usually clears the symptoms that follow from it."))),
+        h("div", { "class": "incidents" }, items.map(incidentEl))));
+  }
+  function incidentEl(inc) {
+    var k = cat(inc.category);
+    var ids = arr(inc.findings).filter(function (id) { return byId[id]; });
+    var rootId = byId[inc.root_cause] ? inc.root_cause : ids[0];
+    var order = [rootId].concat(ids.filter(function (id) { return id !== rootId; })).filter(Boolean);
+    var steps = arr(inc.first_fix);
+    if (!steps.length && byId[rootId]) { steps = arr(byId[rootId].fix).slice(0, 3); }
+    return h("article", { "class": "incident c-" + k },
+      h("div", { "class": "incident-main" },
+        h("div", { "class": "row" }, pill(k), sevEl(inc.severity),
+          ids.length > 1 ? h("span", { "class": "conf" }, ids.length + " linked findings") : null),
+        h("h3", null, str(inc.title)),
+        inc.story ? h("p", { "class": "story" }, rich(inc.story)) : null,
+        order.length ? h("ol", { "class": "chain", "aria-label": "Root cause, then symptoms" }, order.map(function (id, i) {
+          var f = byId[id], fk = cat(f.category);
+          return h("li", { "class": "c-" + fk }, h("button", { type: "button", "class": "node" + (i === 0 ? " root" : ""), onclick: function () { goto(id); } },
+            h("small", null, h("b", null, str(id)), i === 0 ? " root cause" : " symptom"),
+            h("span", null, str(f.title))));
+        })) : null),
+      h("div", { "class": "incident-fix" },
+        h("h4", null, "Do this first"),
+        steps.length ? h("ol", { "class": "steps" }, steps.map(function (st) { return h("li", null, h("span", null, rich(st))); }))
+          : h("p", null, "See the finding for details.")));
+  }
+
+  // ----------------------------------------------------------- findings
+  var cards = [];
+  var chipEls = {};
+  var currentFilter = "all";
+  function setFilter(k) {
+    currentFilter = k;
+    Object.keys(chipEls).forEach(function (c) { chipEls[c].setAttribute("aria-pressed", String(c === k)); });
+    cards.forEach(function (c) { c.el.hidden = !(k === "all" || c.cat === k); });
+  }
+  function findingsSection() {
+    var counts = { all: findings.length, attack: 0, fault: 0, misconfig: 0, info: 0 };
+    findings.forEach(function (f) { counts[cat(f.category)]++; });
+    var chipDefs = [["all", "All"], ["attack", CAT.attack.chip], ["fault", CAT.fault.chip], ["misconfig", CAT.misconfig.chip]];
+    if (counts.info) { chipDefs.push(["info", CAT.info.chip]); }
+    var chips = h("div", { "class": "chips", role: "group", "aria-label": "Filter findings" }, chipDefs.map(function (d) {
+      var b = h("button", { type: "button", "class": "chip", "aria-pressed": String(d[0] === "all"), disabled: counts[d[0]] === 0 ? true : null,
+        onclick: function () { setFilter(d[0]); } }, d[1], h("span", { "class": "n" }, String(counts[d[0]])));
+      chipEls[d[0]] = b;
+      return b;
+    }));
+    var list = h("div", { "class": "finding-list" });
+    if (!findings.length) {
+      list.appendChild(h("div", { "class": "empty" },
+        h("h3", null, "Nothing looks wrong"),
+        h("p", null, "Faultline checked TCP, DNS, DHCP, ARP, ICMP and TLS behaviour in this capture and found no faults, misconfigurations or attacks.")));
+    }
+    findings.forEach(function (f, i) {
+      var c = card(f, i === 0);
+      cards.push({ el: c.el, cat: cat(f.category), id: f.id, open: c.open });
+      list.appendChild(c.el);
+    });
+    return h("section", { id: "findings", "class": "section" },
+      h("div", { "class": "wrap" },
+        h("div", { "class": "section-head" },
+          h("div", null,
+            h("h2", null, "What we found"),
+            h("p", null, "Most important first. Open a finding to see what it means, how to fix it, and the exact packets behind it.")),
+          findings.length ? chips : null),
+        list));
+  }
+
+  function block(title, kids, extraClass) {
+    return h("div", { "class": "block" + (extraClass ? " " + extraClass : "") }, h("h4", null, title), kids);
+  }
+  function dots(weight, k) {
+    var w = clamp(num(weight) || 0, 0, 3), out = [];
+    for (var i = 1; i <= 3; i++) {
+      out.push(h("i", { "class": w >= i - 0.25 ? "on" : (w >= i - 0.75 ? "half" : null) }));
+    }
+    return h("span", { "class": "dots c-" + k, title: "weight " + w, "aria-label": "weight " + w + " of 3" }, out);
+  }
+  function reasoning(f) {
+    var sc = obj(f.scores), win = cat(f.category);
+    var hypKeys = ["attack", "fault", "misconfig"];
+    var vals = {}, total = 0;
+    hypKeys.forEach(function (k) { vals[k] = Math.max(0, num(sc[k]) || 0); total += vals[k]; });
+    var inds = arr(f.indicators).filter(function (i) { return i && typeof i === "object"; });
+    var alts = arr(f.alternatives).filter(function (a) { return a && typeof a === "object"; });
+    if (!total && !inds.length && !alts.length) { return null; }
+    var others = hypKeys.filter(function (k) { return k !== win && vals[k] > 0; })
+      .map(function (k) { return vals[k].toFixed(1) + " for " + CAT[k].one.toLowerCase(); });
+    var lead = win === "info" ? "This is informational. Here is the evidence we weighed." :
+      CAT[win].one + " wins with " + (vals[win] || 0).toFixed(1) + " points of evidence" +
+      (others.length ? ", against " + others.join(" and ") + "." : ". Nothing pointed anywhere else.");
+    var bar = h("div", { "class": "scorebar", role: "img", "aria-label": hypKeys.map(function (k) { return CAT[k].one + " " + vals[k].toFixed(1); }).join(", ") });
+    hypKeys.forEach(function (k) {
+      if (!vals[k]) { return; }
+      var seg = h("i", { "class": "c-" + k });
+      seg.style.width = (100 * vals[k] / total).toFixed(2) + "%";
+      bar.appendChild(seg);
+    });
+    var groups = hypKeys.concat(["info"]).map(function (k) {
+      var mine = inds.filter(function (i) { return cat(i.supports) === k; });
+      if (!mine.length) { return null; }
+      mine.sort(function (a, b) { return (num(b.weight) || 0) - (num(a.weight) || 0); });
+      return h("div", { "class": "hyp c-" + k },
+        h("h5", null, CAT[k].hyp),
+        h("ul", null, mine.map(function (i) { return h("li", null, dots(i.weight, k), h("span", null, str(i.text))); })));
+    });
+    return h("div", { "class": "reason" },
+      h("h4", null, "Fault or attack? Why we think so"),
+      h("p", { "class": "lead" }, lead),
+      total ? bar : null,
+      total ? h("ul", { "class": "scorekey" }, hypKeys.map(function (k) {
+        return h("li", { "class": "c-" + k + (k === win ? " win" : "") }, CAT[k].one + " " + vals[k].toFixed(1));
+      })) : null,
+      h("div", { "class": "hyps" }, groups),
+      alts.length ? h("ul", { "class": "whynot" }, alts.map(function (a) {
+        return h("li", null, h("b", null, "Why not “" + str(a.title) + "”?"), " ", pill(a.category),
+          a.why_not ? h("p", null, rich(a.why_not)) : null);
+      })) : null);
+  }
+  function evidenceBlock(f) {
+    var lines = arr(f.evidence_lines).filter(function (l) { return l && typeof l === "object"; });
+    var pk = arr(f.packets).filter(function (n) { return num(n) !== null; }).map(function (n) { return Math.round(n); });
+    if (!pk.length) { pk = lines.map(function (l) { return Math.round(num(l.no) || 0); }).filter(Boolean); }
+    if (!lines.length && !pk.length) { return null; }
+    var filter = pk.length ? "frame.number in {" + pk.join(" ") + "}" : "";
+    var tools = [];
+    if (!redacted && typeof evidence[f.id] === "string") {
+      tools.push(h("button", { type: "button", "class": "btn", onclick: function () { downloadEvidence(f); } },
+        icon(I_DOWN), "Download evidence .pcap (open in Wireshark)"));
+    }
+    if (filter) {
+      tools.push(h("span", { "class": "filter" }, "In Wireshark:", h("code", { title: filter }, filter),
+        h("button", { type: "button", "class": "btn", onclick: function () { copyText(filter, "Wireshark filter copied"); } }, icon(I_COPY), "Copy filter")));
+    }
+    var total = num(f.packet_total);
+    var rows = lines.slice(0, 50).map(function (l) {
+      var r = rel(l.ts);
+      return h("tr", null,
+        h("td", { "class": "num" }, fmtInt(l.no)),
+        h("td", { "class": "num mono" }, r === null ? "" : "+" + fmtClock(r, true)),
+        h("td", { "class": "mono" }, str(l.summary)));
+    });
+    var shown = rows.length;
+    return h("div", { "class": "block evidence" },
+      h("h4", null, "Evidence: the exact packets"),
+      tools.length ? h("div", { "class": "evidence-tools" }, tools) : null,
+      shown ? h("div", { "class": "table-scroll" }, h("table", null,
+        h("thead", null, h("tr", null, h("th", { "class": "num", scope: "col" }, "No."), h("th", { "class": "num", scope: "col" }, "Time"), h("th", { scope: "col" }, "What happened"))),
+        h("tbody", null, rows))) : null,
+      total !== null && total > shown ? h("p", { "class": "more" }, "Showing " + shown + " of " + fmtInt(total) + " matching packets." +
+        (pk.length > shown ? " The filter and the evidence file include " + fmtInt(pk.length) + "." : "")) : null);
+  }
+  function metricsEl(m) {
+    m = obj(m);
+    var keys = Object.keys(m).slice(0, 40);
+    if (!keys.length) { return null; }
+    return h("dl", { "class": "metrics" }, keys.map(function (k) {
+      var v = m[k];
+      var txt = Array.isArray(v) ? v.slice(0, 20).map(str).join(", ") : (v && typeof v === "object" ? JSON.stringify(v).slice(0, 300) : str(v));
+      return h("div", null, h("dt", null, k.replace(/_/g, " ")), h("dd", null, txt));
+    }));
+  }
+  function card(f, openByDefault) {
+    var k = cat(f.category), id = str(f.id);
+    var bodyId = "fb-" + id.replace(/[^A-Za-z0-9_-]/g, "");
+    var causes = findings.filter(function (x) { return x.symptom_of === f.id; }).map(function (x) { return x.id; });
+    var toggle = h("button", { type: "button", "class": "toggle", "aria-expanded": "false", "aria-controls": bodyId },
+      h("span", null, "Details"), chevron());
+    var body = h("div", { "class": "card-body", id: bodyId, hidden: true });
+    var built = false;
+    function build() {
+      if (built) { return; }
+      built = true;
+      var mitre = str(f.mitre).trim();
+      var mm = /^(T\d{4}(?:\.\d{3})?)\s*(.*)$/.exec(mitre);
+      append(body, [
+        h("div", { "class": "cols" },
+          h("div", null,
+            block("What's happening", [
+              h("p", null, rich(f.explanation || f.summary)),
+              f.analogy ? h("p", { "class": "analogy beginner-only" }, rich(f.analogy)) : null
+            ])),
+          h("div", { "class": "cols-right" },
+            f.cause ? block("Likely cause", h("p", null, rich(f.cause))) : null,
+            arr(f.fix).length ? h("div", { "class": "block", id: null }, h("h4", null, "How to fix"),
+              h("ol", { "class": "ordered" }, arr(f.fix).map(function (st) { return h("li", null, h("span", null, rich(st))); }))) : null)),
+        reasoning(f),
+        mitre ? h("p", { "class": "mitre" }, "MITRE ATT&CK", mm ? h("b", null, mm[1]) : null, mm ? mm[2] : mitre) : null,
+        evidenceBlock(f),
+        arr(f.hosts).length ? block("Devices involved", h("ul", { "class": "hostlist" }, arr(f.hosts).slice(0, 60).map(function (x) { return h("li", null, str(x)); }))) : null,
+        h("div", { "class": "block expert-only" },
+          h("h4", null, "Technical details"),
+          f.technical ? h("pre", { "class": "tech" }, str(f.technical)) : null,
+          h("dl", { "class": "metrics" },
+            h("div", null, h("dt", null, "detector"), h("dd", null, str(f.kind))),
+            h("div", null, h("dt", null, "time"), h("dd", null, (rel(f.first_ts) === null ? "?" : "+" + fmtClock(rel(f.first_ts), true)) + " to " + (rel(f.last_ts) === null ? "?" : "+" + fmtClock(rel(f.last_ts), true))))),
+          metricsEl(f.metrics))
+      ]);
+    }
+    function open(state) {
+      var isOpen = toggle.getAttribute("aria-expanded") === "true";
+      var want = state === undefined ? !isOpen : state;
+      if (want) { build(); }
+      toggle.setAttribute("aria-expanded", String(want));
+      toggle.firstChild.textContent = want ? "Hide details" : "Details";
+      body.hidden = !want;
+    }
+    toggle.addEventListener("click", function () { open(); });
+    var el = h("article", { "class": "card c-" + k, id: "finding-" + id.replace(/[^A-Za-z0-9_-]/g, ""), "aria-labelledby": bodyId + "-t" },
+      h("div", { "class": "card-head" },
+        h("div", null,
+          h("div", { "class": "card-tags" }, pill(k), sevEl(f.severity), confEl(f.confidence), h("span", { "class": "fid-tag" }, id)),
+          h("h3", { id: bodyId + "-t", tabindex: "-1" }, str(f.title)),
+          h("p", null, rich(f.summary)),
+          f.symptom_of && byId[f.symptom_of] ? h("p", { "class": "symlink" }, "Symptom of", jump(f.symptom_of, f.symptom_of + ": " + str(byId[f.symptom_of].title))) : null,
+          causes.length ? h("p", { "class": "symlink" }, "Leads to", causes.map(function (c) { return jump(c, c); })) : null),
+        toggle),
+      body);
+    if (openByDefault) { open(true); }
+    return { el: el, open: open };
+  }
+  function goto(id) {
+    var c = null;
+    for (var i = 0; i < cards.length; i++) { if (cards[i].id === id) { c = cards[i]; } }
+    if (!c) { return; }
+    if (c.el.hidden) { setFilter("all"); }
+    c.open(true);
+    c.el.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "start" });
+    c.el.classList.remove("flash");
+    void c.el.offsetWidth;
+    c.el.classList.add("flash");
+    var t = c.el.querySelector("h3");
+    if (t) { try { t.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
+  }
+
+  // ------------------------------------------------------------ network
+  function barsList(rows, labelMono) {
+    var max = Math.max.apply(null, rows.map(function (r) { return r.v; }).concat([1]));
+    return h("ul", { "class": "bars" }, rows.map(function (r) {
+      var fillEl = h("i");
+      fillEl.style.width = (100 * r.v / max).toFixed(1) + "%";
+      return h("li", null, h("span", { "class": "lbl" + (labelMono ? " mono" : ""), title: r.label }, r.label),
+        h("span", { "class": "bar", "aria-hidden": "true" }, fillEl), h("span", { "class": "val" }, r.text));
+    }));
+  }
+  function networkSection() {
+    var attackHosts = {};
+    findings.forEach(function (f) {
+      if (cat(f.category) !== "attack") { return; }
+      arr(f.hosts).slice(0, 1).forEach(function (x) { (attackHosts[x] = attackHosts[x] || []).push(f.id); });
+    });
+    var hs = hosts.slice().sort(function (a, b) {
+      return ((num(b.packets_sent) || 0) + (num(b.packets_recv) || 0)) - ((num(a.packets_sent) || 0) + (num(a.packets_recv) || 0));
+    });
+    var shown = hs.slice(0, 60);
+    var hostTable = h("div", { "class": "panel" },
+      h("h3", null, "Devices"),
+      shown.length ? h("div", { "class": "table-scroll" }, h("table", { "class": "hosts" },
+        h("thead", null, h("tr", null, ["Address", "Name", "Hardware (MAC)", "Role", "Sent", "Received", "Data"].map(function (t, i) {
+          return h("th", { scope: "col", "class": i >= 4 ? "num" : null }, t);
+        }))),
+        h("tbody", null, shown.map(function (x) {
+          var ip = str(x.ip);
+          var macs = arr(x.macs).map(str);
+          return h("tr", null,
+            h("td", { "class": "mono" }, ip, x.local === false ? h("div", { "class": "ext" }, "outside network") : null),
+            h("td", null, arr(x.names).slice(0, 4).map(function (n, i) { return h("div", null, str(n)); })),
+            h("td", { "class": "mono" }, macs.slice(0, 4).map(function (m) { return h("div", null, m); }),
+              macs.length > 1 ? h("span", { "class": "badge flag" }, macs.length + " MACs for one IP") : null),
+            h("td", null, arr(x.roles).map(function (r) {
+              r = str(r);
+              return h("span", { "class": "badge r-" + r.replace(/[^a-z-]/g, "") }, { "gateway": "Router", "dns-server": "DNS server", "dhcp-server": "DHCP server" }[r] || r);
+            }), attackHosts[ip] ? h("span", { "class": "badge flag" }, "Suspect in " + attackHosts[ip].join(", ")) : null),
+            h("td", { "class": "num" }, fmtInt(x.packets_sent)),
+            h("td", { "class": "num" }, fmtInt(x.packets_recv)),
+            h("td", { "class": "num" }, fmtBytes((num(x.bytes_sent) || 0) + (num(x.bytes_recv) || 0))));
+        })))) : h("p", { "class": "more" }, "No devices were seen."),
+      hs.length > shown.length ? h("p", { "class": "more" }, "Showing the " + shown.length + " busiest of " + fmtInt(hs.length) + " devices.") : null);
+
+    var protos = obj(stats.protocols);
+    var pkeys = Object.keys(protos).filter(function (k) { return num(protos[k]) !== null; });
+    var ptotal = pkeys.reduce(function (a, k) { return a + protos[k]; }, 0) || 1;
+    var prow = pkeys.sort(function (a, b) { return protos[b] - protos[a]; }).slice(0, 14).map(function (k) {
+      return { label: k, v: protos[k], text: (100 * protos[k] / ptotal).toFixed(protos[k] / ptotal < 0.01 ? 2 : 1) + "%" };
+    });
+    var talk = arr(stats.top_talkers).filter(function (t) { return t && typeof t === "object"; }).slice(0, 10).map(function (t) {
+      return { label: str(t.ip), v: num(t.bytes) || 0, text: fmtBytes(t.bytes) };
+    });
+    var convs = arr(stats.conversations).filter(function (c) { return c && typeof c === "object"; }).slice(0, 12);
+    return h("section", { id: "network", "class": "section" },
+      h("div", { "class": "wrap" },
+        h("div", { "class": "section-head" }, h("div", null,
+          h("h2", null, "Who was talking"),
+          h("p", null, "Every device seen in the capture, what it does, and how much it sent."))),
+        hostTable,
+        h("div", { "class": "net-grid" },
+          h("div", { "class": "panel" }, h("h3", null, "Protocols"), prow.length ? barsList(prow, false) : h("p", { "class": "more" }, "No protocol data.")),
+          h("div", { "class": "panel" }, h("h3", null, "Busiest devices by data"), talk.length ? barsList(talk, true) : h("p", { "class": "more" }, "No traffic data."))),
+        convs.length ? h("div", { "class": "panel", id: "conversations" },
+          h("h3", null, "Busiest conversations"),
+          h("div", { "class": "table-scroll" }, h("table", null,
+            h("thead", null, h("tr", null, h("th", { scope: "col" }, "Between"), h("th", { scope: "col" }, "And"), h("th", { scope: "col" }, "Protocol"),
+              h("th", { scope: "col", "class": "num" }, "Packets"), h("th", { scope: "col", "class": "num" }, "Data"))),
+            h("tbody", null, convs.map(function (c) {
+              return h("tr", null, h("td", { "class": "mono" }, str(c.a)), h("td", { "class": "mono" }, str(c.b)), h("td", null, str(c.proto)),
+                h("td", { "class": "num" }, fmtInt(c.packets)), h("td", { "class": "num" }, fmtBytes(c.bytes)));
+            }))))) : null));
+  }
+
+  // ------------------------------------------------------------ capture
+  function captureSection() {
+    var c = capture;
+    var lt = arr(c.linktypes).map(function (x) { return ({ 0: "Null/loopback", 1: "Ethernet", 101: "Raw IP", 105: "802.11", 113: "Linux cooked", 127: "802.11 radiotap", 228: "Raw IPv4", 229: "Raw IPv6", 276: "Linux cooked v2" })[x] || ("type " + str(x)); });
+    var rows = [
+      ["File", str(c.name) || "unnamed"],
+      ["Format", (str(c.format) || "?") + (c.compressed === true ? " (gzip compressed)" : "")],
+      ["File size", fmtBytes(c.file_bytes)],
+      ["Packets", fmtInt(c.packets) + (num(c.malformed_packets) ? " (" + fmtInt(c.malformed_packets) + " malformed)" : "")],
+      ["Data captured", fmtBytes(c.bytes_captured)],
+      ["Link type", lt.join(", ") || "?"],
+      ["Started", fmtDate(c.first_ts)],
+      ["Ended", fmtDate(c.last_ts)],
+      ["Duration", fmtDur(c.duration)],
+      ["SHA-256", str(c.sha256) || "?"],
+      ["Report created", str(R.generated_at)]
+    ];
+    var warns = [];
+    if (c.truncated === true) { warns.push("The file was truncated. Faultline analysed every complete packet before the cut."); }
+    if (c.limited === true) { warns.push("A safety limit was reached, so only part of the file was analysed."); }
+    warns = warns.concat(arr(c.warnings).map(str), arr(R.warnings).map(str));
+    return h("section", { id: "capture", "class": "section" },
+      h("div", { "class": "wrap" },
+        h("div", { "class": "section-head" }, h("div", null,
+          h("h2", null, "About this capture"),
+          h("p", null, "The file Faultline read, and anything unusual about reading it."))),
+        h("div", { "class": "capture-grid" },
+          h("div", { "class": "panel" }, h("dl", { "class": "kv" }, rows.map(function (r) {
+            return [h("dt", null, r[0]), h("dd", { "class": r[0] === "SHA-256" ? "mono" : null }, r[1])];
+          }))),
+          h("div", { "class": "panel" }, h("h3", null, "Reading notes"),
+            warns.length ? h("ul", { "class": "warnlist" }, warns.slice(0, 50).map(function (w) { return h("li", null, w); }))
+              : h("p", { "class": "more" }, "The file was read completely, with no problems.")))));
+  }
+
+  function footer() {
+    return h("footer", { "class": "footer" },
+      h("div", { "class": "wrap" },
+        h("p", null, h("strong", null, "Generated offline by Faultline " + str(tool.version) + "."), " No data left this machine."),
+        redacted ? h("p", null, "Privacy mode was on: addresses are pseudonymised and no raw packets are included.") :
+          h("p", null, "This report contains addresses from your network. Re-run with redaction before sharing it publicly.")));
+  }
+
+  // -------------------------------------------------------------- mount
+  var frag = doc.createDocumentFragment();
+  append(frag, [topbar(), h("main", null, hero(), fixFirst(), findingsSection(), networkSection(), captureSection()), footer(), toastEl]);
+  root.appendChild(frag);
+  if (chartRedraw) {
+    chartRedraw();
+    var rt = null;
+    window.addEventListener("resize", function () { clearTimeout(rt); rt = setTimeout(chartRedraw, 120); });
+  }
+  if (location.hash && /^#finding-[A-Za-z0-9_-]+$/.test(location.hash)) { goto(location.hash.slice(9)); }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<svg class="rich-terminal" viewBox="0 0 1360 1416.3999999999999" xmlns="http://www.w3.org/2000/svg">
+    <!-- Generated with Rich https://www.textualize.io -->
+    <style>
+
+    @font-face {
+        font-family: "Fira Code";
+        src: local("FiraCode-Regular"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Regular.woff2") format("woff2"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Regular.woff") format("woff");
+        font-style: normal;
+        font-weight: 400;
+    }
+    @font-face {
+        font-family: "Fira Code";
+        src: local("FiraCode-Bold"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Bold.woff2") format("woff2"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Bold.woff") format("woff");
+        font-style: bold;
+        font-weight: 700;
+    }
+
+    .terminal-2908498105-matrix {
+        font-family: Fira Code, monospace;
+        font-size: 20px;
+        line-height: 24.4px;
+        font-variant-east-asian: full-width;
+    }
+
+    .terminal-2908498105-title {
+        font-size: 18px;
+        font-weight: bold;
+        font-family: arial;
+    }
+
+    .terminal-2908498105-r1 { fill: #98e024;font-weight: bold }
+.terminal-2908498105-r2 { fill: #d9d9d9 }
+.terminal-2908498105-r3 { fill: #f4005f }
+.terminal-2908498105-r4 { fill: #c4c5b5 }
+.terminal-2908498105-r5 { fill: #f4005f;font-weight: bold }
+.terminal-2908498105-r6 { fill: #fd971f }
+.terminal-2908498105-r7 { fill: #878787 }
+.terminal-2908498105-r8 { fill: #fd971f;font-weight: bold }
+.terminal-2908498105-r9 { fill: #0c0c0c;font-weight: bold }
+.terminal-2908498105-r10 { fill: #97043d }
+.terminal-2908498105-r11 { fill: #d9d9d9;font-weight: bold }
+.terminal-2908498105-r12 { fill: #878787;font-style: italic; }
+    </style>
+
+    <defs>
+    <clipPath id="terminal-2908498105-clip-terminal">
+      <rect x="0" y="0" width="1341.0" height="1365.3999999999999" />
+    </clipPath>
+    <clipPath id="terminal-2908498105-line-0">
+    <rect x="0" y="1.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-1">
+    <rect x="0" y="25.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-2">
+    <rect x="0" y="50.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-3">
+    <rect x="0" y="74.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-4">
+    <rect x="0" y="99.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-5">
+    <rect x="0" y="123.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-6">
+    <rect x="0" y="147.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-7">
+    <rect x="0" y="172.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-8">
+    <rect x="0" y="196.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-9">
+    <rect x="0" y="221.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-10">
+    <rect x="0" y="245.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-11">
+    <rect x="0" y="269.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-12">
+    <rect x="0" y="294.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-13">
+    <rect x="0" y="318.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-14">
+    <rect x="0" y="343.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-15">
+    <rect x="0" y="367.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-16">
+    <rect x="0" y="391.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-17">
+    <rect x="0" y="416.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-18">
+    <rect x="0" y="440.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-19">
+    <rect x="0" y="465.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-20">
+    <rect x="0" y="489.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-21">
+    <rect x="0" y="513.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-22">
+    <rect x="0" y="538.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-23">
+    <rect x="0" y="562.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-24">
+    <rect x="0" y="587.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-25">
+    <rect x="0" y="611.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-26">
+    <rect x="0" y="635.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-27">
+    <rect x="0" y="660.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-28">
+    <rect x="0" y="684.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-29">
+    <rect x="0" y="709.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-30">
+    <rect x="0" y="733.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-31">
+    <rect x="0" y="757.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-32">
+    <rect x="0" y="782.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-33">
+    <rect x="0" y="806.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-34">
+    <rect x="0" y="831.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-35">
+    <rect x="0" y="855.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-36">
+    <rect x="0" y="879.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-37">
+    <rect x="0" y="904.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-38">
+    <rect x="0" y="928.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-39">
+    <rect x="0" y="953.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-40">
+    <rect x="0" y="977.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-41">
+    <rect x="0" y="1001.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-42">
+    <rect x="0" y="1026.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-43">
+    <rect x="0" y="1050.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-44">
+    <rect x="0" y="1075.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-45">
+    <rect x="0" y="1099.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-46">
+    <rect x="0" y="1123.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-47">
+    <rect x="0" y="1148.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-48">
+    <rect x="0" y="1172.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-49">
+    <rect x="0" y="1197.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-50">
+    <rect x="0" y="1221.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-51">
+    <rect x="0" y="1245.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-52">
+    <rect x="0" y="1270.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-53">
+    <rect x="0" y="1294.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-2908498105-line-54">
+    <rect x="0" y="1319.1" width="1342" height="24.65"/>
+            </clipPath>
+    </defs>
+
+    <rect fill="#0c0c0c" stroke="rgba(255,255,255,0.35)" stroke-width="1" x="1" y="1" width="1358" height="1414.4" rx="8"/><text class="terminal-2908498105-title" fill="#d9d9d9" text-anchor="middle" x="679" y="27">faultline&#160;analyze&#160;samples/arp_spoofing.pcap</text>
+            <g transform="translate(26,22)">
+            <circle cx="0" cy="0" r="7" fill="#ff5f57"/>
+            <circle cx="22" cy="0" r="7" fill="#febc2e"/>
+            <circle cx="44" cy="0" r="7" fill="#28c840"/>
+            </g>
+        
+    <g transform="translate(9, 41)" clip-path="url(#terminal-2908498105-clip-terminal)">
+    <rect fill="#f4005f" x="36.6" y="50.3" width="170.8" height="24.65" shape-rendering="crispEdges"/><rect fill="#f4005f" x="36.6" y="294.3" width="97.6" height="24.65" shape-rendering="crispEdges"/>
+    <g class="terminal-2908498105-matrix">
+    <text class="terminal-2908498105-r1" x="0" y="20" textLength="12.2" clip-path="url(#terminal-2908498105-line-0)">$</text><text class="terminal-2908498105-r2" x="12.2" y="20" textLength="536.8" clip-path="url(#terminal-2908498105-line-0)">&#160;faultline&#160;analyze&#160;samples/arp_spoofing.pcap</text><text class="terminal-2908498105-r2" x="1342" y="20" textLength="12.2" clip-path="url(#terminal-2908498105-line-0)">
+</text><text class="terminal-2908498105-r2" x="1342" y="44.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-1)">
+</text><text class="terminal-2908498105-r3" x="0" y="68.8" textLength="24.4" clip-path="url(#terminal-2908498105-line-2)">┏━</text><text class="terminal-2908498105-r4" x="36.6" y="68.8" textLength="170.8" clip-path="url(#terminal-2908498105-line-2)">&#160;UNDER&#160;ATTACK&#160;</text><text class="terminal-2908498105-r5" x="231.8" y="68.8" textLength="878.4" clip-path="url(#terminal-2908498105-line-2)">Someone&#160;is&#160;impersonating&#160;192.168.1.1&#160;(ARP&#160;spoofing&#160;/&#160;man-in-the-middle).</text><text class="terminal-2908498105-r3" x="1122.4" y="68.8" textLength="195.2" clip-path="url(#terminal-2908498105-line-2)">━━━━━━━━━━━━━━━━</text><text class="terminal-2908498105-r3" x="1317.6" y="68.8" textLength="24.4" clip-path="url(#terminal-2908498105-line-2)">━┓</text><text class="terminal-2908498105-r2" x="1342" y="68.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-2)">
+</text><text class="terminal-2908498105-r3" x="0" y="93.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-3)">┃</text><text class="terminal-2908498105-r3" x="1329.8" y="93.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-3)">┃</text><text class="terminal-2908498105-r2" x="1342" y="93.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-3)">
+</text><text class="terminal-2908498105-r3" x="0" y="117.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-4)">┃</text><text class="terminal-2908498105-r2" x="36.6" y="117.6" textLength="1244.4" clip-path="url(#terminal-2908498105-line-4)">We&#160;found&#160;1&#160;sign&#160;of&#160;malicious&#160;activity.&#160;This&#160;is&#160;not&#160;an&#160;ordinary&#160;outage:&#160;restarting&#160;the&#160;router&#160;will&#160;not&#160;</text><text class="terminal-2908498105-r3" x="1329.8" y="117.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-4)">┃</text><text class="terminal-2908498105-r2" x="1342" y="117.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-4)">
+</text><text class="terminal-2908498105-r3" x="0" y="142" textLength="12.2" clip-path="url(#terminal-2908498105-line-5)">┃</text><text class="terminal-2908498105-r2" x="36.6" y="142" textLength="85.4" clip-path="url(#terminal-2908498105-line-5)">fix&#160;it.</text><text class="terminal-2908498105-r3" x="1329.8" y="142" textLength="12.2" clip-path="url(#terminal-2908498105-line-5)">┃</text><text class="terminal-2908498105-r2" x="1342" y="142" textLength="12.2" clip-path="url(#terminal-2908498105-line-5)">
+</text><text class="terminal-2908498105-r3" x="0" y="166.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-6)">┃</text><text class="terminal-2908498105-r3" x="1329.8" y="166.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-6)">┃</text><text class="terminal-2908498105-r2" x="1342" y="166.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-6)">
+</text><text class="terminal-2908498105-r3" x="0" y="190.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-7)">┃</text><text class="terminal-2908498105-r2" x="36.6" y="190.8" textLength="97.6" clip-path="url(#terminal-2908498105-line-7)">Health&#160;&#160;</text><text class="terminal-2908498105-r6" x="134.2" y="190.8" textLength="256.2" clip-path="url(#terminal-2908498105-line-7)">█████████████████████</text><text class="terminal-2908498105-r7" x="390.4" y="190.8" textLength="109.8" clip-path="url(#terminal-2908498105-line-7)">░░░░░░░░░</text><text class="terminal-2908498105-r8" x="500.2" y="190.8" textLength="97.6" clip-path="url(#terminal-2908498105-line-7)">&#160;&#160;70/100</text><text class="terminal-2908498105-r3" x="1329.8" y="190.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-7)">┃</text><text class="terminal-2908498105-r2" x="1342" y="190.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-7)">
+</text><text class="terminal-2908498105-r3" x="0" y="215.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-8)">┃</text><text class="terminal-2908498105-r5" x="36.6" y="215.2" textLength="195.2" clip-path="url(#terminal-2908498105-line-8)">Found&#160;&#160;&#160;1&#160;attack</text><text class="terminal-2908498105-r7" x="231.8" y="215.2" textLength="61" clip-path="url(#terminal-2908498105-line-8)">&#160;&#160;·&#160;&#160;</text><text class="terminal-2908498105-r7" x="292.8" y="215.2" textLength="97.6" clip-path="url(#terminal-2908498105-line-8)">0&#160;faults</text><text class="terminal-2908498105-r7" x="390.4" y="215.2" textLength="61" clip-path="url(#terminal-2908498105-line-8)">&#160;&#160;·&#160;&#160;</text><text class="terminal-2908498105-r7" x="451.4" y="215.2" textLength="231.8" clip-path="url(#terminal-2908498105-line-8)">0&#160;misconfigurations</text><text class="terminal-2908498105-r3" x="1329.8" y="215.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-8)">┃</text><text class="terminal-2908498105-r2" x="1342" y="215.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-8)">
+</text><text class="terminal-2908498105-r3" x="0" y="239.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-9)">┃</text><text class="terminal-2908498105-r7" x="36.6" y="239.6" textLength="841.8" clip-path="url(#terminal-2908498105-line-9)">arp_spoofing.pcap&#160;·&#160;pcap&#160;·&#160;1,743&#160;packets&#160;·&#160;149.9s&#160;·&#160;analysed&#160;in&#160;0.04s</text><text class="terminal-2908498105-r3" x="1329.8" y="239.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-9)">┃</text><text class="terminal-2908498105-r2" x="1342" y="239.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-9)">
+</text><text class="terminal-2908498105-r3" x="0" y="264" textLength="12.2" clip-path="url(#terminal-2908498105-line-10)">┃</text><text class="terminal-2908498105-r3" x="1329.8" y="264" textLength="12.2" clip-path="url(#terminal-2908498105-line-10)">┃</text><text class="terminal-2908498105-r2" x="1342" y="264" textLength="12.2" clip-path="url(#terminal-2908498105-line-10)">
+</text><text class="terminal-2908498105-r3" x="0" y="288.4" textLength="1342" clip-path="url(#terminal-2908498105-line-11)">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</text><text class="terminal-2908498105-r2" x="1342" y="288.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-11)">
+</text><text class="terminal-2908498105-r3" x="0" y="312.8" textLength="24.4" clip-path="url(#terminal-2908498105-line-12)">╭─</text><text class="terminal-2908498105-r9" x="36.6" y="312.8" textLength="97.6" clip-path="url(#terminal-2908498105-line-12)">&#160;ATTACK&#160;</text><text class="terminal-2908498105-r10" x="134.2" y="312.8" textLength="61" clip-path="url(#terminal-2908498105-line-12)">&#160;99%&#160;</text><text class="terminal-2908498105-r5" x="195.2" y="312.8" textLength="122" clip-path="url(#terminal-2908498105-line-12)">&#160;CRITICAL&#160;</text><text class="terminal-2908498105-r10" x="317.2" y="312.8" textLength="61" clip-path="url(#terminal-2908498105-line-12)">&#160;F1&#160;&#160;</text><text class="terminal-2908498105-r5" x="378.2" y="312.8" textLength="866.2" clip-path="url(#terminal-2908498105-line-12)">Someone&#160;is&#160;impersonating&#160;192.168.1.1&#160;(ARP&#160;spoofing&#160;/&#160;man-in-the-middle)</text><text class="terminal-2908498105-r3" x="1256.6" y="312.8" textLength="61" clip-path="url(#terminal-2908498105-line-12)">─────</text><text class="terminal-2908498105-r3" x="1317.6" y="312.8" textLength="24.4" clip-path="url(#terminal-2908498105-line-12)">─╮</text><text class="terminal-2908498105-r2" x="1342" y="312.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-12)">
+</text><text class="terminal-2908498105-r3" x="0" y="337.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-13)">│</text><text class="terminal-2908498105-r11" x="24.4" y="337.2" textLength="1293.2" clip-path="url(#terminal-2908498105-line-13)">The&#160;device&#160;with&#160;MAC&#160;08:00:27:3a:66:9e&#160;keeps&#160;claiming&#160;to&#160;be&#160;192.168.1.15,&#160;192.168.1.1&#160;(162&#160;ARP&#160;claims,&#160;149&#160;</text><text class="terminal-2908498105-r3" x="1329.8" y="337.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-13)">│</text><text class="terminal-2908498105-r2" x="1342" y="337.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-13)">
+</text><text class="terminal-2908498105-r3" x="0" y="361.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-14)">│</text><text class="terminal-2908498105-r11" x="24.4" y="361.6" textLength="707.6" clip-path="url(#terminal-2908498105-line-14)">unsolicited),&#160;although&#160;3c:84:6a:12:34:01&#160;owns&#160;192.168.1.1.</text><text class="terminal-2908498105-r3" x="1329.8" y="361.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-14)">│</text><text class="terminal-2908498105-r2" x="1342" y="361.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-14)">
+</text><text class="terminal-2908498105-r3" x="0" y="386" textLength="12.2" clip-path="url(#terminal-2908498105-line-15)">│</text><text class="terminal-2908498105-r3" x="1329.8" y="386" textLength="12.2" clip-path="url(#terminal-2908498105-line-15)">│</text><text class="terminal-2908498105-r2" x="1342" y="386" textLength="12.2" clip-path="url(#terminal-2908498105-line-15)">
+</text><text class="terminal-2908498105-r3" x="0" y="410.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-16)">│</text><text class="terminal-2908498105-r11" x="24.4" y="410.4" textLength="195.2" clip-path="url(#terminal-2908498105-line-16)">What&#x27;s&#160;happening</text><text class="terminal-2908498105-r2" x="219.6" y="410.4" textLength="1098" clip-path="url(#terminal-2908498105-line-16)">&#160;&#160;On&#160;a&#160;local&#160;network,&#160;devices&#160;use&#160;ARP&#160;to&#160;ask&#160;&#x27;who&#160;has&#160;this&#160;IP&#160;address?&#x27;&#160;and&#160;trust&#160;whoever&#160;</text><text class="terminal-2908498105-r3" x="1329.8" y="410.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-16)">│</text><text class="terminal-2908498105-r2" x="1342" y="410.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-16)">
+</text><text class="terminal-2908498105-r3" x="0" y="434.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-17)">│</text><text class="terminal-2908498105-r2" x="24.4" y="434.8" textLength="1207.8" clip-path="url(#terminal-2908498105-line-17)">answers.&#160;Here&#160;a&#160;device&#160;keeps&#160;sending&#160;fake&#160;answers&#160;saying&#160;that&#160;192.168.1.1&#160;lives&#160;at&#160;its&#160;MAC&#160;address&#160;</text><text class="terminal-2908498105-r3" x="1329.8" y="434.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-17)">│</text><text class="terminal-2908498105-r2" x="1342" y="434.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-17)">
+</text><text class="terminal-2908498105-r3" x="0" y="459.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-18)">│</text><text class="terminal-2908498105-r2" x="24.4" y="459.2" textLength="1293.2" clip-path="url(#terminal-2908498105-line-18)">08:00:27:3a:66:9e.&#160;Devices&#160;that&#160;believe&#160;it&#160;send&#160;their&#160;traffic&#160;to&#160;the&#160;impostor,&#160;which&#160;can&#160;read&#160;or&#160;modify&#160;it</text><text class="terminal-2908498105-r3" x="1329.8" y="459.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-18)">│</text><text class="terminal-2908498105-r2" x="1342" y="459.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-18)">
+</text><text class="terminal-2908498105-r3" x="0" y="483.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-19)">│</text><text class="terminal-2908498105-r2" x="24.4" y="483.6" textLength="1220" clip-path="url(#terminal-2908498105-line-19)">before&#160;passing&#160;it&#160;on,&#160;so&#160;the&#160;network&#160;may&#160;only&#160;feel&#160;slow&#160;or&#160;flaky&#160;to&#160;users.&#160;Because&#160;the&#160;impersonated&#160;</text><text class="terminal-2908498105-r3" x="1329.8" y="483.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-19)">│</text><text class="terminal-2908498105-r2" x="1342" y="483.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-19)">
+</text><text class="terminal-2908498105-r3" x="0" y="508" textLength="12.2" clip-path="url(#terminal-2908498105-line-20)">│</text><text class="terminal-2908498105-r2" x="24.4" y="508" textLength="866.2" clip-path="url(#terminal-2908498105-line-20)">address&#160;is&#160;your&#160;router,&#160;internet&#160;traffic&#160;can&#160;pass&#160;through&#160;the&#160;attacker.</text><text class="terminal-2908498105-r3" x="1329.8" y="508" textLength="12.2" clip-path="url(#terminal-2908498105-line-20)">│</text><text class="terminal-2908498105-r2" x="1342" y="508" textLength="12.2" clip-path="url(#terminal-2908498105-line-20)">
+</text><text class="terminal-2908498105-r3" x="0" y="532.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-21)">│</text><text class="terminal-2908498105-r12" x="24.4" y="532.4" textLength="1159" clip-path="url(#terminal-2908498105-line-21)">Like&#160;someone&#160;changing&#160;the&#160;house&#160;numbers&#160;on&#160;your&#160;street&#160;so&#160;your&#160;post&#160;is&#160;delivered&#160;to&#160;them&#160;first.</text><text class="terminal-2908498105-r3" x="1329.8" y="532.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-21)">│</text><text class="terminal-2908498105-r2" x="1342" y="532.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-21)">
+</text><text class="terminal-2908498105-r3" x="0" y="556.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-22)">│</text><text class="terminal-2908498105-r11" x="24.4" y="556.8" textLength="146.4" clip-path="url(#terminal-2908498105-line-22)">Likely&#160;cause</text><text class="terminal-2908498105-r2" x="170.8" y="556.8" textLength="1037" clip-path="url(#terminal-2908498105-line-22)">&#160;&#160;ARP&#160;cache&#160;poisoning&#160;from&#160;the&#160;device&#160;with&#160;MAC&#160;08:00:27:3a:66:9e&#160;(its&#160;own&#160;address&#160;is&#160;</text><text class="terminal-2908498105-r3" x="1329.8" y="556.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-22)">│</text><text class="terminal-2908498105-r2" x="1342" y="556.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-22)">
+</text><text class="terminal-2908498105-r3" x="0" y="581.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-23)">│</text><text class="terminal-2908498105-r2" x="24.4" y="581.2" textLength="866.2" clip-path="url(#terminal-2908498105-line-23)">192.168.1.66),&#160;for&#160;example&#160;a&#160;tool&#160;like&#160;arpspoof,&#160;ettercap&#160;or&#160;bettercap.</text><text class="terminal-2908498105-r3" x="1329.8" y="581.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-23)">│</text><text class="terminal-2908498105-r2" x="1342" y="581.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-23)">
+</text><text class="terminal-2908498105-r3" x="0" y="605.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-24)">│</text><text class="terminal-2908498105-r11" x="24.4" y="605.6" textLength="122" clip-path="url(#terminal-2908498105-line-24)">How&#160;to&#160;fix</text><text class="terminal-2908498105-r3" x="1329.8" y="605.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-24)">│</text><text class="terminal-2908498105-r2" x="1342" y="605.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-24)">
+</text><text class="terminal-2908498105-r3" x="0" y="630" textLength="12.2" clip-path="url(#terminal-2908498105-line-25)">│</text><text class="terminal-2908498105-r2" x="24.4" y="630" textLength="1268.8" clip-path="url(#terminal-2908498105-line-25)">&#160;&#160;1.&#160;Find&#160;the&#160;device:&#160;look&#160;up&#160;MAC&#160;08:00:27:3a:66:9e&#160;in&#160;your&#160;switch&#x27;s&#160;MAC&#160;address&#160;table&#160;(or&#160;the&#160;router&#x27;s&#160;</text><text class="terminal-2908498105-r3" x="1329.8" y="630" textLength="12.2" clip-path="url(#terminal-2908498105-line-25)">│</text><text class="terminal-2908498105-r2" x="1342" y="630" textLength="12.2" clip-path="url(#terminal-2908498105-line-25)">
+</text><text class="terminal-2908498105-r3" x="0" y="654.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-26)">│</text><text class="terminal-2908498105-r2" x="24.4" y="654.4" textLength="768.6" clip-path="url(#terminal-2908498105-line-26)">client&#160;list)&#160;to&#160;get&#160;its&#160;port&#160;or&#160;Wi-Fi&#160;name,&#160;then&#160;disconnect&#160;it.</text><text class="terminal-2908498105-r3" x="1329.8" y="654.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-26)">│</text><text class="terminal-2908498105-r2" x="1342" y="654.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-26)">
+</text><text class="terminal-2908498105-r3" x="0" y="678.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-27)">│</text><text class="terminal-2908498105-r2" x="24.4" y="678.8" textLength="427" clip-path="url(#terminal-2908498105-line-27)">&#160;&#160;2.&#160;Check&#160;your&#160;own&#160;ARP&#160;cache&#160;with&#160;</text><text class="terminal-2908498105-r1" x="451.4" y="678.8" textLength="73.2" clip-path="url(#terminal-2908498105-line-27)">arp&#160;-a</text><text class="terminal-2908498105-r2" x="524.6" y="678.8" textLength="244" clip-path="url(#terminal-2908498105-line-27)">&#160;(Windows/macOS)&#160;or&#160;</text><text class="terminal-2908498105-r1" x="768.6" y="678.8" textLength="97.6" clip-path="url(#terminal-2908498105-line-27)">ip&#160;neigh</text><text class="terminal-2908498105-r2" x="866.2" y="678.8" textLength="439.2" clip-path="url(#terminal-2908498105-line-27)">&#160;(Linux):&#160;192.168.1.1&#160;should&#160;map&#160;to&#160;</text><text class="terminal-2908498105-r3" x="1329.8" y="678.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-27)">│</text><text class="terminal-2908498105-r2" x="1342" y="678.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-27)">
+</text><text class="terminal-2908498105-r3" x="0" y="703.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-28)">│</text><text class="terminal-2908498105-r2" x="24.4" y="703.2" textLength="500.2" clip-path="url(#terminal-2908498105-line-28)">3c:84:6a:12:34:01,&#160;not&#160;08:00:27:3a:66:9e.</text><text class="terminal-2908498105-r3" x="1329.8" y="703.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-28)">│</text><text class="terminal-2908498105-r2" x="1342" y="703.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-28)">
+</text><text class="terminal-2908498105-r3" x="0" y="727.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-29)">│</text><text class="terminal-2908498105-r2" x="24.4" y="727.6" textLength="549" clip-path="url(#terminal-2908498105-line-29)">&#160;&#160;3.&#160;As&#160;a&#160;temporary&#160;measure,&#160;pin&#160;the&#160;router:&#160;</text><text class="terminal-2908498105-r1" x="573.4" y="727.6" textLength="439.2" clip-path="url(#terminal-2908498105-line-29)">arp&#160;-s&#160;192.168.1.1&#160;3c:84:6a:12:34:01</text><text class="terminal-2908498105-r2" x="1012.6" y="727.6" textLength="219.6" clip-path="url(#terminal-2908498105-line-29)">&#160;(Linux/macOS)&#160;or&#160;</text><text class="terminal-2908498105-r1" x="1232.2" y="727.6" textLength="73.2" clip-path="url(#terminal-2908498105-line-29)">netsh&#160;</text><text class="terminal-2908498105-r3" x="1329.8" y="727.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-29)">│</text><text class="terminal-2908498105-r2" x="1342" y="727.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-29)">
+</text><text class="terminal-2908498105-r3" x="0" y="752" textLength="12.2" clip-path="url(#terminal-2908498105-line-30)">│</text><text class="terminal-2908498105-r1" x="24.4" y="752" textLength="841.8" clip-path="url(#terminal-2908498105-line-30)">interface&#160;ipv4&#160;add&#160;neighbors&#160;&quot;Ethernet&quot;&#160;192.168.1.1&#160;3c-84-6a-12-34-01</text><text class="terminal-2908498105-r2" x="866.2" y="752" textLength="134.2" clip-path="url(#terminal-2908498105-line-30)">&#160;(Windows).</text><text class="terminal-2908498105-r3" x="1329.8" y="752" textLength="12.2" clip-path="url(#terminal-2908498105-line-30)">│</text><text class="terminal-2908498105-r2" x="1342" y="752" textLength="12.2" clip-path="url(#terminal-2908498105-line-30)">
+</text><text class="terminal-2908498105-r3" x="0" y="776.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-31)">│</text><text class="terminal-2908498105-r2" x="24.4" y="776.4" textLength="1146.8" clip-path="url(#terminal-2908498105-line-31)">&#160;&#160;4.&#160;Enable&#160;Dynamic&#160;ARP&#160;Inspection&#160;(with&#160;DHCP&#160;snooping)&#160;and&#160;port&#160;security&#160;on&#160;managed&#160;switches.</text><text class="terminal-2908498105-r3" x="1329.8" y="776.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-31)">│</text><text class="terminal-2908498105-r2" x="1342" y="776.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-31)">
+</text><text class="terminal-2908498105-r3" x="0" y="800.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-32)">│</text><text class="terminal-2908498105-r2" x="24.4" y="800.8" textLength="1195.6" clip-path="url(#terminal-2908498105-line-32)">&#160;&#160;5.&#160;Treat&#160;passwords&#160;typed&#160;while&#160;this&#160;was&#160;happening&#160;as&#160;exposed:&#160;change&#160;them,&#160;and&#160;prefer&#160;HTTPS/VPN.</text><text class="terminal-2908498105-r3" x="1329.8" y="800.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-32)">│</text><text class="terminal-2908498105-r2" x="1342" y="800.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-32)">
+</text><text class="terminal-2908498105-r3" x="0" y="825.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-33)">│</text><text class="terminal-2908498105-r11" x="24.4" y="825.2" textLength="329.4" clip-path="url(#terminal-2908498105-line-33)">Why&#160;we&#160;think&#160;it&#x27;s&#160;an&#160;attack</text><text class="terminal-2908498105-r3" x="1329.8" y="825.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-33)">│</text><text class="terminal-2908498105-r2" x="1342" y="825.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-33)">
+</text><text class="terminal-2908498105-r3" x="0" y="849.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-34)">│</text><text class="terminal-2908498105-r3" x="48.8" y="849.6" textLength="36.6" clip-path="url(#terminal-2908498105-line-34)">●●&#160;</text><text class="terminal-2908498105-r2" x="85.4" y="849.6" textLength="1183.4" clip-path="url(#terminal-2908498105-line-34)">&#160;The&#160;suspicious&#160;MAC&#160;answered&#160;ARP&#160;for&#160;2&#160;different&#160;IPs&#160;that&#160;belong&#160;to&#160;other&#160;devices&#160;(192.168.1.15,&#160;</text><text class="terminal-2908498105-r3" x="1329.8" y="849.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-34)">│</text><text class="terminal-2908498105-r2" x="1342" y="849.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-34)">
+</text><text class="terminal-2908498105-r3" x="0" y="874" textLength="12.2" clip-path="url(#terminal-2908498105-line-35)">│</text><text class="terminal-2908498105-r2" x="24.4" y="874" textLength="146.4" clip-path="url(#terminal-2908498105-line-35)">192.168.1.1)</text><text class="terminal-2908498105-r3" x="1329.8" y="874" textLength="12.2" clip-path="url(#terminal-2908498105-line-35)">│</text><text class="terminal-2908498105-r2" x="1342" y="874" textLength="12.2" clip-path="url(#terminal-2908498105-line-35)">
+</text><text class="terminal-2908498105-r3" x="0" y="898.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-36)">│</text><text class="terminal-2908498105-r3" x="48.8" y="898.4" textLength="36.6" clip-path="url(#terminal-2908498105-line-36)">●●&#160;</text><text class="terminal-2908498105-r2" x="85.4" y="898.4" textLength="890.6" clip-path="url(#terminal-2908498105-line-36)">&#160;The&#160;disputed&#160;address&#160;192.168.1.1&#160;belongs&#160;to&#160;the&#160;router&#160;(default&#160;gateway)</text><text class="terminal-2908498105-r3" x="1329.8" y="898.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-36)">│</text><text class="terminal-2908498105-r2" x="1342" y="898.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-36)">
+</text><text class="terminal-2908498105-r3" x="0" y="922.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-37)">│</text><text class="terminal-2908498105-r3" x="48.8" y="922.8" textLength="36.6" clip-path="url(#terminal-2908498105-line-37)">●●&#160;</text><text class="terminal-2908498105-r2" x="85.4" y="922.8" textLength="915" clip-path="url(#terminal-2908498105-line-37)">&#160;The&#160;suspicious&#160;MAC&#160;08:00:27:3a:66:9e&#160;sent&#160;149&#160;ARP&#160;replies&#160;nobody&#160;asked&#160;for</text><text class="terminal-2908498105-r3" x="1329.8" y="922.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-37)">│</text><text class="terminal-2908498105-r2" x="1342" y="922.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-37)">
+</text><text class="terminal-2908498105-r3" x="0" y="947.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-38)">│</text><text class="terminal-2908498105-r7" x="48.8" y="947.2" textLength="1268.8" clip-path="url(#terminal-2908498105-line-38)">Not&#160;two&#160;devices&#160;are&#160;using&#160;the&#160;same&#160;ip&#160;address:&#160;Some&#160;signs&#160;pointed&#160;this&#160;way&#160;(Both&#160;MACs&#160;answered&#160;the&#160;same&#160;</text><text class="terminal-2908498105-r3" x="1329.8" y="947.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-38)">│</text><text class="terminal-2908498105-r2" x="1342" y="947.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-38)">
+</text><text class="terminal-2908498105-r3" x="0" y="971.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-39)">│</text><text class="terminal-2908498105-r7" x="24.4" y="971.6" textLength="1171.2" clip-path="url(#terminal-2908498105-line-39)">ARP&#160;question&#160;6&#160;times,&#160;which&#160;is&#160;what&#160;two&#160;honest&#160;devices&#160;with&#160;the&#160;same&#160;address&#160;do),&#160;but&#160;they&#160;were&#160;</text><text class="terminal-2908498105-r3" x="1329.8" y="971.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-39)">│</text><text class="terminal-2908498105-r2" x="1342" y="971.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-39)">
+</text><text class="terminal-2908498105-r3" x="0" y="996" textLength="12.2" clip-path="url(#terminal-2908498105-line-40)">│</text><text class="terminal-2908498105-r7" x="24.4" y="996" textLength="1244.4" clip-path="url(#terminal-2908498105-line-40)">outweighed.&#160;The&#160;stronger&#160;evidence:&#160;The&#160;suspicious&#160;MAC&#160;answered&#160;ARP&#160;for&#160;2&#160;different&#160;IPs&#160;that&#160;belong&#160;to&#160;</text><text class="terminal-2908498105-r3" x="1329.8" y="996" textLength="12.2" clip-path="url(#terminal-2908498105-line-40)">│</text><text class="terminal-2908498105-r2" x="1342" y="996" textLength="12.2" clip-path="url(#terminal-2908498105-line-40)">
+</text><text class="terminal-2908498105-r3" x="0" y="1020.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-41)">│</text><text class="terminal-2908498105-r7" x="24.4" y="1020.4" textLength="1293.2" clip-path="url(#terminal-2908498105-line-41)">other&#160;devices&#160;(192.168.1.15,&#160;192.168.1.1);&#160;The&#160;disputed&#160;address&#160;192.168.1.1&#160;belongs&#160;to&#160;the&#160;router&#160;(default</text><text class="terminal-2908498105-r3" x="1329.8" y="1020.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-41)">│</text><text class="terminal-2908498105-r2" x="1342" y="1020.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-41)">
+</text><text class="terminal-2908498105-r3" x="0" y="1044.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-42)">│</text><text class="terminal-2908498105-r7" x="24.4" y="1044.8" textLength="109.8" clip-path="url(#terminal-2908498105-line-42)">gateway).</text><text class="terminal-2908498105-r3" x="1329.8" y="1044.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-42)">│</text><text class="terminal-2908498105-r2" x="1342" y="1044.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-42)">
+</text><text class="terminal-2908498105-r3" x="0" y="1069.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-43)">│</text><text class="terminal-2908498105-r11" x="24.4" y="1069.2" textLength="146.4" clip-path="url(#terminal-2908498105-line-43)">MITRE&#160;ATT&amp;CK</text><text class="terminal-2908498105-r2" x="170.8" y="1069.2" textLength="378.2" clip-path="url(#terminal-2908498105-line-43)">&#160;&#160;T1557.002&#160;ARP&#160;Cache&#160;Poisoning</text><text class="terminal-2908498105-r3" x="1329.8" y="1069.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-43)">│</text><text class="terminal-2908498105-r2" x="1342" y="1069.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-43)">
+</text><text class="terminal-2908498105-r3" x="0" y="1093.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-44)">│</text><text class="terminal-2908498105-r11" x="24.4" y="1093.6" textLength="97.6" clip-path="url(#terminal-2908498105-line-44)">Evidence</text><text class="terminal-2908498105-r2" x="122" y="1093.6" textLength="1134.6" clip-path="url(#terminal-2908498105-line-44)">&#160;&#160;frames&#160;#180,&#160;#181,&#160;#182,&#160;#183,&#160;#184,&#160;#185,&#160;#186,&#160;#187,&#160;#188,&#160;#189,&#160;#214,&#160;#215&#160;…&#160;(249&#160;total)</text><text class="terminal-2908498105-r3" x="1329.8" y="1093.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-44)">│</text><text class="terminal-2908498105-r2" x="1342" y="1093.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-44)">
+</text><text class="terminal-2908498105-r3" x="0" y="1118" textLength="12.2" clip-path="url(#terminal-2908498105-line-45)">│</text><text class="terminal-2908498105-r7" x="48.8" y="1118" textLength="231.8" clip-path="url(#terminal-2908498105-line-45)">#180&#160;&#160;&#160;&#160;+&#160;&#160;&#160;19.503s</text><text class="terminal-2908498105-r2" x="280.6" y="1118" textLength="707.6" clip-path="url(#terminal-2908498105-line-45)">&#160;ARP&#160;192.168.1.1&#160;is-at&#160;08:00:27:3a:66:9e&#160;(to&#160;192.168.1.15)</text><text class="terminal-2908498105-r3" x="1329.8" y="1118" textLength="12.2" clip-path="url(#terminal-2908498105-line-45)">│</text><text class="terminal-2908498105-r2" x="1342" y="1118" textLength="12.2" clip-path="url(#terminal-2908498105-line-45)">
+</text><text class="terminal-2908498105-r3" x="0" y="1142.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-46)">│</text><text class="terminal-2908498105-r7" x="48.8" y="1142.4" textLength="231.8" clip-path="url(#terminal-2908498105-line-46)">#181&#160;&#160;&#160;&#160;+&#160;&#160;&#160;19.503s</text><text class="terminal-2908498105-r2" x="280.6" y="1142.4" textLength="707.6" clip-path="url(#terminal-2908498105-line-46)">&#160;ARP&#160;192.168.1.15&#160;is-at&#160;08:00:27:3a:66:9e&#160;(to&#160;192.168.1.1)</text><text class="terminal-2908498105-r3" x="1329.8" y="1142.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-46)">│</text><text class="terminal-2908498105-r2" x="1342" y="1142.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-46)">
+</text><text class="terminal-2908498105-r3" x="0" y="1166.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-47)">│</text><text class="terminal-2908498105-r7" x="48.8" y="1166.8" textLength="231.8" clip-path="url(#terminal-2908498105-line-47)">#182&#160;&#160;&#160;&#160;+&#160;&#160;&#160;20.995s</text><text class="terminal-2908498105-r2" x="280.6" y="1166.8" textLength="707.6" clip-path="url(#terminal-2908498105-line-47)">&#160;ARP&#160;192.168.1.1&#160;is-at&#160;08:00:27:3a:66:9e&#160;(to&#160;192.168.1.15)</text><text class="terminal-2908498105-r3" x="1329.8" y="1166.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-47)">│</text><text class="terminal-2908498105-r2" x="1342" y="1166.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-47)">
+</text><text class="terminal-2908498105-r3" x="0" y="1191.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-48)">│</text><text class="terminal-2908498105-r7" x="48.8" y="1191.2" textLength="207.4" clip-path="url(#terminal-2908498105-line-48)">Wireshark&#160;filter:</text><text class="terminal-2908498105-r2" x="256.2" y="1191.2" textLength="1049.2" clip-path="url(#terminal-2908498105-line-48)">&#160;frame.number&#160;in&#160;{180&#160;181&#160;182&#160;183&#160;184&#160;185&#160;186&#160;187&#160;188&#160;189&#160;214&#160;215&#160;216&#160;217&#160;236&#160;238&#160;239&#160;</text><text class="terminal-2908498105-r3" x="1329.8" y="1191.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-48)">│</text><text class="terminal-2908498105-r2" x="1342" y="1191.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-48)">
+</text><text class="terminal-2908498105-r3" x="0" y="1215.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-49)">│</text><text class="terminal-2908498105-r2" x="24.4" y="1215.6" textLength="634.4" clip-path="url(#terminal-2908498105-line-49)">243&#160;244&#160;248&#160;249&#160;260&#160;261&#160;262&#160;274&#160;275&#160;294&#160;295&#160;296&#160;297}</text><text class="terminal-2908498105-r3" x="1329.8" y="1215.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-49)">│</text><text class="terminal-2908498105-r2" x="1342" y="1215.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-49)">
+</text><text class="terminal-2908498105-r3" x="0" y="1240" textLength="12.2" clip-path="url(#terminal-2908498105-line-50)">│</text><text class="terminal-2908498105-r11" x="24.4" y="1240" textLength="61" clip-path="url(#terminal-2908498105-line-50)">Hosts</text><text class="terminal-2908498105-r2" x="85.4" y="1240" textLength="500.2" clip-path="url(#terminal-2908498105-line-50)">&#160;&#160;192.168.1.15,&#160;192.168.1.1,&#160;192.168.1.66</text><text class="terminal-2908498105-r3" x="1329.8" y="1240" textLength="12.2" clip-path="url(#terminal-2908498105-line-50)">│</text><text class="terminal-2908498105-r2" x="1342" y="1240" textLength="12.2" clip-path="url(#terminal-2908498105-line-50)">
+</text><text class="terminal-2908498105-r3" x="0" y="1264.4" textLength="1342" clip-path="url(#terminal-2908498105-line-51)">╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯</text><text class="terminal-2908498105-r2" x="1342" y="1264.4" textLength="12.2" clip-path="url(#terminal-2908498105-line-51)">
+</text><text class="terminal-2908498105-r2" x="1342" y="1288.8" textLength="12.2" clip-path="url(#terminal-2908498105-line-52)">
+</text><text class="terminal-2908498105-r7" x="0" y="1313.2" textLength="1281" clip-path="url(#terminal-2908498105-line-53)">Tip:&#160;--html&#160;report.html&#160;for&#160;the&#160;full&#160;interactive&#160;report&#160;·&#160;faultline&#160;web&#160;for&#160;the&#160;dashboard&#160;·&#160;--expert&#160;for&#160;</text><text class="terminal-2908498105-r2" x="1342" y="1313.2" textLength="12.2" clip-path="url(#terminal-2908498105-line-53)">
+</text><text class="terminal-2908498105-r7" x="0" y="1337.6" textLength="85.4" clip-path="url(#terminal-2908498105-line-54)">details</text><text class="terminal-2908498105-r2" x="1342" y="1337.6" textLength="12.2" clip-path="url(#terminal-2908498105-line-54)">
+</text><text class="terminal-2908498105-r2" x="1342" y="1362" textLength="12.2" clip-path="url(#terminal-2908498105-line-55)">
+</text>
+    </g>
+    </g>
+</svg>

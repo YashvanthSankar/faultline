@@ -285,8 +285,8 @@ class CaptureReader:
                         "the rest of the file looks like padding or garbage, stopped reading here"
                     )
                     return
-                continue
-            empty_run = 0
+            else:
+                empty_run = 0
             frame = self._emit(ts_s + ts_f * resolution, orig, linktype, data)
             if frame is None:
                 return

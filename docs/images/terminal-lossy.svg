@@ -1,0 +1,280 @@
+<svg class="rich-terminal" viewBox="0 0 1360 1367.6" xmlns="http://www.w3.org/2000/svg">
+    <!-- Generated with Rich https://www.textualize.io -->
+    <style>
+
+    @font-face {
+        font-family: "Fira Code";
+        src: local("FiraCode-Regular"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Regular.woff2") format("woff2"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Regular.woff") format("woff");
+        font-style: normal;
+        font-weight: 400;
+    }
+    @font-face {
+        font-family: "Fira Code";
+        src: local("FiraCode-Bold"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Bold.woff2") format("woff2"),
+                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Bold.woff") format("woff");
+        font-style: bold;
+        font-weight: 700;
+    }
+
+    .terminal-3843236273-matrix {
+        font-family: Fira Code, monospace;
+        font-size: 20px;
+        line-height: 24.4px;
+        font-variant-east-asian: full-width;
+    }
+
+    .terminal-3843236273-title {
+        font-size: 18px;
+        font-weight: bold;
+        font-family: arial;
+    }
+
+    .terminal-3843236273-r1 { fill: #98e024;font-weight: bold }
+.terminal-3843236273-r2 { fill: #d9d9d9 }
+.terminal-3843236273-r3 { fill: #fd971f }
+.terminal-3843236273-r4 { fill: #1a1a1a }
+.terminal-3843236273-r5 { fill: #fd971f;font-weight: bold }
+.terminal-3843236273-r6 { fill: #98e024 }
+.terminal-3843236273-r7 { fill: #878787 }
+.terminal-3843236273-r8 { fill: #0c0c0c;font-weight: bold }
+.terminal-3843236273-r9 { fill: #9c5f17 }
+.terminal-3843236273-r10 { fill: #d9d9d9;font-weight: bold }
+.terminal-3843236273-r11 { fill: #878787;font-style: italic; }
+    </style>
+
+    <defs>
+    <clipPath id="terminal-3843236273-clip-terminal">
+      <rect x="0" y="0" width="1341.0" height="1316.6" />
+    </clipPath>
+    <clipPath id="terminal-3843236273-line-0">
+    <rect x="0" y="1.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-1">
+    <rect x="0" y="25.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-2">
+    <rect x="0" y="50.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-3">
+    <rect x="0" y="74.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-4">
+    <rect x="0" y="99.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-5">
+    <rect x="0" y="123.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-6">
+    <rect x="0" y="147.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-7">
+    <rect x="0" y="172.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-8">
+    <rect x="0" y="196.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-9">
+    <rect x="0" y="221.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-10">
+    <rect x="0" y="245.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-11">
+    <rect x="0" y="269.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-12">
+    <rect x="0" y="294.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-13">
+    <rect x="0" y="318.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-14">
+    <rect x="0" y="343.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-15">
+    <rect x="0" y="367.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-16">
+    <rect x="0" y="391.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-17">
+    <rect x="0" y="416.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-18">
+    <rect x="0" y="440.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-19">
+    <rect x="0" y="465.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-20">
+    <rect x="0" y="489.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-21">
+    <rect x="0" y="513.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-22">
+    <rect x="0" y="538.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-23">
+    <rect x="0" y="562.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-24">
+    <rect x="0" y="587.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-25">
+    <rect x="0" y="611.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-26">
+    <rect x="0" y="635.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-27">
+    <rect x="0" y="660.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-28">
+    <rect x="0" y="684.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-29">
+    <rect x="0" y="709.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-30">
+    <rect x="0" y="733.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-31">
+    <rect x="0" y="757.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-32">
+    <rect x="0" y="782.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-33">
+    <rect x="0" y="806.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-34">
+    <rect x="0" y="831.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-35">
+    <rect x="0" y="855.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-36">
+    <rect x="0" y="879.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-37">
+    <rect x="0" y="904.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-38">
+    <rect x="0" y="928.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-39">
+    <rect x="0" y="953.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-40">
+    <rect x="0" y="977.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-41">
+    <rect x="0" y="1001.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-42">
+    <rect x="0" y="1026.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-43">
+    <rect x="0" y="1050.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-44">
+    <rect x="0" y="1075.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-45">
+    <rect x="0" y="1099.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-46">
+    <rect x="0" y="1123.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-47">
+    <rect x="0" y="1148.3" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-48">
+    <rect x="0" y="1172.7" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-49">
+    <rect x="0" y="1197.1" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-50">
+    <rect x="0" y="1221.5" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-51">
+    <rect x="0" y="1245.9" width="1342" height="24.65"/>
+            </clipPath>
+<clipPath id="terminal-3843236273-line-52">
+    <rect x="0" y="1270.3" width="1342" height="24.65"/>
+            </clipPath>
+    </defs>
+
+    <rect fill="#0c0c0c" stroke="rgba(255,255,255,0.35)" stroke-width="1" x="1" y="1" width="1358" height="1365.6" rx="8"/><text class="terminal-3843236273-title" fill="#d9d9d9" text-anchor="middle" x="679" y="27">faultline&#160;analyze&#160;samples/lossy_link.pcap</text>
+            <g transform="translate(26,22)">
+            <circle cx="0" cy="0" r="7" fill="#ff5f57"/>
+            <circle cx="22" cy="0" r="7" fill="#febc2e"/>
+            <circle cx="44" cy="0" r="7" fill="#28c840"/>
+            </g>
+        
+    <g transform="translate(9, 41)" clip-path="url(#terminal-3843236273-clip-terminal)">
+    <rect fill="#fd971f" x="36.6" y="50.3" width="97.6" height="24.65" shape-rendering="crispEdges"/><rect fill="#fd971f" x="36.6" y="294.3" width="85.4" height="24.65" shape-rendering="crispEdges"/>
+    <g class="terminal-3843236273-matrix">
+    <text class="terminal-3843236273-r1" x="0" y="20" textLength="12.2" clip-path="url(#terminal-3843236273-line-0)">$</text><text class="terminal-3843236273-r2" x="12.2" y="20" textLength="512.4" clip-path="url(#terminal-3843236273-line-0)">&#160;faultline&#160;analyze&#160;samples/lossy_link.pcap</text><text class="terminal-3843236273-r2" x="1342" y="20" textLength="12.2" clip-path="url(#terminal-3843236273-line-0)">
+</text><text class="terminal-3843236273-r2" x="1342" y="44.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-1)">
+</text><text class="terminal-3843236273-r3" x="0" y="68.8" textLength="24.4" clip-path="url(#terminal-3843236273-line-2)">┏━</text><text class="terminal-3843236273-r4" x="36.6" y="68.8" textLength="97.6" clip-path="url(#terminal-3843236273-line-2)">&#160;FAULTY&#160;</text><text class="terminal-3843236273-r5" x="158.6" y="68.8" textLength="732" clip-path="url(#terminal-3843236273-line-2)">Packets&#160;are&#160;getting&#160;lost&#160;on&#160;the&#160;way&#160;to&#160;or&#160;from&#160;203.0.113.10.</text><text class="terminal-3843236273-r3" x="902.8" y="68.8" textLength="414.8" clip-path="url(#terminal-3843236273-line-2)">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</text><text class="terminal-3843236273-r3" x="1317.6" y="68.8" textLength="24.4" clip-path="url(#terminal-3843236273-line-2)">━┓</text><text class="terminal-3843236273-r2" x="1342" y="68.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-2)">
+</text><text class="terminal-3843236273-r3" x="0" y="93.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-3)">┃</text><text class="terminal-3843236273-r3" x="1329.8" y="93.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-3)">┃</text><text class="terminal-3843236273-r2" x="1342" y="93.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-3)">
+</text><text class="terminal-3843236273-r3" x="0" y="117.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-4)">┃</text><text class="terminal-3843236273-r2" x="36.6" y="117.6" textLength="1256.6" clip-path="url(#terminal-3843236273-line-4)">We&#160;found&#160;1&#160;problem&#160;affecting&#160;your&#160;network,&#160;and&#160;no&#160;sign&#160;of&#160;an&#160;attack.&#160;This&#160;looks&#160;like&#160;an&#160;ordinary&#160;fault&#160;</text><text class="terminal-3843236273-r3" x="1329.8" y="117.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-4)">┃</text><text class="terminal-3843236273-r2" x="1342" y="117.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-4)">
+</text><text class="terminal-3843236273-r3" x="0" y="142" textLength="12.2" clip-path="url(#terminal-3843236273-line-5)">┃</text><text class="terminal-3843236273-r2" x="36.6" y="142" textLength="244" clip-path="url(#terminal-3843236273-line-5)">or&#160;misconfiguration.</text><text class="terminal-3843236273-r3" x="1329.8" y="142" textLength="12.2" clip-path="url(#terminal-3843236273-line-5)">┃</text><text class="terminal-3843236273-r2" x="1342" y="142" textLength="12.2" clip-path="url(#terminal-3843236273-line-5)">
+</text><text class="terminal-3843236273-r3" x="0" y="166.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-6)">┃</text><text class="terminal-3843236273-r3" x="1329.8" y="166.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-6)">┃</text><text class="terminal-3843236273-r2" x="1342" y="166.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-6)">
+</text><text class="terminal-3843236273-r3" x="0" y="190.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-7)">┃</text><text class="terminal-3843236273-r2" x="36.6" y="190.8" textLength="97.6" clip-path="url(#terminal-3843236273-line-7)">Health&#160;&#160;</text><text class="terminal-3843236273-r6" x="134.2" y="190.8" textLength="341.6" clip-path="url(#terminal-3843236273-line-7)">████████████████████████████</text><text class="terminal-3843236273-r7" x="475.8" y="190.8" textLength="24.4" clip-path="url(#terminal-3843236273-line-7)">░░</text><text class="terminal-3843236273-r1" x="500.2" y="190.8" textLength="97.6" clip-path="url(#terminal-3843236273-line-7)">&#160;&#160;92/100</text><text class="terminal-3843236273-r3" x="1329.8" y="190.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-7)">┃</text><text class="terminal-3843236273-r2" x="1342" y="190.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-7)">
+</text><text class="terminal-3843236273-r3" x="0" y="215.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-8)">┃</text><text class="terminal-3843236273-r7" x="36.6" y="215.2" textLength="207.4" clip-path="url(#terminal-3843236273-line-8)">Found&#160;&#160;&#160;0&#160;attacks</text><text class="terminal-3843236273-r7" x="244" y="215.2" textLength="61" clip-path="url(#terminal-3843236273-line-8)">&#160;&#160;·&#160;&#160;</text><text class="terminal-3843236273-r5" x="305" y="215.2" textLength="85.4" clip-path="url(#terminal-3843236273-line-8)">1&#160;fault</text><text class="terminal-3843236273-r7" x="390.4" y="215.2" textLength="61" clip-path="url(#terminal-3843236273-line-8)">&#160;&#160;·&#160;&#160;</text><text class="terminal-3843236273-r7" x="451.4" y="215.2" textLength="231.8" clip-path="url(#terminal-3843236273-line-8)">0&#160;misconfigurations</text><text class="terminal-3843236273-r3" x="1329.8" y="215.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-8)">┃</text><text class="terminal-3843236273-r2" x="1342" y="215.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-8)">
+</text><text class="terminal-3843236273-r3" x="0" y="239.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-9)">┃</text><text class="terminal-3843236273-r7" x="36.6" y="239.6" textLength="805.2" clip-path="url(#terminal-3843236273-line-9)">lossy_link.pcap&#160;·&#160;pcap&#160;·&#160;2,234&#160;packets&#160;·&#160;58.0s&#160;·&#160;analysed&#160;in&#160;0.05s</text><text class="terminal-3843236273-r3" x="1329.8" y="239.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-9)">┃</text><text class="terminal-3843236273-r2" x="1342" y="239.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-9)">
+</text><text class="terminal-3843236273-r3" x="0" y="264" textLength="12.2" clip-path="url(#terminal-3843236273-line-10)">┃</text><text class="terminal-3843236273-r3" x="1329.8" y="264" textLength="12.2" clip-path="url(#terminal-3843236273-line-10)">┃</text><text class="terminal-3843236273-r2" x="1342" y="264" textLength="12.2" clip-path="url(#terminal-3843236273-line-10)">
+</text><text class="terminal-3843236273-r3" x="0" y="288.4" textLength="1342" clip-path="url(#terminal-3843236273-line-11)">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</text><text class="terminal-3843236273-r2" x="1342" y="288.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-11)">
+</text><text class="terminal-3843236273-r3" x="0" y="312.8" textLength="24.4" clip-path="url(#terminal-3843236273-line-12)">╭─</text><text class="terminal-3843236273-r8" x="36.6" y="312.8" textLength="85.4" clip-path="url(#terminal-3843236273-line-12)">&#160;FAULT&#160;</text><text class="terminal-3843236273-r9" x="122" y="312.8" textLength="61" clip-path="url(#terminal-3843236273-line-12)">&#160;93%&#160;</text><text class="terminal-3843236273-r3" x="183" y="312.8" textLength="97.6" clip-path="url(#terminal-3843236273-line-12)">&#160;MEDIUM&#160;</text><text class="terminal-3843236273-r9" x="280.6" y="312.8" textLength="61" clip-path="url(#terminal-3843236273-line-12)">&#160;F1&#160;&#160;</text><text class="terminal-3843236273-r5" x="341.6" y="312.8" textLength="719.8" clip-path="url(#terminal-3843236273-line-12)">Packets&#160;are&#160;getting&#160;lost&#160;on&#160;the&#160;way&#160;to&#160;or&#160;from&#160;203.0.113.10</text><text class="terminal-3843236273-r3" x="1073.6" y="312.8" textLength="244" clip-path="url(#terminal-3843236273-line-12)">────────────────────</text><text class="terminal-3843236273-r3" x="1317.6" y="312.8" textLength="24.4" clip-path="url(#terminal-3843236273-line-12)">─╮</text><text class="terminal-3843236273-r2" x="1342" y="312.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-12)">
+</text><text class="terminal-3843236273-r3" x="0" y="337.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-13)">│</text><text class="terminal-3843236273-r10" x="24.4" y="337.2" textLength="1268.8" clip-path="url(#terminal-3843236273-line-13)">5.0%&#160;of&#160;TCP&#160;data&#160;packets&#160;(56&#160;of&#160;1,122)&#160;had&#160;to&#160;be&#160;sent&#160;again,&#160;mostly&#160;on&#160;both&#160;sides&#160;of&#160;this&#160;capture&#160;point.</text><text class="terminal-3843236273-r3" x="1329.8" y="337.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-13)">│</text><text class="terminal-3843236273-r2" x="1342" y="337.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-13)">
+</text><text class="terminal-3843236273-r3" x="0" y="361.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-14)">│</text><text class="terminal-3843236273-r3" x="1329.8" y="361.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-14)">│</text><text class="terminal-3843236273-r2" x="1342" y="361.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-14)">
+</text><text class="terminal-3843236273-r3" x="0" y="386" textLength="12.2" clip-path="url(#terminal-3843236273-line-15)">│</text><text class="terminal-3843236273-r10" x="24.4" y="386" textLength="195.2" clip-path="url(#terminal-3843236273-line-15)">What&#x27;s&#160;happening</text><text class="terminal-3843236273-r2" x="219.6" y="386" textLength="1085.8" clip-path="url(#terminal-3843236273-line-15)">&#160;&#160;When&#160;a&#160;packet&#160;is&#160;lost,&#160;TCP&#160;notices&#160;that&#160;the&#160;other&#160;side&#160;never&#160;confirmed&#160;it&#160;and&#160;sends&#160;it&#160;</text><text class="terminal-3843236273-r3" x="1329.8" y="386" textLength="12.2" clip-path="url(#terminal-3843236273-line-15)">│</text><text class="terminal-3843236273-r2" x="1342" y="386" textLength="12.2" clip-path="url(#terminal-3843236273-line-15)">
+</text><text class="terminal-3843236273-r3" x="0" y="410.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-16)">│</text><text class="terminal-3843236273-r2" x="24.4" y="410.4" textLength="1268.8" clip-path="url(#terminal-3843236273-line-16)">again&#160;(a&#160;retransmission).&#160;Each&#160;resend&#160;costs&#160;time,&#160;and&#160;TCP&#160;also&#160;slows&#160;down&#160;on&#160;purpose&#160;because&#160;it&#160;assumes&#160;</text><text class="terminal-3843236273-r3" x="1329.8" y="410.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-16)">│</text><text class="terminal-3843236273-r2" x="1342" y="410.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-16)">
+</text><text class="terminal-3843236273-r3" x="0" y="434.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-17)">│</text><text class="terminal-3843236273-r2" x="24.4" y="434.8" textLength="1293.2" clip-path="url(#terminal-3843236273-line-17)">the&#160;network&#160;is&#160;overloaded,&#160;so&#160;pages&#160;load&#160;slowly&#160;and&#160;downloads&#160;crawl.&#160;Losses&#160;are&#160;spread&#160;over&#160;both&#160;sides&#160;of&#160;</text><text class="terminal-3843236273-r3" x="1329.8" y="434.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-17)">│</text><text class="terminal-3843236273-r2" x="1342" y="434.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-17)">
+</text><text class="terminal-3843236273-r3" x="0" y="459.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-18)">│</text><text class="terminal-3843236273-r2" x="24.4" y="459.2" textLength="1244.4" clip-path="url(#terminal-3843236273-line-18)">the&#160;capture&#160;point&#160;(53.6%&#160;near&#160;the&#160;local&#160;devices,&#160;46.4%&#160;towards&#160;203.0.113.10),&#160;which&#160;points&#160;to&#160;general&#160;</text><text class="terminal-3843236273-r3" x="1329.8" y="459.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-18)">│</text><text class="terminal-3843236273-r2" x="1342" y="459.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-18)">
+</text><text class="terminal-3843236273-r3" x="0" y="483.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-19)">│</text><text class="terminal-3843236273-r2" x="24.4" y="483.6" textLength="439.2" clip-path="url(#terminal-3843236273-line-19)">congestion&#160;rather&#160;than&#160;one&#160;bad&#160;link.</text><text class="terminal-3843236273-r3" x="1329.8" y="483.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-19)">│</text><text class="terminal-3843236273-r2" x="1342" y="483.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-19)">
+</text><text class="terminal-3843236273-r3" x="0" y="508" textLength="12.2" clip-path="url(#terminal-3843236273-line-20)">│</text><text class="terminal-3843236273-r11" x="24.4" y="508" textLength="1268.8" clip-path="url(#terminal-3843236273-line-20)">Like&#160;a&#160;phone&#160;call&#160;where&#160;every&#160;so&#160;often&#160;a&#160;word&#160;drops&#160;out&#160;and&#160;you&#160;have&#160;to&#160;say&#160;the&#160;sentence&#160;again,&#160;and&#160;you&#160;</text><text class="terminal-3843236273-r3" x="1329.8" y="508" textLength="12.2" clip-path="url(#terminal-3843236273-line-20)">│</text><text class="terminal-3843236273-r2" x="1342" y="508" textLength="12.2" clip-path="url(#terminal-3843236273-line-20)">
+</text><text class="terminal-3843236273-r3" x="0" y="532.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-21)">│</text><text class="terminal-3843236273-r11" x="24.4" y="532.4" textLength="463.6" clip-path="url(#terminal-3843236273-line-21)">start&#160;talking&#160;slower&#160;to&#160;be&#160;understood.</text><text class="terminal-3843236273-r3" x="1329.8" y="532.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-21)">│</text><text class="terminal-3843236273-r2" x="1342" y="532.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-21)">
+</text><text class="terminal-3843236273-r3" x="0" y="556.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-22)">│</text><text class="terminal-3843236273-r10" x="24.4" y="556.8" textLength="146.4" clip-path="url(#terminal-3843236273-line-22)">Likely&#160;cause</text><text class="terminal-3843236273-r2" x="170.8" y="556.8" textLength="1146.8" clip-path="url(#terminal-3843236273-line-22)">&#160;&#160;Congestion&#160;or&#160;a&#160;faulty&#160;link&#160;somewhere&#160;on&#160;the&#160;path;&#160;the&#160;evidence&#160;does&#160;not&#160;pin&#160;it&#160;to&#160;one&#160;side.</text><text class="terminal-3843236273-r3" x="1329.8" y="556.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-22)">│</text><text class="terminal-3843236273-r2" x="1342" y="556.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-22)">
+</text><text class="terminal-3843236273-r3" x="0" y="581.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-23)">│</text><text class="terminal-3843236273-r10" x="24.4" y="581.2" textLength="122" clip-path="url(#terminal-3843236273-line-23)">How&#160;to&#160;fix</text><text class="terminal-3843236273-r3" x="1329.8" y="581.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-23)">│</text><text class="terminal-3843236273-r2" x="1342" y="581.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-23)">
+</text><text class="terminal-3843236273-r3" x="0" y="605.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-24)">│</text><text class="terminal-3843236273-r2" x="24.4" y="605.6" textLength="1244.4" clip-path="url(#terminal-3843236273-line-24)">&#160;&#160;1.&#160;On&#160;the&#160;affected&#160;device,&#160;check&#160;the&#160;link&#160;first:&#160;for&#160;Wi-Fi&#160;move&#160;closer&#160;to&#160;the&#160;access&#160;point&#160;or&#160;try&#160;a&#160;</text><text class="terminal-3843236273-r3" x="1329.8" y="605.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-24)">│</text><text class="terminal-3843236273-r2" x="1342" y="605.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-24)">
+</text><text class="terminal-3843236273-r3" x="0" y="630" textLength="12.2" clip-path="url(#terminal-3843236273-line-25)">│</text><text class="terminal-3843236273-r2" x="24.4" y="630" textLength="622.2" clip-path="url(#terminal-3843236273-line-25)">cable;&#160;for&#160;Ethernet&#160;swap&#160;the&#160;cable&#160;and&#160;switch&#160;port.</text><text class="terminal-3843236273-r3" x="1329.8" y="630" textLength="12.2" clip-path="url(#terminal-3843236273-line-25)">│</text><text class="terminal-3843236273-r2" x="1342" y="630" textLength="12.2" clip-path="url(#terminal-3843236273-line-25)">
+</text><text class="terminal-3843236273-r3" x="0" y="654.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-26)">│</text><text class="terminal-3843236273-r2" x="24.4" y="654.4" textLength="475.8" clip-path="url(#terminal-3843236273-line-26)">&#160;&#160;2.&#160;Look&#160;at&#160;interface&#160;error&#160;counters:&#160;</text><text class="terminal-3843236273-r1" x="500.2" y="654.4" textLength="183" clip-path="url(#terminal-3843236273-line-26)">ethtool&#160;-S&#160;eth0</text><text class="terminal-3843236273-r2" x="683.2" y="654.4" textLength="36.6" clip-path="url(#terminal-3843236273-line-26)">&#160;/&#160;</text><text class="terminal-3843236273-r1" x="719.8" y="654.4" textLength="122" clip-path="url(#terminal-3843236273-line-26)">ip&#160;-s&#160;link</text><text class="terminal-3843236273-r2" x="841.8" y="654.4" textLength="134.2" clip-path="url(#terminal-3843236273-line-26)">&#160;on&#160;Linux,&#160;</text><text class="terminal-3843236273-r1" x="976" y="654.4" textLength="122" clip-path="url(#terminal-3843236273-line-26)">netstat&#160;-e</text><text class="terminal-3843236273-r2" x="1098" y="654.4" textLength="158.6" clip-path="url(#terminal-3843236273-line-26)">&#160;on&#160;Windows;&#160;</text><text class="terminal-3843236273-r3" x="1329.8" y="654.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-26)">│</text><text class="terminal-3843236273-r2" x="1342" y="654.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-26)">
+</text><text class="terminal-3843236273-r3" x="0" y="678.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-27)">│</text><text class="terminal-3843236273-r2" x="24.4" y="678.8" textLength="1232.2" clip-path="url(#terminal-3843236273-line-27)">rising&#160;CRC/FCS&#160;errors&#160;or&#160;drops&#160;confirm&#160;a&#160;bad&#160;link,&#160;and&#160;a&#160;duplex&#160;mismatch&#160;shows&#160;up&#160;as&#160;late&#160;collisions&#160;</text><text class="terminal-3843236273-r3" x="1329.8" y="678.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-27)">│</text><text class="terminal-3843236273-r2" x="1342" y="678.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-27)">
+</text><text class="terminal-3843236273-r3" x="0" y="703.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-28)">│</text><text class="terminal-3843236273-r2" x="24.4" y="703.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-28)">(</text><text class="terminal-3843236273-r1" x="36.6" y="703.2" textLength="146.4" clip-path="url(#terminal-3843236273-line-28)">ethtool&#160;eth0</text><text class="terminal-3843236273-r2" x="183" y="703.2" textLength="24.4" clip-path="url(#terminal-3843236273-line-28)">).</text><text class="terminal-3843236273-r3" x="1329.8" y="703.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-28)">│</text><text class="terminal-3843236273-r2" x="1342" y="703.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-28)">
+</text><text class="terminal-3843236273-r3" x="0" y="727.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-29)">│</text><text class="terminal-3843236273-r2" x="24.4" y="727.6" textLength="646.6" clip-path="url(#terminal-3843236273-line-29)">&#160;&#160;3.&#160;Measure&#160;the&#160;path&#160;loss&#160;beyond&#160;the&#160;capture&#160;point:&#160;</text><text class="terminal-3843236273-r1" x="671" y="727.6" textLength="305" clip-path="url(#terminal-3843236273-line-29)">mtr&#160;-rwc&#160;100&#160;203.0.113.10</text><text class="terminal-3843236273-r2" x="976" y="727.6" textLength="219.6" clip-path="url(#terminal-3843236273-line-29)">&#160;(Linux/macOS)&#160;or&#160;</text><text class="terminal-3843236273-r1" x="1195.6" y="727.6" textLength="97.6" clip-path="url(#terminal-3843236273-line-29)">pathping</text><text class="terminal-3843236273-r3" x="1329.8" y="727.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-29)">│</text><text class="terminal-3843236273-r2" x="1342" y="727.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-29)">
+</text><text class="terminal-3843236273-r3" x="0" y="752" textLength="12.2" clip-path="url(#terminal-3843236273-line-30)">│</text><text class="terminal-3843236273-r2" x="24.4" y="752" textLength="1049.2" clip-path="url(#terminal-3843236273-line-30)">(Windows);&#160;loss&#160;that&#160;starts&#160;at&#160;one&#160;hop&#160;and&#160;continues&#160;to&#160;the&#160;end&#160;shows&#160;where&#160;it&#160;begins.</text><text class="terminal-3843236273-r3" x="1329.8" y="752" textLength="12.2" clip-path="url(#terminal-3843236273-line-30)">│</text><text class="terminal-3843236273-r2" x="1342" y="752" textLength="12.2" clip-path="url(#terminal-3843236273-line-30)">
+</text><text class="terminal-3843236273-r3" x="0" y="776.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-31)">│</text><text class="terminal-3843236273-r2" x="24.4" y="776.4" textLength="1281" clip-path="url(#terminal-3843236273-line-31)">&#160;&#160;4.&#160;Check&#160;whether&#160;the&#160;Internet&#160;uplink&#160;is&#160;saturated&#160;(router&#160;traffic&#160;graphs);&#160;if&#160;it&#160;is,&#160;enable&#160;QoS/SQM&#160;on&#160;</text><text class="terminal-3843236273-r3" x="1329.8" y="776.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-31)">│</text><text class="terminal-3843236273-r2" x="1342" y="776.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-31)">
+</text><text class="terminal-3843236273-r3" x="0" y="800.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-32)">│</text><text class="terminal-3843236273-r2" x="24.4" y="800.8" textLength="366" clip-path="url(#terminal-3843236273-line-32)">the&#160;router&#160;or&#160;reduce&#160;the&#160;load.</text><text class="terminal-3843236273-r3" x="1329.8" y="800.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-32)">│</text><text class="terminal-3843236273-r2" x="1342" y="800.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-32)">
+</text><text class="terminal-3843236273-r3" x="0" y="825.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-33)">│</text><text class="terminal-3843236273-r2" x="24.4" y="825.2" textLength="1207.8" clip-path="url(#terminal-3843236273-line-33)">&#160;&#160;5.&#160;Check&#160;the&#160;router/switch&#160;logs&#160;for&#160;interface&#160;errors&#160;or&#160;flapping&#160;links&#160;during&#160;the&#160;capture&#160;window.</text><text class="terminal-3843236273-r3" x="1329.8" y="825.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-33)">│</text><text class="terminal-3843236273-r2" x="1342" y="825.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-33)">
+</text><text class="terminal-3843236273-r3" x="0" y="849.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-34)">│</text><text class="terminal-3843236273-r10" x="24.4" y="849.6" textLength="305" clip-path="url(#terminal-3843236273-line-34)">Why&#160;we&#160;think&#160;it&#x27;s&#160;a&#160;fault</text><text class="terminal-3843236273-r3" x="1329.8" y="849.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-34)">│</text><text class="terminal-3843236273-r2" x="1342" y="849.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-34)">
+</text><text class="terminal-3843236273-r3" x="0" y="874" textLength="12.2" clip-path="url(#terminal-3843236273-line-35)">│</text><text class="terminal-3843236273-r3" x="48.8" y="874" textLength="36.6" clip-path="url(#terminal-3843236273-line-35)">●●&#160;</text><text class="terminal-3843236273-r2" x="85.4" y="874" textLength="756.4" clip-path="url(#terminal-3843236273-line-35)">&#160;5.0%&#160;of&#160;data&#160;segments&#160;were&#160;retransmitted&#160;across&#160;2&#160;connections</text><text class="terminal-3843236273-r3" x="1329.8" y="874" textLength="12.2" clip-path="url(#terminal-3843236273-line-35)">│</text><text class="terminal-3843236273-r2" x="1342" y="874" textLength="12.2" clip-path="url(#terminal-3843236273-line-35)">
+</text><text class="terminal-3843236273-r3" x="0" y="898.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-36)">│</text><text class="terminal-3843236273-r3" x="48.8" y="898.4" textLength="36.6" clip-path="url(#terminal-3843236273-line-36)">●&#160;&#160;</text><text class="terminal-3843236273-r2" x="85.4" y="898.4" textLength="1207.8" clip-path="url(#terminal-3843236273-line-36)">&#160;Normal&#160;TCP&#160;recovery&#160;behaviour&#160;(14&#160;fast&#160;and&#160;42&#160;timeout&#160;retransmissions):&#160;endpoints&#160;are&#160;reacting&#160;to&#160;</text><text class="terminal-3843236273-r3" x="1329.8" y="898.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-36)">│</text><text class="terminal-3843236273-r2" x="1342" y="898.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-36)">
+</text><text class="terminal-3843236273-r3" x="0" y="922.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-37)">│</text><text class="terminal-3843236273-r2" x="24.4" y="922.8" textLength="109.8" clip-path="url(#terminal-3843236273-line-37)">real&#160;loss</text><text class="terminal-3843236273-r3" x="1329.8" y="922.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-37)">│</text><text class="terminal-3843236273-r2" x="1342" y="922.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-37)">
+</text><text class="terminal-3843236273-r3" x="0" y="947.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-38)">│</text><text class="terminal-3843236273-r3" x="48.8" y="947.2" textLength="36.6" clip-path="url(#terminal-3843236273-line-38)">●&#160;&#160;</text><text class="terminal-3843236273-r2" x="85.4" y="947.2" textLength="610" clip-path="url(#terminal-3843236273-line-38)">&#160;637&#160;duplicate&#160;ACKs:&#160;receivers&#160;report&#160;missing&#160;data</text><text class="terminal-3843236273-r3" x="1329.8" y="947.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-38)">│</text><text class="terminal-3843236273-r2" x="1342" y="947.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-38)">
+</text><text class="terminal-3843236273-r3" x="0" y="971.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-39)">│</text><text class="terminal-3843236273-r10" x="24.4" y="971.6" textLength="97.6" clip-path="url(#terminal-3843236273-line-39)">Evidence</text><text class="terminal-3843236273-r2" x="122" y="971.6" textLength="1110.2" clip-path="url(#terminal-3843236273-line-39)">&#160;&#160;frames&#160;#56,&#160;#291,&#160;#364,&#160;#366,&#160;#369,&#160;#370,&#160;#371,&#160;#372,&#160;#373,&#160;#454,&#160;#490,&#160;#502&#160;…&#160;(56&#160;total)</text><text class="terminal-3843236273-r3" x="1329.8" y="971.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-39)">│</text><text class="terminal-3843236273-r2" x="1342" y="971.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-39)">
+</text><text class="terminal-3843236273-r3" x="0" y="996" textLength="12.2" clip-path="url(#terminal-3843236273-line-40)">│</text><text class="terminal-3843236273-r7" x="48.8" y="996" textLength="231.8" clip-path="url(#terminal-3843236273-line-40)">#56&#160;&#160;&#160;&#160;&#160;+&#160;&#160;&#160;&#160;2.263s</text><text class="terminal-3843236273-r2" x="280.6" y="996" textLength="1037" clip-path="url(#terminal-3843236273-line-40)">&#160;TCP&#160;203.0.113.10:443&#160;→&#160;192.168.1.10:51358&#160;[PA]&#160;seq=969592635&#160;ack=2402560149&#160;win=2047</text><text class="terminal-3843236273-r3" x="1329.8" y="996" textLength="12.2" clip-path="url(#terminal-3843236273-line-40)">│</text><text class="terminal-3843236273-r2" x="1342" y="996" textLength="12.2" clip-path="url(#terminal-3843236273-line-40)">
+</text><text class="terminal-3843236273-r3" x="0" y="1020.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-41)">│</text><text class="terminal-3843236273-r2" x="24.4" y="1020.4" textLength="97.6" clip-path="url(#terminal-3843236273-line-41)">len=1460</text><text class="terminal-3843236273-r3" x="1329.8" y="1020.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-41)">│</text><text class="terminal-3843236273-r2" x="1342" y="1020.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-41)">
+</text><text class="terminal-3843236273-r3" x="0" y="1044.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-42)">│</text><text class="terminal-3843236273-r7" x="48.8" y="1044.8" textLength="231.8" clip-path="url(#terminal-3843236273-line-42)">#291&#160;&#160;&#160;&#160;+&#160;&#160;&#160;&#160;2.382s</text><text class="terminal-3843236273-r2" x="280.6" y="1044.8" textLength="1037" clip-path="url(#terminal-3843236273-line-42)">&#160;TCP&#160;203.0.113.10:443&#160;→&#160;192.168.1.10:51358&#160;[PA]&#160;seq=969804335&#160;ack=2402560149&#160;win=2047</text><text class="terminal-3843236273-r3" x="1329.8" y="1044.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-42)">│</text><text class="terminal-3843236273-r2" x="1342" y="1044.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-42)">
+</text><text class="terminal-3843236273-r3" x="0" y="1069.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-43)">│</text><text class="terminal-3843236273-r2" x="24.4" y="1069.2" textLength="97.6" clip-path="url(#terminal-3843236273-line-43)">len=1460</text><text class="terminal-3843236273-r3" x="1329.8" y="1069.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-43)">│</text><text class="terminal-3843236273-r2" x="1342" y="1069.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-43)">
+</text><text class="terminal-3843236273-r3" x="0" y="1093.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-44)">│</text><text class="terminal-3843236273-r7" x="48.8" y="1093.6" textLength="231.8" clip-path="url(#terminal-3843236273-line-44)">#364&#160;&#160;&#160;&#160;+&#160;&#160;&#160;&#160;2.394s</text><text class="terminal-3843236273-r2" x="280.6" y="1093.6" textLength="1037" clip-path="url(#terminal-3843236273-line-44)">&#160;TCP&#160;203.0.113.10:443&#160;→&#160;192.168.1.10:51358&#160;[PA]&#160;seq=969764915&#160;ack=2402560149&#160;win=2047</text><text class="terminal-3843236273-r3" x="1329.8" y="1093.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-44)">│</text><text class="terminal-3843236273-r2" x="1342" y="1093.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-44)">
+</text><text class="terminal-3843236273-r3" x="0" y="1118" textLength="12.2" clip-path="url(#terminal-3843236273-line-45)">│</text><text class="terminal-3843236273-r2" x="24.4" y="1118" textLength="97.6" clip-path="url(#terminal-3843236273-line-45)">len=1460</text><text class="terminal-3843236273-r3" x="1329.8" y="1118" textLength="12.2" clip-path="url(#terminal-3843236273-line-45)">│</text><text class="terminal-3843236273-r2" x="1342" y="1118" textLength="12.2" clip-path="url(#terminal-3843236273-line-45)">
+</text><text class="terminal-3843236273-r3" x="0" y="1142.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-46)">│</text><text class="terminal-3843236273-r7" x="48.8" y="1142.4" textLength="207.4" clip-path="url(#terminal-3843236273-line-46)">Wireshark&#160;filter:</text><text class="terminal-3843236273-r2" x="256.2" y="1142.4" textLength="1037" clip-path="url(#terminal-3843236273-line-46)">&#160;frame.number&#160;in&#160;{56&#160;291&#160;364&#160;366&#160;369&#160;370&#160;371&#160;372&#160;373&#160;454&#160;490&#160;502&#160;610&#160;724&#160;725&#160;774&#160;796&#160;</text><text class="terminal-3843236273-r3" x="1329.8" y="1142.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-46)">│</text><text class="terminal-3843236273-r2" x="1342" y="1142.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-46)">
+</text><text class="terminal-3843236273-r3" x="0" y="1166.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-47)">│</text><text class="terminal-3843236273-r2" x="24.4" y="1166.8" textLength="695.4" clip-path="url(#terminal-3843236273-line-47)">815&#160;818&#160;846&#160;930&#160;931&#160;932&#160;935&#160;938&#160;1257&#160;1259&#160;1260&#160;1346&#160;1347}</text><text class="terminal-3843236273-r3" x="1329.8" y="1166.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-47)">│</text><text class="terminal-3843236273-r2" x="1342" y="1166.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-47)">
+</text><text class="terminal-3843236273-r3" x="0" y="1191.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-48)">│</text><text class="terminal-3843236273-r10" x="24.4" y="1191.2" textLength="61" clip-path="url(#terminal-3843236273-line-48)">Hosts</text><text class="terminal-3843236273-r2" x="85.4" y="1191.2" textLength="341.6" clip-path="url(#terminal-3843236273-line-48)">&#160;&#160;192.168.1.10,&#160;203.0.113.10</text><text class="terminal-3843236273-r3" x="1329.8" y="1191.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-48)">│</text><text class="terminal-3843236273-r2" x="1342" y="1191.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-48)">
+</text><text class="terminal-3843236273-r3" x="0" y="1215.6" textLength="1342" clip-path="url(#terminal-3843236273-line-49)">╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯</text><text class="terminal-3843236273-r2" x="1342" y="1215.6" textLength="12.2" clip-path="url(#terminal-3843236273-line-49)">
+</text><text class="terminal-3843236273-r2" x="1342" y="1240" textLength="12.2" clip-path="url(#terminal-3843236273-line-50)">
+</text><text class="terminal-3843236273-r7" x="0" y="1264.4" textLength="1281" clip-path="url(#terminal-3843236273-line-51)">Tip:&#160;--html&#160;report.html&#160;for&#160;the&#160;full&#160;interactive&#160;report&#160;·&#160;faultline&#160;web&#160;for&#160;the&#160;dashboard&#160;·&#160;--expert&#160;for&#160;</text><text class="terminal-3843236273-r2" x="1342" y="1264.4" textLength="12.2" clip-path="url(#terminal-3843236273-line-51)">
+</text><text class="terminal-3843236273-r7" x="0" y="1288.8" textLength="85.4" clip-path="url(#terminal-3843236273-line-52)">details</text><text class="terminal-3843236273-r2" x="1342" y="1288.8" textLength="12.2" clip-path="url(#terminal-3843236273-line-52)">
+</text><text class="terminal-3843236273-r2" x="1342" y="1313.2" textLength="12.2" clip-path="url(#terminal-3843236273-line-53)">
+</text>
+    </g>
+    </g>
+</svg>

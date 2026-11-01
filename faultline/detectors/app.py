@@ -72,8 +72,8 @@ ALERTS = {
     41: ("no_certificate", "a certificate was required but not sent", Category.MISCONFIG, True),
     42: ("bad_certificate", "the certificate is damaged or does not match", Category.MISCONFIG, True),
     43: ("unsupported_certificate", "the certificate type is not supported", Category.MISCONFIG, True),
-    44: ("certificate_revoked", "the certificate was cancelled (revoked) by whoever issued it", Category.FAULT, True),
-    45: ("certificate_expired", "the website's certificate has expired", Category.FAULT, True),
+    44: ("certificate_revoked", "the certificate was cancelled (revoked) by whoever issued it", Category.MISCONFIG, True),
+    45: ("certificate_expired", "the website's certificate has expired", Category.MISCONFIG, True),
     46: ("certificate_unknown", "the certificate was rejected for an unspecified reason (often an untrusted or "
          "self-signed certificate)", Category.MISCONFIG, True),
     47: ("illegal_parameter", "one side sent an invalid setting", Category.MISCONFIG, False),
@@ -550,7 +550,11 @@ class AppDetector(Detector):
                                  "server side, not one device", Category.FAULT if cat is Category.FAULT else
                                  Category.MISCONFIG, 1.0))
         sev = Severity.MEDIUM if (f.count >= 3 or len(f.clients) >= 2) else Severity.LOW
-        title = f"Secure connection fails: {site} ({name.replace('_', ' ')})"
+        title = {45: f"This website's security certificate has expired ({site})",
+                 44: f"This website's security certificate was revoked ({site})",
+                 48: f"Devices don't trust the certificate of {site}",
+                 70: f"No common TLS version with {site}"}.get(
+            top_desc, f"Secure connection fails: {site} ({name.replace('_', ' ')})")
         summary = f"{plural(f.count, 'secure (TLS) connection')} to {f.server} failed; main reason: {plain}."
         expl = ("Before a secure (https) connection starts, both sides agree on encryption and the server proves its "
                 f"identity with a certificate. Here it failed: {plain}. Users see a security warning or the app "

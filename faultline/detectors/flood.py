@@ -405,7 +405,7 @@ class FloodDetector(Detector):
         ic = pkt.icmp
         # ping of death: a fragment whose end lies beyond the 65,535-byte IP maximum
         if pkt.proto == 1 and (pkt.mf or pkt.frag_off):
-            end = (pkt.frag_off or 0) * 8 + max(0, (pkt.ip_len or 0) - 20)
+            end = (pkt.frag_off or 0) + max(0, pkt.ip_len or 0)  # decoder: frag_off in bytes, ip_len = IP payload length
             if end > 65535:
                 self.pod.add(pkt)
                 self.pod_hosts[(src, dst)] += 1

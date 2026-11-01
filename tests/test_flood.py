@@ -147,7 +147,7 @@ def test_ping_of_death_fragment():
     s = Seq()
     p = icmp(s, 0, "198.51.100.1", VICTIM, 8, 0)
     p.icmp = None
-    p.mf, p.frag_off, p.ip_len = False, 8100, 1500  # 64,800 + 1,480 bytes > 65,535
+    p.mf, p.frag_off, p.ip_len = False, 64800, 1480  # offset in bytes (decoder units) + IP payload > 65,535
     fs = [f for f in run_detector(FloodDetector(), [p]) if f.kind == "flood.icmp"]
     assert fs and fs[0].metrics["pattern"] == "ping_of_death"
 

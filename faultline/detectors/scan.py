@@ -554,7 +554,7 @@ class ScanDetector(Detector):
         data = sum(p.with_data for p in pairs)
         udp_closed = sum(len(p.udp_closed) for p in pairs)
         udp_open = sum(len(p.udp_open) for p in pairs)
-        ftp = any(p.ftp for p in pairs)
+        ftp = any(p.ftp for p in pairs) and data > 0  # an FTP session that actually transferred something
         peak = max((p.win.peak for p in pairs), default=0)
         data_ratio = data / ports if ports else 0.0
 
@@ -617,11 +617,11 @@ class ScanDetector(Detector):
                 "applications never send; they exist only to sneak past firewalls", Category.ATTACK, 3.0))
         if half:
             ind.append(Indicator(
-                f"{plural(half, 'connection')} were answered by the server and then immediately reset by {src} "
+                f"{plural(half, 'connection')} {'was' if half == 1 else 'were'} answered by the server and then immediately reset by {src} "
                 "before finishing the handshake (classic half-open 'SYN scan')", Category.ATTACK, 2.0))
         if cclose:
             ind.append(Indicator(
-                f"{plural(cclose, 'connection')} were opened and closed again without sending any data "
+                f"{plural(cclose, 'connection')} {'was' if cclose == 1 else 'were'} opened and closed again without sending any data "
                 "(a 'connect scan' just checking whether the door opens)", Category.ATTACK, 1.5))
         if udp_closed >= 5:
             ind.append(Indicator(
@@ -639,7 +639,7 @@ class ScanDetector(Detector):
             ind.append(Indicator(f"{fmt_pct(unanswered / ports)} of probed ports never answered (filtered or closed)",
                                  Category.ATTACK, 0.5))
         if opened:
-            ind.append(Indicator(f"{plural(opened, 'open port')} were discovered ({', '.join(open_list[:5])})",
+            ind.append(Indicator(f"{plural(opened, 'open port')} {'was' if opened == 1 else 'were'} discovered ({', '.join(open_list[:5])})",
                                  Category.ATTACK, 0.5))
         if data:
             ind.append(Indicator(

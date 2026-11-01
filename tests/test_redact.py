@@ -115,7 +115,7 @@ def test_no_false_positives(text):
     ("10.0.0.1", "lan-host-"), ("172.16.5.5", "lan-host-"), ("169.254.1.1", "lan-host-"),
     ("1.1.1.1", "inet-host-"), ("93.184.216.34", "inet-host-"),
     ("fe80::1", "lan6-host-"), ("2606:4700::1111", "inet6-host-"),
-    ("2001:0db8:0000:0000:0000:0000:0000:0001", "lan6-host-"),
+    ("2001:0db8:0000:0000:0000:0000:0000:0001", "inet6-host-"),
     ("::ffff:8.8.8.8", "inet-host-"),
 ])
 def test_single_addresses(text, kind):
@@ -127,7 +127,7 @@ def test_embedded_forms():
     r = Redactor(KEY)
     out = r.text("from 192.168.1.15:443 to (8.8.8.8) and [2001:db8::5]:53, mac 7c-1e-22-33-44-55.")
     assert out.startswith("from lan-host-") and ":443 to (inet-host-" in out
-    assert "[lan6-host-" in out and "]:53" in out
+    assert "[inet6-host-" in out and "]:53" in out
     assert "mac mac-" in out and out.endswith(".")
     assert not IPV4_RE.search(out) and not MAC_RE.search(out)
 

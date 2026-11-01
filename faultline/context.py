@@ -147,9 +147,9 @@ class HostTable:
                 self.dhcp_servers[sid] += 1
                 if src is not None:
                     src.roles.add("dhcp-server")
-                for r in d.routers[:4]:
+                for r in (d.routers or [])[:4]:
                     self.dhcp_routers[r] += 1
-                for s in d.dns_servers[:4]:
+                for s in (d.dns_servers or [])[:4]:
                     self.dhcp_dns[s] += 1
             if d.hostname and src is not None and len(src.names) < 8:
                 src.names.add(d.hostname[:64])
@@ -169,11 +169,18 @@ class HostTable:
             public = sum(1 for ip in ips if not is_private(ip))
             if public >= 3:
                 macs.add(mac)
-        ips: set[str] = {ip for ip, _ in self.dhcp_routers.most_common(2)}
+        # Trust what the traffic proves (a MAC that really forwards internet traffic)
+        # over what DHCP *claims*: a rogue DHCP server can name itself the router.
+        ips: set[str] = set()
         for mac in macs:
             for ip in self.mac_ips.get(mac, ()):
                 if is_private(ip):
                     ips.add(ip)
+            for ip, claims in self.arp_claims.items():
+                if claims and claims.most_common(1)[0][0] == mac:
+                    ips.add(ip)
+        if not ips and self.dhcp_routers:
+            ips = {self.dhcp_routers.most_common(1)[0][0]}
         # gateway MAC may never source public traffic in a short LAN-only capture
         for ip in list(ips):
             for mac, _ in self.arp_claims.get(ip, Counter()).most_common(1):
