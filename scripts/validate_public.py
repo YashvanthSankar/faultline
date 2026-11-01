@@ -7,8 +7,8 @@ SHA-256 (so a tampered download is refused), runs the full engine, and scores
 the result against what each capture is documented to contain, including the
 cases we knowingly miss.
 
-    python scripts/validate_public.py                 # downloads into a temp dir, deleted afterwards
-    python scripts/validate_public.py --dir captures/ # keep the downloads
+    python scripts/validate_public.py                 # downloads once into ~/.cache/faultline/public-captures
+    python scripts/validate_public.py --dir captures/ # use another folder
 
 The captures are not redistributed in this repository.
 """
@@ -128,11 +128,12 @@ def fetch(name: str, dest: str) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--dir", help="keep downloads here (default: a temporary directory)")
+    ap.add_argument("--dir", default=os.path.join(os.path.expanduser("~"), ".cache", "faultline", "public-captures"),
+                    help="where downloads are cached (default: ~/.cache/faultline/public-captures)")
     args = ap.parse_args()
     con = Console(highlight=False)
-    work = args.dir or tempfile.mkdtemp(prefix="faultline-public-")
-    os.makedirs(work, exist_ok=True)
+    work = args.dir
+    os.makedirs(work, mode=0o700, exist_ok=True)
     try:
         con.print(f"[dim]Downloading {len(PINNED)} public captures from wiki.wireshark.org (SHA-256 pinned)…[/]")
         try:
@@ -180,8 +181,7 @@ def main() -> int:
                   f"0 crashes on {total} real captures (including 3 DNS exploit files)")
         return 0
     finally:
-        if not args.dir:
-            shutil.rmtree(work, ignore_errors=True)
+        pass
 
 
 if __name__ == "__main__":

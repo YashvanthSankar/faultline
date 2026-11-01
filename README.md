@@ -84,8 +84,11 @@ Other features of the report: a beginner/expert toggle, plain-language tooltips 
 
 ## Demo video
 
-<!-- VIDEO_LINK -->
-To be added before submission.
+[<img src="docs/demo/poster.png" alt="Demo video: Faultline on a man-in-the-middle capture" width="720">](docs/demo/faultline-demo.mp4)
+
+[`docs/demo/faultline-demo.mp4`](docs/demo/faultline-demo.mp4) (3 min 12 s). It covers the problem, the command-line tool on an attack and on a fault, the web dashboard (report, network map, evidence scoreboard, side-by-side comparison), hostile input and redaction, and the evaluation results.
+
+All footage shows the real tool running on the bundled samples. The terminal scenes are recorded with [VHS](https://github.com/charmbracelet/vhs) and the dashboard scenes with Playwright. The narration is a synthesized voice (macOS `say`). The scripts that produced the video are in [`scripts/demo_video/`](scripts/demo_video).
 
 ## Design
 
@@ -308,9 +311,9 @@ To check behaviour on traffic we did not generate, [`scripts/validate_public.py`
 
 The images in [`docs/proof/`](docs/proof) show the verification commands being run. The PNG files are screenshots of a macOS Terminal window. The SVG files are recordings of each command's output, which [`scripts/make_proof.py`](scripts/make_proof.py) regenerates by running the commands again.
 
-| Analysis of an attack capture | Test suite and benchmark |
+| Analysis of an attack capture | Test suite and benchmark (339 tests at the time of this screenshot) |
 |---|---|
-| <img src="docs/proof/real-terminal-mitm.png" alt="faultline analyze samples/mitm_chain.pcap in a Terminal window" width="440"> | <img src="docs/proof/real-terminal-tests.png" alt="339 tests passed and the benchmark in a Terminal window" width="440"> |
+| <img src="docs/proof/real-terminal-mitm.png" alt="faultline analyze samples/mitm_chain.pcap in a Terminal window" width="440"> | <img src="docs/proof/real-terminal-tests.png" alt="Test suite and benchmark in a Terminal window (taken when the suite had 339 tests; it now has 357, see tests.svg)" width="440"> |
 | **Fuzzing and secret scan** | **Public captures** |
 | <img src="docs/proof/real-terminal-fuzz.png" alt="Fuzzer and secret scanner in a Terminal window" width="440"> | <img src="docs/proof/public-captures.svg" alt="Validation on public Wireshark captures" width="440"> |
 
@@ -334,7 +337,7 @@ The images in [`docs/proof/`](docs/proof) show the verification commands being r
 pip install -e ".[dev]"
 pytest -q                                   # 357 tests
 faultline bench                             # labelled benchmark
-python scripts/validate_public.py           # public captures (downloads about 1.5 MB)
+python scripts/validate_public.py           # public captures (downloads about 1.5 MB once, cached in ~/.cache/faultline)
 python scripts/fuzz.py -n 3000 --seed 42    # fuzzing
 python scripts/check_secrets.py             # secret scan
 python scripts/make_proof.py                # regenerate docs/proof
