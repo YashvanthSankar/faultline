@@ -372,3 +372,23 @@ def test_sniff_capture(tmp_path):
     assert sniff_capture(p) is None
     p.write_bytes(b"GIF89a")
     assert sniff_capture(p) is None
+
+
+def test_real_size_upload_is_accepted():
+    """Regression: uploads larger than 64 KiB were rejected with 413 (werkzeug form-memory limit)."""
+    import io as _io
+    import os as _os
+
+    from faultline.web.app import create_app as _create
+
+    path = _os.path.join(_os.path.dirname(_os.path.dirname(__file__)), "samples", "lossy_link.pcap")
+    if not _os.path.exists(path):
+        import pytest as _pytest
+        _pytest.skip("samples not generated")
+    app = _create()
+    c = app.test_client()
+    data = open(path, "rb").read()
+    assert len(data) > 1024 * 1024
+    r = c.post("/analyze", data={"csrf_token": app.config["FAULTLINE_CSRF_TOKEN"], "capture": (_io.BytesIO(data), "lossy_link.pcap")},
+               content_type="multipart/form-data")
+    assert r.status_code == 200

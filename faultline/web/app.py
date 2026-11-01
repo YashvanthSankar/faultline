@@ -274,7 +274,7 @@ def create_app(*, max_upload_mb: int = 200, samples_dir: str | os.PathLike | Non
     app.config.update(
         SECRET_KEY=secrets.token_bytes(32),  # generated per process, never stored
         MAX_CONTENT_LENGTH=int(max_upload_mb) * 1024 * 1024,
-        MAX_FORM_MEMORY_SIZE=64 * 1024,
+        MAX_FORM_MEMORY_SIZE=int(max_upload_mb) * 1024 * 1024,  # werkzeug counts in-memory file parts too; total is capped by MAX_CONTENT_LENGTH
         MAX_FORM_PARTS=50,
         JSON_SORT_KEYS=False,
         PROPAGATE_EXCEPTIONS=False,
