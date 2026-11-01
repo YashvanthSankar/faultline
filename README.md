@@ -1,102 +1,160 @@
+<div align="center">
+
 # Faultline
 
-> **Is my network broken, or is someone breaking it?**
->
-> Faultline reads a packet capture, finds the faults *and* the attacks hidden in it, tells them apart, and explains every one in plain language: what happened, the likely cause, the fix, and the exact packets that prove it.
+### Is my network broken, or is someone breaking it?
+
+**Faultline reads a packet capture, finds the faults *and* the attacks hidden in it, tells them apart, and explains every one in plain language: what happened, the likely cause, how to fix it, and the exact packets that prove it.**
 
 ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
-![Works offline](https://img.shields.io/badge/runs-100%25%20offline-informational)
-![Engine: zero runtime deps](https://img.shields.io/badge/analysis%20engine-stdlib%20only-success)
-![Own parser, own detectors](https://img.shields.io/badge/tshark%20%2F%20scapy-not%20used-critical)
+![Runs offline](https://img.shields.io/badge/runs-100%25%20offline-informational)
+![Analysis engine: stdlib only](https://img.shields.io/badge/analysis%20engine-stdlib%20only-success)
+![No tshark / scapy](https://img.shields.io/badge/tshark%20%2F%20scapy-not%20used-critical)
+![Tests](https://img.shields.io/badge/tests-334%20passing-brightgreen)
+![Benchmark](https://img.shields.io/badge/benchmark-30%2F30%20detected%20%C2%B7%200%20false%20alarms-brightgreen)
 
-**Demo video:** <!-- VIDEO_LINK --> · **Hackathon:** IIITDM Kancheepuram Cybersecurity Club 24-hour hackathon, Network track ("Diagnosing Network Problems from Packet Captures") · **Team:** Moorthy Gang — Yashvanth S (CS24I1029), team leader (solo team)
+**[Demo video](#demo-video)** · **[Try it in 60 seconds](#try-it-in-60-seconds)** · **[See the output](#see-the-output)** · **[Benchmark](#benchmark)** · **[Security](#security)** · **[How we thought about it](docs/THINKING.md)**
 
-<!-- SCREENSHOT:dashboard  (hero: web dashboard showing the "Under attack" verdict for samples/mitm_rogue_dhcp.pcap with the incident chain) -->
+*IIITDM Kancheepuram Cybersecurity Club · 24-hour hackathon · Network track: "Diagnosing Network Problems from Packet Captures"*
+*Team **Moorthy Gang**: Yashvanth S (CS24I1029)*
+
+<img src="docs/images/report-mitm_chain.png" alt="Faultline report for a man-in-the-middle capture: big 'Under attack' verdict, health score 52, timeline and 'Fix this first' incident chain" width="900">
+
+</div>
 
 ---
 
-## Try it in 60 seconds
+## Results at a glance
 
-```bash
-git clone <REPO_URL> faultline && cd faultline          # <!-- VERIFY: repo URL -->
-python3 -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
-pip install -e .                                        # installs rich + flask and the `faultline` command
-faultline analyze samples/ip_conflict.pcap              # verdict + findings in the terminal
-faultline analyze samples/arp_spoofing.pcap             # <!-- VERIFY: attack sample not generated yet -->
-faultline web                                           # dashboard at http://127.0.0.1:8765
-```
+| | |
+|---|---|
+| 🎯 **Detection** | **30 / 30** expected problems found across 35 labelled captures (`faultline bench`) |
+| ⚖️ **Fault vs. attack** | **30 / 30** judged correctly: fault, misconfiguration or attack |
+| 🔕 **False alarms** | **0**, and all 4 clean captures (including a busy 5,900-packet office) stay quiet |
+| 🛡️ **Hostile input** | **6 / 6** malicious or broken files handled; **0 crashes** in 3,000 fuzzed captures (`scripts/fuzz.py`) |
+| 🧠 **Own logic** | 36 finding kinds, our own pcap/pcapng reader and L2→L7 decoders: **no Wireshark, tshark, Scapy or dpkt** |
+| ✅ **Tested** | 334 automated tests passing on Python 3.10 and 3.12; secret scan clean |
 
-No Wireshark, tshark, Scapy, root privileges, network access or API keys are needed. Everything runs locally on Python ≥ 3.10.
+Every number above is produced by a command in this repo and can be re-run in under a minute: see [Verify our claims](#verify-our-claims).
 
 ---
 
 ## The problem
 
-A small office, a lab, a campus department. Nobody there is a network engineer. One morning "the internet is broken": pages load slowly or go to the wrong place, video calls freeze, printers vanish. The office manager does the only thing they know: restart the router, wait, hope.
+A small office, a lab, a campus department. Nobody there is a network engineer. One morning "the internet is broken": pages go to the wrong place, video calls freeze, the printer vanishes. The office manager does the only thing they know: restart the router, wait, hope.
 
-The honest way to find out what is wrong is to take a packet capture and read it, line by line, in Wireshark. That needs years of protocol knowledge. And it hides a nastier problem: **an outage and an attack look identical to the person suffering them.** Two devices fighting over one IP address and an attacker poisoning the ARP table both produce "the Wi-Fi keeps dropping". A dead DNS server and a DNS hijack both produce "websites don't work". While the manager reboots the router, the attacker who is sitting on the LAN keeps reading the traffic.
+The honest way to find out what is wrong is to take a packet capture and read it, line by line, in Wireshark. That takes years of protocol knowledge, and it hides a nastier problem: **an outage and an attack look identical to the person suffering them.**
 
-The brief asks for a tool that takes a capture file, finds the faults and attacks hidden in the traffic, and explains them in plain language with the likely cause and a suggested fix. Faultline is that tool, and it is built around the question nobody else answers first: **fault or attack?**
+- Two devices fighting over one IP address and an attacker poisoning the ARP table both produce "the Wi-Fi keeps dropping".
+- A dead DNS server and a DNS hijack both produce "websites don't work".
 
-## What Faultline does in 30 seconds
+While the manager reboots the router, the attacker sitting on the LAN keeps reading the traffic.
 
+## Our answer: diagnosis, not just detection
+
+Faultline is built around the question nobody else answers first: **fault or attack?**
+
+For every problem it finds, Faultline:
+
+1. **Says what is wrong in plain language**, with an everyday analogy, for a beginner. An expert view sits one click away.
+2. **Decides "fault", "misconfiguration" or "attack"**, and **shows its reasoning both ways**: the evidence for its verdict *and* why it rejected the alternative ("why this is ARP spoofing and **not** an IP conflict").
+3. **Separates root causes from symptoms.** "A rogue DHCP server handed out a fake DNS server, so DNS answers were forged and a password leaked. **Fix the DHCP server first.**"
+4. **Gives the likely cause and concrete fix steps**, with real commands (`ipconfig /renew`, `show mac address-table`, `ping -M do -s 1472`, …).
+5. **Points to the exact packets** (Wireshark frame numbers and a ready-to-paste filter), plus a **one-click evidence `.pcap`** with just those packets.
+6. **Gives one verdict for the whole capture**: `Healthy`, `Minor issues`, `Faulty` or `Under attack`, with a 0–100 health score.
+
+## Try it in 60 seconds
+
+```bash
+git clone https://github.com/YashvanthSankar/faultline.git && cd faultline
+python3 -m venv .venv && source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -e .                                          # installs rich + flask and the `faultline` command
+
+faultline analyze samples/mitm_chain.pcap                 # an attack: rogue DHCP → fake DNS → stolen password
+faultline analyze samples/lossy_link.pcap                 # a fault: lossy Wi-Fi, no attack
+faultline web                                             # dashboard at http://127.0.0.1:8765, click any sample
 ```
-$ faultline analyze samples/mitm_rogue_dhcp.pcap    # <!-- VERIFY: sample not generated yet; use whichever attack sample ships -->
-<!-- VERIFY: paste real output of `faultline analyze samples/mitm_rogue_dhcp.pcap --no-color` once samples exist; do not hand-edit it -->
-```
 
-Every analysis produces:
+That's all. No Wireshark, no root, no internet connection, no API keys. Python ≥ 3.10 on macOS, Linux or Windows.
 
-1. **A verdict at the top**: `Healthy`, `Minor issues`, `Faulty` or `Under attack`, with a 0 to 100 health score.
-2. **Findings**, each with a beginner explanation, an analogy, an expert view, the likely cause, concrete fix steps, the exact frame numbers (same numbering as Wireshark), a confidence value, and, for attacks, a MITRE ATT&CK technique.
-3. **For and against reasoning**: each finding is labelled *Fault*, *Misconfiguration* or *Attack*, and shows the evidence that supported the winning hypothesis **and** the evidence that would have supported the alternatives ("why we think this is ARP spoofing and not an IP conflict").
-4. **Incidents**: related findings chained into one story with the root cause separated from its symptoms. "A rogue DHCP server handed out a fake DNS server, so DNS answers were hijacked. **Fix the DHCP server first.**"
-5. **Evidence you can open in Wireshark**: a tiny per-finding `.pcap` containing only the frames behind that finding.
+## See the output
+
+All images below are **real output** generated from the bundled samples by [`scripts/make_assets.py`](scripts/make_assets.py); nothing is mocked. You can also open the full interactive reports in [`docs/examples/`](docs/examples) (download and open in a browser; they are single offline HTML files).
+
+### Terminal: an attack, explained
+
+`faultline analyze samples/mitm_chain.pcap`: three findings chained into one incident, each with "why we think it's an attack" and the evidence frames.
+
+<img src="docs/images/terminal-mitm.svg" alt="Terminal output for mitm_chain.pcap" width="900">
+
+### Terminal: a fault, *not* an attack
+
+`faultline analyze samples/lossy_link.pcap`: 5% packet loss, located relative to the capture point, with "no sign of an attack".
+
+<img src="docs/images/terminal-lossy.svg" alt="Terminal output for lossy_link.pcap" width="900">
+
+### Same symptom, opposite diagnosis
+
+Both captures contain "two MAC addresses claim one IP". Faultline calls one a harmless **misconfiguration** and the other an **ARP-spoofing attack**, and says why.
+
+| `ip_conflict.pcap`: printer and laptop share .23 | `arp_spoofing.pcap`: a device impersonates the router |
+|---|---|
+| <img src="docs/images/terminal-ip-conflict.svg" alt="IP conflict judged misconfiguration" width="440"> | <img src="docs/images/terminal-arp-spoofing.svg" alt="ARP spoofing judged attack" width="440"> |
+
+### The dashboard and HTML report
+
+| An outage *and* an attack in one capture, separated | A lossy link: timeline, blame, fix |
+|---|---|
+| <img src="docs/images/report-outage_vs_attack_mixed.png" alt="Report separating a DNS outage from a port scan" width="440"> | <img src="docs/images/report-lossy_link.png" alt="Report for lossy link" width="440"> |
+
+The full-page tour of the attack report, with the "Fault or attack? Why we think so" scoreboard, the MITRE ATT&CK mapping and the evidence table: [`docs/images/report-mitm_chain-full.png`](docs/images/report-mitm_chain-full.png).
+
+## Demo video
+
+<!-- VIDEO_LINK -->
+🎬 **Demo video (2–5 min):** *link will be added here before submission.*
 
 ## Why it's different
 
-Wireshark shows packets. IDSs raise alerts. Both leave the hard part, *interpretation*, to a human expert. Faultline is a **diagnosis engine**, not a packet viewer and not a signature matcher.
+Wireshark shows packets. Intrusion detection systems raise alerts. Both leave the hard part, *interpretation*, to an expert. Faultline is a **diagnosis engine**.
 
-| Capability | Wireshark expert info | Zeek | Suricata / Snort | NetworkMiner | **Faultline** |
-|---|---|---|---|---|---|
-| Finds TCP faults (retrans, resets, zero window, MTU) | Yes | Partly (logs) | No | No | **Yes** |
-| Finds attacks (scans, ARP/DNS/DHCP spoofing, floods) | No | Scripts | Signatures | Partly | **Yes** |
-| Decides **fault vs. attack** with "why not the other one" reasoning | No | No | No | No | **Yes: competing hypotheses, weighted indicators, counter-evidence shown** |
-| Root cause vs. symptom ("fix this first") | No | No | No | No | **Yes: incident chains** |
-| Localises loss **upstream / downstream of the capture point** | No | No | No | No | **Yes** (before / after the capture point) |
-| Blame split for "it's slow" (network / server / client / window) | No | No | No | No | **Yes** |
-| Plain-language explanation + analogy + expert view | No | No | No | No | **Yes, for every finding** |
-| Cause and fix steps for every finding | No | No | No | No | **Yes** |
-| Per-finding evidence pcap export | Manual | No | No | No | **Yes, one click** |
-| Privacy redaction of shareable reports | No | No | No | No | **Yes: `--redact` (HMAC-SHA256 pseudonyms, random 32-byte key per run)** |
-| Before/after diff to prove a fix worked | No | No | No | No | **Yes: `faultline diff`** |
-| Labelled scenario lab + precision/recall/false-alarm benchmark | No | No | No | No | **Yes: `faultline lab`, `faultline bench`** |
-| Hostile-input hardening, fuzz-tested | n/a | n/a | n/a | n/a | **Yes** (see [Security](#security)) |
+| Capability | Wireshark expert info | Zeek | Suricata / Snort | **Faultline** |
+|---|---|---|---|---|
+| TCP faults (retransmissions, resets, zero window, MTU) | ✅ | partly (logs) | ❌ | ✅ |
+| Attacks (scans, ARP/DNS/DHCP spoofing, floods) | ❌ | via scripts | ✅ signatures | ✅ behaviour-based |
+| **Decides fault vs. attack, with "why not the other one"** | ❌ | ❌ | ❌ | ✅ competing hypotheses, counter-evidence shown |
+| **Root cause vs. symptom ("fix this first")** | ❌ | ❌ | ❌ | ✅ incident chains |
+| **Packet loss located before / after the capture point** | ❌ | ❌ | ❌ | ✅ |
+| **"It's slow": network vs. server vs. receiver blame** | ❌ | ❌ | ❌ | ✅ |
+| Plain-language explanation, analogy, cause and fix for every finding | ❌ | ❌ | ❌ | ✅ |
+| Per-finding evidence `.pcap` + Wireshark filter | manual | ❌ | ❌ | ✅ one click |
+| Shareable report with IPs/MACs pseudonymised | ❌ | ❌ | ❌ | ✅ `--redact` |
+| Before/after comparison to prove a fix worked | ❌ | ❌ | ❌ | ✅ `faultline diff` |
+| Ships its own labelled benchmark with a false-alarm rate | ❌ | ❌ | ❌ | ✅ `faultline bench` |
 
-Everything above the capture reader is our own code: the pcap/pcapng/gzip reader, every protocol decoder (Ethernet, VLAN, ARP, IPv4/6, TCP with options, UDP, ICMP/v6 with quoted inner header, DNS, DHCP, TLS, HTTP, cleartext authentication) and every detector. **No tshark, Wireshark, Scapy, dpkt or Zeek output is wrapped or parsed.**
+(Comparison refers to what each tool does out of the box for a non-expert.)
 
 ## Coverage of the brief
 
-Every challenge point from the problem statement, how Faultline addresses it, and the finding kinds involved.
-
-| Challenge point (from the brief) | How Faultline addresses it | Finding kinds |
+| Challenge point | How Faultline addresses it | Finding kinds |
 |---|---|---|
-| **Reading captures safely**: large, broken or malicious input without crashing or leaking data | Own streaming reader; every length checked against remaining bytes and hard caps (record ≤ 256 KiB, pcapng block ≤ 16 MiB, ≤ 10 M packets, 4 GiB file, 2 GiB gzip-decompressed bomb guard); corruption reported with byte offset and the analysis of what was read still completes; payload bytes never retained; fuzz tested | reader warnings, `malformed` counter (`tests/test_fuzz.py`) |
-| **TCP retransmissions and resets** | Per-flow state tracker: retransmissions, duplicate ACKs, lost segments, resets, refused connections, SYN timeouts, zero windows, plus upstream/downstream loss localisation | `tcp.retransmissions`, `tcp.resets`, `tcp.refused`, `tcp.syn_timeout`, `tcp.zero_window` |
-| **DNS failures** | Query/response matching by transaction ID: timeouts, SERVFAIL/REFUSED, NXDOMAIN bursts, slow resolvers | `dns.timeout`, `dns.errors`, `dns.nxdomain`, `dns.slow` |
-| **Duplicate IPs / ARP conflicts** | ARP sender claims per IP; stable alternating MACs with probes/DAD = conflict; gateway impersonation, flip-flop, unsolicited replies = spoofing | `arp.duplicate_ip` (conflict vs. spoofing variants), `arp.unanswered`, `arp.scan`, `arp.storm` |
-| **MTU mismatches** | ICMP Fragmentation-Needed / Packet-Too-Big, PMTUD black holes (large segments retransmitted with DF set and no ICMP), MSS mismatches | `mtu.frag_needed`, `mtu.blackhole` |
-| **Unusual delays** | Handshake RTT, server response time, stalls; blame split: network vs. server vs. client vs. receive window | `latency.high_rtt`, `latency.slow_server` |
-| **Port scans** | One source → many ports/hosts; SYN, FIN, NULL, Xmas, connect and UDP scans; host and ping sweeps | `scan.port`, `scan.host_sweep` |
-| **ARP spoofing** | See ARP row; MITRE T1557.002 | `arp.duplicate_ip` (attack variant) |
-| **DNS hijacking** | Two answers for one query (race), answers from a server that was never queried, public names resolving to private IPs, TTL anomalies; chained to rogue DHCP/ARP spoofing when present | `dns.hijack`, `dns.tunneling` |
-| **Rogue DHCP servers** | Second server offering a different router/DNS = rogue; NAK storms / lease mismatch = misconfiguration; no server; starvation | `dhcp.multiple_servers` (rogue vs. misconfigured variants), `dhcp.no_server`, `dhcp.nak`, `dhcp.starvation` |
-| **Telling an outage from an attack, low false alarms** | Hypothesis engine (weighted indicators for fault / misconfig / attack, calibrated confidence); thresholds scaled by `--sensitivity`; clean and busy captures in the benchmark must produce zero findings | all kinds; `verdict.py`, `bench.py` |
-| **Explaining clearly to a beginner** | Every finding carries `summary`, `explanation`, `analogy` and `technical` (expert) text | all kinds |
-| **Recommending fixes** | Every finding carries `cause` and `fix[]`; incidents carry `first_fix` ("fix this first") | all kinds |
-| **Showing the evidence** | Frame numbers per finding (Wireshark numbering), hosts and conversations, timeline, per-finding evidence pcap download | all kinds; `report/html.py`, `web/app.py` <!-- VERIFY: per-finding evidence download route in the web UI (not found in app.py at time of writing; HTML report + --evidence-dir do provide it) --> |
-| Beyond the brief | Floods, ICMP diagnostics, application-layer problems and cleartext credentials | `flood.syn`, `flood.icmp`, `flood.broadcast`, `icmp.unreachable`, `icmp.routing_loop`, `icmp.redirect`, `cred.cleartext`, `tls.failure`, `tls.deprecated`, `http.errors` <!-- VERIFY: detectors/app.py (cred.cleartext, tls.*, http.errors) not landed at time of writing; remove these kinds if it does not ship --> |
+| **Reading captures safely** | Own streaming reader for pcap / pcapng / `.pcap.gz`. Every length is checked against hard caps (record ≤ 256 KiB, block ≤ 16 MiB, 10 M packets, 4 GiB file, 2 GiB decompressed). Runs of empty records are capped. Corruption becomes a warning with the byte offset, and the analysis of everything read still completes. Payload bytes are never kept. Fuzz-tested. | reader warnings, `capture.malformed` |
+| **TCP retransmissions and resets** | Per-flow state tracker covering retransmissions (fast / timeout / spurious), dup-ACKs, gaps, aborts, refused connections, unanswered SYNs and zero windows, plus **loss localisation** (before or after the capture point) | `tcp.retransmissions`, `tcp.resets`, `tcp.refused`, `tcp.syn_timeout`, `tcp.zero_window` |
+| **DNS failures** | Query ↔ response matching per transaction: timeouts (with per-server "stopped answering at…"), SERVFAIL/REFUSED, slow resolvers, NXDOMAIN bursts (typo vs. malware DGA) | `dns.timeout`, `dns.errors`, `dns.slow`, `dns.nxdomain` |
+| **Duplicate IPs / ARP conflicts** | Every ARP claim per IP, who answered when asked, probes (RFC 5227), flip-flops; conflict vs. spoofing decided by weighted evidence | `arp.duplicate_ip`, `arp.unanswered`, `arp.storm` |
+| **MTU mismatches** | ICMP fragmentation-needed / packet-too-big with "did the sender adapt?", plus **PMTUD black holes** (large DF segments resent with no ICMP while small ones pass) with a path-MTU estimate | `mtu.frag_needed`, `mtu.blackhole` |
+| **Unusual delays** | Handshake RTT split at the capture point, server think time, client-side delay: "the network is fine, the server is slow" | `latency.high_rtt`, `latency.slow_server` |
+| **Port scans** | SYN half-open, connect, FIN/NULL/Xmas, UDP scans; host, ping and ARP sweeps | `scan.port`, `scan.host_sweep`, `arp.scan` |
+| **ARP spoofing** | Gateway impersonation, unsolicited replies on a rhythm, one MAC claiming many IPs, traffic redirected to the impostor (MITRE T1557.002) | `arp.duplicate_ip` (attack reading) |
+| **DNS hijacking** | Two different answers to one query (race), answers that arrive faster than physically possible, answers from servers never asked, public names → LAN address of a rogue host; tunnelling (MITRE T1557, T1071.004) | `dns.hijack`, `dns.tunneling` |
+| **Rogue DHCP servers** | Rogue (same subnet, names itself router/DNS, wins the race) vs. misplugged home router (different subnet, public DNS); no server; NAKs; starvation (MITRE T1557.003) | `dhcp.multiple_servers`, `dhcp.no_server`, `dhcp.nak`, `dhcp.starvation` |
+| **Telling an outage from an attack** | Hypothesis engine over weighted indicators + correlation into incidents; `outage_vs_attack_mixed.pcap` contains both and they are reported separately | all; [`verdict.py`](faultline/verdict.py), [`correlate.py`](faultline/correlate.py) |
+| **Keeping false alarms low** | Precision-first thresholds; clean and busy captures are part of the benchmark and must stay silent; `--sensitivity low/normal/high` | [`bench.py`](faultline/bench.py) |
+| **Explaining clearly** | Every finding has a summary, beginner explanation, analogy and an expert "technical" paragraph | all |
+| **Recommending fixes** | Every finding has a likely cause and ordered fix steps; incidents add "Do this first" | all |
+| **Showing the evidence** | Exact frame numbers, Wireshark filter, evidence-line table, timeline with finding bands, hosts and conversations, downloadable evidence `.pcap` | all |
+| *Beyond the brief* | Floods, ICMP diagnostics, TLS and HTTP problems, passwords sent in clear text, damaged captures | `flood.syn`, `flood.icmp`, `flood.broadcast`, `icmp.unreachable`, `icmp.routing_loop`, `icmp.redirect`, `tls.failure`, `tls.deprecated`, `http.errors`, `cred.cleartext`, `capture.malformed` |
 
 The full catalogue with signals, thresholds and discriminators is in [`docs/DETECTORS.md`](docs/DETECTORS.md).
 
@@ -105,240 +163,249 @@ The full catalogue with signals, thresholds and discriminators is in [`docs/DETE
 ```mermaid
 flowchart LR
     F[".pcap / .pcapng / .pcap.gz"] --> R["capture/reader.py<br/>hardened streaming reader"]
-    R -->|bounded frames| D["capture/decode.py<br/>L2 → L7 decoders"]
-    D -->|typed Packet, no payload| H["context.py<br/>HostTable: ip↔mac, roles<br/>(gateway, DNS, DHCP)"]
+    R -->|bounded frames| D["capture/decode.py<br/>our own L2 → L7 decoders"]
+    D -->|typed Packet, no payload| H["context.py<br/>host table: ip ↔ mac, roles<br/>(gateway, DNS, DHCP)"]
     D --> DET["detectors/*<br/>tcp · latency · mtu · arp · dhcp<br/>dns · scan · flood · icmp · app"]
     H --> DET
     DET -->|Finding + Indicators + Variants| V["verdict.py<br/>hypothesis engine<br/>fault / misconfig / attack"]
-    V --> C["correlate.py<br/>incidents · root cause vs symptom<br/>health score · overall verdict"]
+    V --> C["correlate.py<br/>incidents · root cause vs symptom<br/>health score · verdict"]
     C --> CLI["CLI (rich)"]
-    C --> HTML["HTML report<br/>single file, CSP"]
-    C --> WEB["Web dashboard<br/>Flask, 127.0.0.1"]
-    C --> JSON["JSON"]
+    C --> HTML["HTML report<br/>single file, strict CSP"]
+    C --> WEB["Web dashboard<br/>Flask, 127.0.0.1 only"]
+    C --> JSON["JSON / CI exit codes"]
     C --> EV["evidence .pcap<br/>per finding"]
 ```
 
+**One streaming pass.** The reader yields one frame at a time. The decoder turns each frame into a compact `Packet` holding header fields only, never payload bytes. The host table and every detector see each packet once. Memory stays bounded: flow and host tables evict their oldest entries, and evidence keeps ≤ 200 frame numbers per finding. A second, targeted pass re-reads only the evidence frames to build the evidence table and evidence pcaps.
 
-**One streaming pass.** The reader yields frames one at a time; the decoder turns each into a compact `Packet` (slots, header fields only, no payload bytes). The host table and every detector observe each packet once. Memory stays bounded by design (`BoundedDict` evicts the oldest flow/host state; `Evidence` keeps at most 200 frame numbers per finding and counts the rest).
+**The hypothesis engine.** Detectors never decide "attack". They report what they saw as `Indicator(text, supports, weight)`, where `supports ∈ {fault, misconfig, attack}` and the weight runs from 0.5 (hint) to 3 (near-conclusive). They also supply a `Variant` (title, explanation, cause, fix, MITRE technique) for each plausible reading. [`verdict.py`](faultline/verdict.py) then decides the same way for every detector:
+- it scores each hypothesis as the sum of its indicator weights, plus a 0.5 prior for the detector's own reading;
+- it picks the highest score and turns the margin into a confidence (softmax, clamped to 50–99%);
+- it keeps the losing hypotheses together with their evidence, which become the "why not" text.
 
-**The hypothesis engine.** Detectors do not decide "attack". They describe what they saw as `Indicator(text, supports, weight)` with `supports ∈ {fault, misconfig, attack}` and `weight` from 0.5 (hint) to 3 (near-conclusive), and they provide a `Variant` (title, explanation, cause, fix, MITRE technique) for each plausible reading. The verdict engine then scores each hypothesis as the sum of its indicator weights plus a small prior for the detector's own hint, picks the argmax, turns the margin into a calibrated confidence, and keeps the losing hypotheses with their indicators as the "why not" text. The same logic applies to every detector, so the reasoning is consistent and auditable. Concretely (`verdict.py`): prior 0.5, indicator weights clamped to 3, softmax over the candidate hypotheses, confidence clamped to [0.5, 0.99]; a weakly supported attack reading (confidence < 0.6) is shown one severity step softer, and ties go to the detector's default reading.
+**Worked example: "two MAC addresses claim one IP"** (real indicator texts and weights from [`detectors/arp.py`](faultline/detectors/arp.py), real scores from the samples):
 
-**Worked example: two MACs claim one IP.**
+| Evidence seen | Supports | Weight | `arp_spoofing.pcap` | `ip_conflict.pcap` |
+|---|---|---|:---:|:---:|
+| The suspicious MAC answered ARP for 2 different IPs that belong to other devices | attack | 2.5 | ✔ | |
+| The disputed address belongs to the router (default gateway) | attack | 2.0 | ✔ | |
+| The suspicious MAC sent 149 ARP replies nobody asked for | attack | 2.0 | ✔ | |
+| 87 packets meant for internet addresses were sent to the suspicious MAC instead of the router | attack | 2.0 | ✔ | |
+| Replies repeat like clockwork (~1.6 s), typical of a poisoning tool | attack | 1.0 | ✔ | |
+| The original owner flipped between the two MACs while the original stayed active | attack | 1.0 | ✔ | |
+| A device probed the address before using it (RFC 5227), normal boot behaviour | misconfig | 1.5 | | ✔ |
+| Both MACs send their own normal traffic from that address | misconfig | 1.5 | | ✔ |
+| The disputed address is not the router's | misconfig | 1.0 | | ✔ |
+| The suspicious MAC only answered when asked; claims only this one address | misconfig | 1.0 + 1.0 | | ✔ |
+| Both MACs answered the same ARP question | misconfig | 1.0 | ✔ | ✔ |
+| **Result** | | | **attack 13.0 vs misconfig 1.0** → *"Someone is impersonating the router (ARP spoofing)"*, 99%, MITRE T1557.002 | **misconfig 8.0 vs attack 0.0** → *"Two devices are using the same IP address"*, 99% |
 
-| Indicator | Supports | Weight |
-|---|---|---|
-| The disputed address belongs to the router (default gateway) | attack | 2.0 |
-| The suspicious MAC sent replies nobody asked for, repeating like clockwork | attack | scales with count |
-| The suspicious MAC answered ARP for several other devices' IPs / has its own different address | attack | — |
-| The owner flipped between two MACs while the original stayed alive; internet traffic is being relayed through the newcomer | attack | — |
-| A device probed the address first (RFC 5227) or announced once with a gratuitous ARP | misconfig | — |
-| The suspicious MAC only answered when asked, claims only this one address | misconfig | 1.0 each |
-| The disputed address is not the router's; both MACs stable | misconfig | 1.0 / 0.5 |
+The report shows both columns: why it *is* the winning reading, and why it is *not* the other one.
 
-(Indicator texts are paraphrased from `detectors/arp.py`; the full list, including VRRP/HSRP exclusions, is in [`docs/DETECTORS.md`](docs/DETECTORS.md).)
+**Correlation.** [`correlate.py`](faultline/correlate.py) links related findings into incidents using chain rules. Examples:
+- rogue DHCP / ARP spoofing / ICMP redirect + DNS hijack + leaked password → *man-in-the-middle attack*;
+- no DHCP server → the DNS and TCP failures that follow are symptoms;
+- a port scan → the resets and ICMP errors it triggers are side effects, not separate problems;
+- an MTU black hole → the retransmissions it causes.
 
-Score the columns: a printer that was given a static address inside the DHCP pool lights up the *misconfig* rows and gets the **Duplicate IP address** variant with the fix "move the printer out of the DHCP range". A laptop impersonating the router lights up the *attack* rows and gets **ARP spoofing (T1557.002)** with the fix "isolate MAC xx, enable Dynamic ARP Inspection / port security". Both explanations show the other side's indicators under *Why not an IP conflict? / Why not ARP spoofing?*.
+Symptoms are listed under their root cause, so a beginner sees one thing to fix first. The health score is 100 minus a penalty per finding, scaled by severity and confidence; symptoms count at 40%.
 
-**Correlation.** Findings sharing hosts or MACs within a time window are grouped into incidents. Chain rules name the story: rogue DHCP or ARP spoofing + DNS hijack → *man-in-the-middle*; no DHCP server → the client's DNS/TCP failures are symptoms; unanswered ARP for the gateway → everything else is a symptom; a scan followed by connections to the opened ports → reconnaissance then access. Symptoms are shown under their root cause with "Fix this first". Health score = 100 − Σ(severity penalty × confidence), where penalties are 3 / 9 / 18 / 30 for low / medium / high / critical and symptoms count at 40 %, clamped to 0..100 (`correlate.py`).
+More on the reasoning, trade-offs and what we rejected: [`docs/THINKING.md`](docs/THINKING.md).
 
-More on the reasoning in [`docs/THINKING.md`](docs/THINKING.md).
-
-## Quick start (full)
-
-Requirements: Python ≥ 3.10 on macOS, Linux or Windows. No root, no network.
+## Usage
 
 ```bash
-# 1. Get the code
-git clone <REPO_URL> faultline && cd faultline        # <!-- VERIFY: repo URL -->
-
-# 2. Virtual environment
-python3 -m venv .venv
-source .venv/bin/activate                              # Windows PowerShell: .venv\Scripts\Activate.ps1
-
-# 3. Install (pulls rich, Flask; the engine itself needs nothing)
-pip install -e .                                       # or: pip install -r requirements.txt && python -m faultline ...
-
-# 4. Analyse a capture in the terminal
-faultline analyze samples/ip_conflict.pcap
-faultline analyze samples/lossy_link.pcap --html report.html    # self-contained HTML report
-faultline analyze samples/dns_failure.pcap --json out.json       # or `--json -` for stdout
-faultline analyze samples/mitm_rogue_dhcp.pcap                   # <!-- VERIFY: attack sample not generated yet -->
-
-# 5. Web dashboard (local only): upload a capture or pick a sample
-faultline web                                          # http://127.0.0.1:8765
-
-# 6. Prove a fix worked
-faultline diff before.pcap after.pcap
-
-# 7. Regenerate the labelled scenario lab and run the benchmark
-faultline lab samples/
-faultline bench
+faultline analyze CAPTURE [options]     # .pcap, .pcapng, .cap, .pcap.gz
+faultline web [--host 127.0.0.1] [--port 8765] [--no-browser]
+faultline diff BEFORE.pcap AFTER.pcap   # did the fix work?
+faultline lab [samples/]                # regenerate the labelled sample captures (deterministic)
+faultline bench [samples/]              # accuracy + false-alarm benchmark on the labelled samples
+python -m faultline …                   # same, without installing the console script
 ```
 
-Subcommands: `analyze` (alias `a`), `web`, `diff`, `lab`, `bench`. Global: `--version`, `--no-color`.
-
-| Option | What it does |
+| `analyze` option | What it does |
 |---|---|
-| `--html FILE` | Write a single-file HTML report (no external resources, strict CSP) |
-| `--json FILE` | Full report as JSON (`-` for stdout) |
-| `--redact` | Pseudonymise IPs and MACs with a per-run random HMAC-SHA256 key (safe to share); raw evidence pcaps are not exported in this mode |
-| `--sensitivity low\|normal\|high` | Scales count thresholds (×1.6 / ×1.0 / ×0.6): fewer or more alerts |
-| `--fail-on attack\|fault\|any\|never` | Exit status 1 when findings of that category (severity ≥ medium) exist, for CI pipelines. Exit 2 = unusable input |
-| `--evidence-dir DIR` | Write one small evidence `.pcap` per finding (named `F1-arp.duplicate_ip.pcap`, mode 0600) |
-| `--expert` | Technical details, all indicators, informational notes, host table |
-| `--quiet` / `-q` | No terminal report (use with `--json` / `--html`) |
-| `--max-packets N`, `--no-evidence` | Bound the work: stop after N packets, skip the evidence pass |
-| `web --host --port --no-browser` | Dashboard defaults: 127.0.0.1:8765, opens your browser |
+| `--html FILE` | Single-file interactive HTML report (offline, no external resources, strict CSP). File created with mode 0600 |
+| `--json FILE` | Full machine-readable report (`-` for stdout) |
+| `--evidence-dir DIR` | One small evidence `.pcap` per finding, e.g. `f1-dhcp.multiple_servers.pcap` |
+| `--redact` | Replace every IP and MAC with a consistent pseudonym (HMAC-SHA256, random key per run, never stored). Evidence pcaps are disabled in this mode |
+| `--sensitivity low\|normal\|high` | Scale detection thresholds (×1.6 / ×1.0 / ×0.6) |
+| `--expert` | Technical paragraph, all indicators, info-level notes, host table |
+| `--fail-on attack\|fault\|any` | Exit code 1 if such findings (severity ≥ medium) exist, for CI / scheduled checks |
+| `--quiet`, `--no-color`, `--max-packets N`, `--no-evidence` | Quieter / bounded runs (`NO_COLOR` is honoured) |
 
-If you prefer not to install: `python -m faultline analyze samples/arp_spoofing.pcap` works from the repo root after `pip install -r requirements.txt`.
+Exit codes: `0` analysed · `1` `--fail-on` condition met · `2` unusable input (with a one-line reason).
+
+**Web dashboard.** `faultline web` opens a local page. You can drag and drop a capture, or click any bundled sample in the gallery; each sample carries its scenario story and expected verdict. Options include redaction and sensitivity. The report it renders is the same file `--html` writes, and you can download it from there.
 
 ## Sample captures
 
-All samples are **synthesised by our own scenario lab** (`faultline/lab/scenarios.py`), byte by byte, with labels in `samples/labels.json`. They contain no real user data. Regenerate with `faultline lab samples/`.
+All 35 samples were **synthesised by our own scenario lab**, byte by byte, with correct checksums (validated against `tcpdump`). Labels are in [`samples/labels.json`](samples/labels.json). They contain no real user data, and `faultline lab` regenerates the exact same bytes. Every scenario hides its problem inside realistic background traffic (DNS, HTTPS with SNI, ARP, NTP, DHCP).
 
-<!-- VERIFY: CRITICAL. At the time of writing, labels.json contains fault/misconfig scenarios and hostile files only. The attack scenarios referenced in the Quick start and in docs/demo-script.md (arp_spoofing, mitm_rogue_dhcp, dns_hijack, port_scan_syn, syn_flood, dhcp_starvation, icmp_redirect, cleartext_creds ...) do not exist yet. Either add them to lab/scenarios.py or change the commands. Rows below marked "planned" must be deleted if not generated. -->
-
-| File | What's inside | Expected finding(s) |
-|---|---|---|
-| `clean_office.pcap` | Clean office afternoon: browsing, DNS, DHCP | none (Healthy) |
-| `busy_but_healthy.pcap` | Heavy legitimate traffic, natural noise | none (Healthy): the false-alarm guard |
-| `pcapng_office.pcapng` | Clean office in pcapng format | none (Healthy) |
-| `lossy_link.pcap` | Lossy Wi-Fi link | `tcp.retransmissions` (fault), loss localised relative to the capture point |
-| `connection_refused.pcap` | Database connection refused | `tcp.refused` (misconfig) |
-| `server_down_timeouts.pcap` | Server down, printer unplugged | `tcp.syn_timeout`, `arp.unanswered` (fault) |
-| `zero_window.pcap` | Receiver stalls | `tcp.zero_window` (fault, blame: client) |
-| `slow_server.pcap` | Slow application server | `latency.slow_server` (fault, blame: server) |
-| `high_latency.pcap` | Satellite-grade latency | `latency.high_rtt` (fault, blame: network) |
-| `mtu_blackhole.pcap` | Path MTU black hole | `mtu.blackhole` (misconfig) |
-| `mtu_frag_needed.pcap` | Fragmentation needed on a VPN path | `mtu.frag_needed` (misconfig) |
-| `ip_conflict.pcap` | Two devices share 192.168.1.23 | `arp.duplicate_ip` (misconfig: conflict, **not** spoofing) |
-| `dns_failure.pcap` | Resolver stops answering | `dns.timeout`, `dns.errors` (fault) |
-| `dhcp_misconfig_two_routers.pcap` | Second DHCP server from a home router | `dhcp.multiple_servers` (misconfig, **not** rogue) |
-| `dhcp_no_server.pcap` | No DHCP server | `dhcp.no_server` (fault) |
-| `routing_loop.pcap` | Routing loop between two routers | `icmp.routing_loop` (fault) |
-| `malformed/truncated.pcap` | Capture cut mid-record | handled: warning with offset, partial analysis |
-| `malformed/bad_magic.pcap` | Random bytes, not a capture | rejected cleanly (`CaptureError`) |
-| `malformed/huge_caplen.pcap` | Record claims a 2 GiB length | handled: length cap |
-| `malformed/zero_length.pcap` | Empty file | rejected cleanly |
-| `malformed/corrupt_packets.pcap` | Valid file, garbage frames inside | handled: frames flagged `malformed`, analysis completes |
-| `malformed/compressed_padding.pcap.gz` | Decompression bomb-ish gzip | handled: streamed through the size guard |
-| *planned:* `arp_spoofing.pcap` | Attacker claims the gateway's IP, flip-flop | `arp.duplicate_ip` (attack, T1557.002) <!-- VERIFY: not generated yet --> |
-| *planned:* `mitm_rogue_dhcp.pcap` | Rogue DHCP hands out a fake DNS, then hijacked answers | `dhcp.multiple_servers` → `dns.hijack` incident (attack) <!-- VERIFY: not generated yet --> |
-| *planned:* `dns_hijack.pcap`, `dns_tunneling.pcap` | Two answers per query; long high-entropy names | `dns.hijack`, `dns.tunneling` (attack) <!-- VERIFY: not generated yet --> |
-| *planned:* `port_scan_syn.pcap`, `host_sweep.pcap`, `arp_scan.pcap` | nmap-style scan / sweep | `scan.port`, `scan.host_sweep`, `arp.scan` (attack) <!-- VERIFY: not generated yet --> |
-| *planned:* `syn_flood.pcap`, `dhcp_starvation.pcap`, `icmp_redirect.pcap` | Floods and redirects | `flood.syn`, `dhcp.starvation`, `icmp.redirect` (attack) <!-- VERIFY: not generated yet --> |
+| Category | Captures |
+|---|---|
+| **Healthy** (must stay quiet) | `clean_office.pcap`, `busy_but_healthy.pcap` (5,900 packets with benign look-alikes: isolated retransmissions, RST after FIN, a typo NXDOMAIN, traceroute, parallel connections), `pcapng_office.pcapng`, `xss_payload.pcap` |
+| **Faults** | `lossy_link`, `server_down_timeouts`, `zero_window`, `slow_server`, `high_latency`, `dns_failure`, `dhcp_no_server`, `routing_loop` |
+| **Misconfigurations** | `connection_refused`, `mtu_blackhole`, `mtu_frag_needed`, `ip_conflict`, `dhcp_misconfig_two_routers`, `cleartext_creds`, `tls_failures` |
+| **Attacks** | `arp_spoofing`, `port_scan`, `host_sweep`, `dns_hijack`, `rogue_dhcp`, `syn_flood`, `dns_tunnel`, `web_bruteforce`, **`mitm_chain`** (rogue DHCP → fake DNS → stolen login) |
+| **Fault + attack together** | `outage_vs_attack_mixed.pcap`: a DNS outage *and* an unrelated port scan, reported separately |
+| **Hostile files** | `malformed/truncated.pcap`, `bad_magic.pcap`, `huge_caplen.pcap`, `zero_length.pcap`, `corrupt_packets.pcap`, `compressed_padding.pcap.gz` (50 MB of padding behind a 51 KB gzip) |
 
 ## Benchmark
 
-`faultline bench` runs every labelled scenario through the engine and reports, per finding kind, precision, recall and the false-alarm rate measured on clean and busy captures. The table below is generated by that command; it is never hand-edited.
+`faultline bench` runs every labelled capture through the full engine. It checks that each expected problem is **detected**, that it got the **right verdict** (fault / misconfig / attack), that **nothing unexpected** of medium or higher severity was raised, and that hostile files never crash the tool. This table is that command's output, converted to Markdown:
 
-<!-- BENCH_TABLE -->
+| Capture | Expected finding(s) | Detected | Correct verdict | False alarms | Result |
+|---|---|---|---|---|---|
+| `arp_spoofing.pcap` | `arp.duplicate_ip` (attack) | 1/1 | 1/1 | 0 | ✅ pass |
+| `busy_but_healthy.pcap` | *clean: must stay quiet* | 0/0 | - | 0 | ✅ pass |
+| `clean_office.pcap` | *clean: must stay quiet* | 0/0 | - | 0 | ✅ pass |
+| `cleartext_creds.pcap` | `cred.cleartext` (misconfig) | 1/1 | 1/1 | 0 | ✅ pass |
+| `connection_refused.pcap` | `tcp.refused` (misconfig) | 1/1 | 1/1 | 0 | ✅ pass |
+| `dhcp_misconfig_two_routers.pcap` | `dhcp.multiple_servers` (misconfig) | 1/1 | 1/1 | 0 | ✅ pass |
+| `dhcp_no_server.pcap` | `dhcp.no_server` (fault) | 1/1 | 1/1 | 0 | ✅ pass |
+| `dns_failure.pcap` | `dns.timeout` (fault), `dns.errors` (fault) | 2/2 | 2/2 | 0 | ✅ pass |
+| `dns_hijack.pcap` | `dns.hijack` (attack) | 1/1 | 1/1 | 0 | ✅ pass |
+| `dns_tunnel.pcap` | `dns.tunneling` (attack) | 1/1 | 1/1 | 0 | ✅ pass |
+| `high_latency.pcap` | `latency.high_rtt` (fault) | 1/1 | 1/1 | 0 | ✅ pass |
+| `host_sweep.pcap` | `arp.scan` (attack) | 1/1 | 1/1 | 0 | ✅ pass |
+| `ip_conflict.pcap` | `arp.duplicate_ip` (misconfig) | 1/1 | 1/1 | 0 | ✅ pass |
+| `lossy_link.pcap` | `tcp.retransmissions` (fault) | 1/1 | 1/1 | 0 | ✅ pass |
+| `malformed/bad_magic.pcap` | *hostile file: must not crash* | handled | - | 0 | ✅ pass |
+| `malformed/compressed_padding.pcap.gz` | *hostile file: must not crash* | handled | - | 0 | ✅ pass |
+| `malformed/corrupt_packets.pcap` | *hostile file: must not crash* | handled | - | 0 | ✅ pass |
+| `malformed/huge_caplen.pcap` | *hostile file: must not crash* | handled | - | 0 | ✅ pass |
+| `malformed/truncated.pcap` | *hostile file: must not crash* | handled | - | 0 | ✅ pass |
+| `malformed/zero_length.pcap` | *hostile file: must not crash* | handled | - | 0 | ✅ pass |
+| `mitm_chain.pcap` | `dhcp.multiple_servers` (attack), `dns.hijack` (attack), `cred.cleartext` (misconfig) | 3/3 | 3/3 | 0 | ✅ pass |
+| `mtu_blackhole.pcap` | `mtu.blackhole` (misconfig) | 1/1 | 1/1 | 0 | ✅ pass |
+| `mtu_frag_needed.pcap` | `mtu.frag_needed` (misconfig) | 1/1 | 1/1 | 0 | ✅ pass |
+| `outage_vs_attack_mixed.pcap` | `dns.timeout` (fault), `scan.port` (attack) | 2/2 | 2/2 | 0 | ✅ pass |
+| `pcapng_office.pcapng` | *clean: must stay quiet* | 0/0 | - | 0 | ✅ pass |
+| `port_scan.pcap` | `scan.port` (attack) | 1/1 | 1/1 | 0 | ✅ pass |
+| `rogue_dhcp.pcap` | `dhcp.multiple_servers` (attack) | 1/1 | 1/1 | 0 | ✅ pass |
+| `routing_loop.pcap` | `icmp.routing_loop` (fault) | 1/1 | 1/1 | 0 | ✅ pass |
+| `server_down_timeouts.pcap` | `tcp.syn_timeout` (fault), `arp.unanswered` (fault) | 2/2 | 2/2 | 0 | ✅ pass |
+| `slow_server.pcap` | `latency.slow_server` (fault) | 1/1 | 1/1 | 0 | ✅ pass |
+| `syn_flood.pcap` | `flood.syn` (attack) | 1/1 | 1/1 | 0 | ✅ pass |
+| `tls_failures.pcap` | `tls.failure` (misconfig) | 1/1 | 1/1 | 0 | ✅ pass |
+| `web_bruteforce.pcap` | `http.errors` (attack) | 1/1 | 1/1 | 0 | ✅ pass |
+| `xss_payload.pcap` | *clean: must stay quiet* | 0/0 | - | 0 | ✅ pass |
+| `zero_window.pcap` | `tcp.zero_window` (fault) | 1/1 | 1/1 | 0 | ✅ pass |
 
-<!-- VERIFY: paste the table printed by `faultline bench` (or `faultline bench --json` rendered to Markdown) before submission -->
+**Summary:** detection **30/30 (100%)** · correct fault/attack verdict **30/30 (100%)** · false alarms **0** · clean captures quiet **4/4** · hostile files handled **6/6** · 50,791 packets in about 1.5 s.
+
+*Honesty note:* these scenarios come from our own lab, so the benchmark proves the detectors behave as designed and stay quiet on healthy look-alikes; it is not a claim about every real network. The detectors' unit tests (334 in total) also cover edge cases that are not in the samples.
 
 ## Security
 
-Capture files are treated as hostile input from the first byte to the last pixel of the report.
+Capture files are treated as **hostile input**, from the first byte read to the last pixel rendered. Full threat model: [`SECURITY.md`](SECURITY.md).
 
-- **Reader**: magic and version validation; every length checked against remaining bytes and hard caps; corruption ends iteration gracefully with an offset in the warnings, never a traceback; gzip is streamed through a decompressed-size guard.
-- **Decoders**: bounds-checked everywhere; a malformed packet is counted and flagged, not raised; DNS name decompression has pointer-loop and depth limits; option/TLV loops are capped.
-- **Data handling**: payload bytes are never retained; credentials are detected but **never stored or displayed** (only the protocol name); `--redact` pseudonymises with a random per-run HMAC key that is never written anywhere.
-- **Reports and web**: all capture-derived strings are untrusted; Jinja2 autoescape; embedded JSON escapes `<`, `>` and `&`; the report's JavaScript renders via `textContent` only; strict Content-Security-Policy; no external resources, no CDN. The dashboard binds to 127.0.0.1, limits upload size, validates extension and magic bytes, stores uploads under random temp names and deletes them after analysis.
-- **Supply chain**: no secrets, no network calls, no telemetry, no `eval`, `pickle` or shell execution. The engine uses the standard library only.
-- **Tests**: a fuzz harness mutates valid captures and feeds hand-crafted malicious files; it asserts no exceptions and bounded time.
+- **Reader:**
+  - formats and versions are validated;
+  - every length is checked against what's actually there and against hard caps;
+  - gzip is streamed through a decompression-bomb guard;
+  - runs of empty records are capped;
+  - a corrupt file ends in a warning with a byte offset, never a traceback (exit code 2 for unusable files).
+- **Decoders:**
+  - every field read is bounds-checked;
+  - DNS name decompression rejects pointer loops and forward jumps;
+  - option and TLV loops have iteration caps;
+  - a damaged packet is flagged and skipped, never raised.
+- **Fuzzing:**
+  - `scripts/fuzz.py` mutates valid captures (bit flips, length inflation, truncation, insertion, …) and runs the whole pipeline: **0 crashes in 3,000 cases**, slowest case under 20 ms;
+  - [`tests/test_fuzz.py`](tests/test_fuzz.py) runs this in the test suite.
+- **No data leaks:**
+  - payload bytes are never stored;
+  - passwords in clear-text protocols are *detected* but never extracted, stored or shown (only "FTP" / "HTTP Basic" / …);
+  - `--redact` pseudonymises every IP and MAC in every field (verified across all samples), with a random key per run;
+  - report files are created owner-readable only (0600).
+- **Report XSS-proof:**
+  - all text from packets is untrusted;
+  - data is embedded as escaped JSON and rendered with `textContent` only;
+  - a strict Content-Security-Policy pins the one script and one style by SHA-256;
+  - no external resources.
+  - `samples/xss_payload.pcap` carries `<script>` and `onerror=` payloads in DNS, DHCP, HTTP and TLS fields, and they render as plain text.
+- **Web dashboard:**
+  - binds to 127.0.0.1 and rejects foreign `Host` headers (DNS-rebinding guard);
+  - CSRF token on uploads;
+  - upload size cap, plus extension *and* magic-byte checks;
+  - uploads go to a random 0600 temp file that is deleted after analysis, and reports are never stored;
+  - security headers (CSP, `nosniff`, `X-Frame-Options: DENY`, `no-referrer`, `no-store`);
+  - generic error pages;
+  - at most 2 analyses at a time.
+- **No secrets, no network:**
+  - no API keys, no telemetry, no outbound connections, no `eval` / `pickle` / shell calls;
+  - `scripts/check_secrets.py` scans the repo: **0 findings**.
 
-Details, threat model and how to report an issue: [`SECURITY.md`](SECURITY.md). A secret scanner (`scripts/check_secrets.py`) runs over the repo.
+## Verify our claims
+
+```bash
+pip install -e ".[dev]"                     # adds pytest
+pytest -q                                   # 334 tests: reader, decoder, every detector, verdict, correlation, report, web, redaction, fuzz
+faultline bench                             # the benchmark table above
+python scripts/fuzz.py -n 3000 --seed 42    # hostile-input fuzzing: expect "RESULT: PASS - no crash, bounded time"
+python scripts/check_secrets.py             # expect "0 potential secret(s) found: PASS"
+python scripts/make_assets.py --shots       # regenerates every image in this README from the samples (needs Chrome for the PNGs)
+```
 
 ## Project structure
 
 ```
 faultline/
   capture/reader.py     hardened streaming pcap / pcapng / gzip reader
-  capture/decode.py     Ethernet/VLAN/SLL/Raw/Null → ARP, IPv4/6, TCP, UDP, ICMP/v6, DNS, DHCP, TLS, HTTP, cleartext auth
+  capture/decode.py     Ethernet/VLAN/SLL/Raw/Null → ARP, IPv4/6, TCP (+options), UDP, ICMP/v6, DNS, DHCP, TLS, HTTP, cleartext auth
   capture/writer.py     pcap / pcapng writer (evidence export, lab)
   model.py              Packet (slots), Finding, Indicator, Variant, Severity, Category, Incident
-  context.py            AnalysisContext, HostTable (ip↔mac, roles), Config (sensitivity)
-  detectors/base.py     Detector interface, registry, Evidence, BoundedDict
-  detectors/tcp.py      retransmissions, dup-ACK, lost segments, RST, refused, zero window, SYN timeout, loss localisation
-  detectors/latency.py  handshake RTT, server response time, stalls, blame split
-  detectors/mtu.py      frag-needed / PTB, PMTUD black hole, MSS mismatch
-  detectors/arp.py      IP conflict vs ARP spoofing, ARP scan, unanswered ARP
-  detectors/dhcp.py     rogue vs misconfigured server, no server, NAK, starvation
-  detectors/dns.py      timeouts, rcodes, slow, NXDOMAIN, hijack, tunneling
-  detectors/scan.py     SYN/FIN/NULL/Xmas/connect/UDP scans, host sweeps
-  detectors/flood.py    SYN flood, ICMP flood, broadcast storm
-  detectors/icmp.py     unreachables, TTL exceeded / routing loop, redirects
-  detectors/app.py      TLS alerts / deprecated TLS, HTTP errors, cleartext credentials
-  verdict.py            hypothesis engine (fault / misconfig / attack + "why not")
+  context.py            AnalysisContext, host table (ip↔mac, gateway / DNS / DHCP roles), sensitivity
+  detectors/            base.py + tcp, latency, mtu, arp, dhcp, dns, scan, flood, icmp, app (36 finding kinds)
+  verdict.py            hypothesis engine: fault / misconfig / attack + "why not"
   correlate.py          incidents, root cause vs symptom, health score, overall verdict
-  engine.py             analyze(path, options) → Report
-  report/               terminal (rich), html (single file), json, redact
-  web/                  Flask dashboard (upload, samples gallery, CSRF token, CSP, 200 MB upload cap)
-  lab/                  byte-level packet builders + labelled scenario generators
-  bench.py              precision / recall / false-alarm benchmark
-  cli.py                analyze | web | diff | lab | bench
-samples/                generated captures + labels.json (+ malformed/)
-tests/                  pytest unit tests, factory for decoded packets, fuzz harness
-scripts/                fuzz.py (standalone fuzzer), check_secrets.py
-docs/                   THINKING.md, DETECTORS.md, demo-script.md
-SECURITY.md             threat model and hardening details
+  engine.py             analyze(path, options) → Report (2 passes: analysis, evidence)
+  report/               html.py (single-file report, CSP), assets/, redact.py
+  web/                  Flask dashboard (upload, sample gallery, CSRF, security headers)
+  lab/                  craft.py (byte-level packet builder), scenarios.py + scenarios_attack.py (labelled captures)
+  bench.py · diff.py · cli.py
+samples/                35 labelled captures + labels.json (+ malformed/)
+tests/                  334 pytest tests (factory.py builds decoded packets for detector unit tests)
+scripts/                fuzz.py · check_secrets.py · make_assets.py
+docs/                   THINKING.md · DETECTORS.md · demo-script.md · images/ · examples/
+SECURITY.md · LICENSE · pyproject.toml · requirements.txt
 ```
 
-<!-- VERIFY: tree against the final repo -->
-
-## Testing
-
-```bash
-pip install pytest
-pytest -q                                   # unit tests: reader, decoders, each detector, verdict, correlation
-pytest tests/test_fuzz.py -q                # mutation fuzzing: reader → decoder → engine; only CaptureError may escape
-python scripts/fuzz.py -n 2000 --keep out/  # standalone fuzzer: N mutated cases, 3 s budget each, saves crashers
-python scripts/check_secrets.py             # no hardcoded secrets
-faultline bench                             # end-to-end accuracy on the labelled lab
-```
-
-Detector tests build decoded `Packet` objects directly through `tests/factory.py`, so each detector is tested in isolation without capture files; reader and decoder tests use real bytes, including the malformed samples.
+About 21,700 lines of Python written during the hackathon.
 
 ## Libraries used
 
-The brief requires a complete list. Faultline's **analysis engine (reader, decoders, detectors, verdict, correlation) uses only the Python standard library**: `struct`, `gzip`, `io`, `os`, `stat`, `ipaddress`, `collections`, `dataclasses`, `enum`, `functools`, `hmac`, `hashlib`, `secrets`, `json`, `math`, `statistics`, `time`, `argparse`, `html`, `re`, `socket`, `zlib`, `base64`, `typing`. <!-- VERIFY: trim to the modules actually imported once all modules land -->
+The brief asks for every library to be listed. **The analysis engine (reader, decoders, detectors, verdict, correlation) uses only the Python standard library:** `struct`, `socket`, `ipaddress`, `gzip`, `zlib`, `io`, `os`, `stat`, `hashlib`, `base64`, `collections`, `dataclasses`, `enum`, `functools`, `math`, `statistics`, `array`, `random`, `time`, `datetime`, `typing`, `importlib`. The report, web and tooling layers additionally use `json`, `html`, `hmac`, `secrets`, `re`, `tempfile`, `threading`, `argparse`, `unicodedata` and `urllib`.
 
-Third-party, open source, used only for presentation and tests:
+Third-party open-source libraries, used **only for presentation and testing**:
 
 | Library | License | Used for |
 |---|---|---|
-| [rich](https://github.com/Textualize/rich) | MIT | Terminal output of the CLI (tables, colours) |
-| [Flask](https://github.com/pallets/flask) | BSD-3 | Local web dashboard |
-| [Jinja2](https://github.com/pallets/jinja) (Flask dependency) | BSD-3 | HTML templating with autoescape |
-| [Werkzeug](https://github.com/pallets/werkzeug) (Flask dependency) | BSD-3 | WSGI server / request handling |
-| [MarkupSafe](https://github.com/pallets/markupsafe), [itsdangerous](https://github.com/pallets/itsdangerous), [click](https://github.com/pallets/click), [blinker](https://github.com/pallets-eco/blinker) (Flask dependencies) | BSD-3 / MIT | Transitive dependencies of Flask |
+| [rich](https://github.com/Textualize/rich) | MIT | Coloured terminal output of the CLI |
+| [Flask](https://github.com/pallets/flask) (+ its dependencies Werkzeug, Jinja2, MarkupSafe, itsdangerous, click, blinker) | BSD-3 / MIT | Local web dashboard |
 | [pytest](https://github.com/pytest-dev/pytest) | MIT | Tests (development only) |
 
-Declared in `pyproject.toml`: `rich>=13`, `flask>=3.0`; dev: `pytest>=8`. The others listed are Flask's own transitive dependencies.
-
-**Not used:** Wireshark, tshark, pyshark, Scapy, dpkt, Zeek, Suricata, any external API or network service. Capture parsing, protocol decoding and all detection and diagnosis logic are original code written for this hackathon.
+**Not used:** Wireshark, tshark, pyshark, Scapy, dpkt, Zeek, Suricata, any AI or cloud API, any network service. Parsing, decoding, detection and diagnosis are original code.
 
 ## Responsible use
 
-Faultline is a defensive diagnostic tool. Only analyse captures you are authorised to hold. Credentials found in cleartext are reported by protocol only and never extracted, stored or displayed. Use `--redact` before sharing a report outside your team. The scenario lab generates synthetic traffic in files; it never transmits anything.
+Faultline is a defensive diagnostic tool. Only analyse captures from networks you own or are authorised to examine. Passwords sent in clear text are reported by protocol only, never extracted. Use `--redact` before sharing a report. The scenario lab writes synthetic packets into files; it never transmits anything.
 
 ## Limitations and future work
 
-Honest notes for the judges:
-
-- **Encrypted content is opaque.** Faultline reads TLS handshakes (versions, SNI, alerts) but not encrypted payloads. It cannot find an attack that lives entirely inside a correctly encrypted session.
-- **Capture point matters.** Loss localisation and RTT blame assume a single capture point; a merged multi-point capture will confuse upstream/downstream reasoning.
-- **Thresholds are heuristics.** Tuned on our lab and on clean/busy captures; `--sensitivity` adjusts them (×1.6 / ×1.0 / ×0.6), but real networks vary. Precision is prioritised over recall on purpose.
-- **No live capture.** Faultline analyses files. Reading from an interface is a thin addition we chose not to spend hackathon hours on.
-- **Protocol breadth.** Decoders cover ARP, IPv4/6, TCP, UDP, ICMP/v6, DNS, DHCPv4, TLS and HTTP/1.x. DHCPv6, QUIC, SMB, mDNS and IPv6 NDP spoofing are natural next steps.
-- **Role inference is heuristic.** The gateway is inferred from DHCP options and from the MAC that fronts many public addresses; in a capture with no outside traffic and no DHCP, gateway-based indicators do not fire.
-
-With more time: IPv6 NDP spoofing detection, flow-level baselines learned from a known-good capture, a Wireshark-compatible display filter per finding, PDF export, and a plug-in API for third-party detectors.
+- **Encrypted content is opaque.** Faultline reads TLS handshakes (versions, SNI, cleartext alerts), never encrypted payloads.
+- **One capture point assumed.** Loss localisation and RTT blame reason about a single vantage point; merged multi-point captures will confuse them.
+- **Heuristic thresholds.** They are tuned for precision on our lab and on healthy look-alike traffic. `--sensitivity` adjusts them, but real networks vary.
+- **Files, not live traffic.** Faultline analyses capture files; live capture was left out to spend the hours on diagnosis quality.
+- **Protocol breadth.** Next steps: IPv6 neighbour-discovery spoofing, DHCPv6, QUIC, SMB, baselines learned from a known-good capture, and a plug-in API for third-party detectors.
 
 ## Team
 
-**Moorthy Gang**: Yashvanth S (CS24I1029), team leader (solo team). IIITDM Kancheepuram Cybersecurity Club 24-hour hackathon, Network track, November 2026.
+**Moorthy Gang**: Yashvanth S (CS24I1029), team leader (solo team).
+IIITDM Kancheepuram Cybersecurity Club 24-hour hackathon, Network track, 31 Oct – 1 Nov 2026.
 
 ## License
 
-MIT. See [`LICENSE`](LICENSE).
+MIT, see [`LICENSE`](LICENSE).
