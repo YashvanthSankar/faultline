@@ -83,9 +83,9 @@ Other features: beginner and expert modes, plain-language tooltips for technical
 
 ## Demo video
 
-[<img src="docs/demo/poster.png" alt="Demo video: Faultline on a man-in-the-middle capture" width="720">](https://drive.google.com/file/d/1eGc4dzjMHWoFoH4zQMdN1dw26WLkenbH/view?usp=sharing)
+[<img src="docs/demo/poster.png" alt="Demo video: Faultline on a man-in-the-middle capture" width="720">](https://drive.google.com/file/d/1CHEC9eo34g8_LROdjIx_w3tMMMJQxSU7/view?usp=sharing)
 
-**[Watch on Google Drive](https://drive.google.com/file/d/1eGc4dzjMHWoFoH4zQMdN1dw26WLkenbH/view?usp=sharing)** (3 min 50 s, plays in the browser). The same file is committed at [`docs/demo/faultline-demo.mp4`](docs/demo/faultline-demo.mp4). It covers the problem, the command-line tool on an attack and on a fault, the web console (overview, network map, findings with the evidence scoreboard, side-by-side comparison), hostile input and redaction, and the evaluation results.
+**[Watch on Google Drive](https://drive.google.com/file/d/1CHEC9eo34g8_LROdjIx_w3tMMMJQxSU7/view?usp=sharing)** (3 min 50 s, plays in the browser). The same file is committed at [`docs/demo/faultline-demo.mp4`](docs/demo/faultline-demo.mp4). It covers the problem, the command-line tool on an attack and on a fault, the web console (overview, network map, findings with the evidence scoreboard, side-by-side comparison), hostile input and redaction, and the evaluation results.
 
 All footage shows the real tool running on the bundled samples. The terminal scenes are recorded with [VHS](https://github.com/charmbracelet/vhs) and the dashboard scenes with Playwright. The narration is a synthesized voice (Sarvam AI text-to-speech, Indian English); this is the only place an external service was used, and only to produce the video, not by Faultline itself. The scripts that produced the video are in [`scripts/demo_video/`](scripts/demo_video).
 
