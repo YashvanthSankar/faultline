@@ -642,8 +642,11 @@ class DnsDetector(Detector):
                                  "devices could use it instead", M, 1.0))
         sev = Severity.MEDIUM if med0 >= 0.5 or s0.slow >= 10 else Severity.LOW
         fault = Variant(
-            title=f"DNS lookups are slow ({fmt_ms(med0)} via {ip0})",
-            summary=f"Your DNS server {ip0} needs {fmt_ms(med0)} on average to answer ({s0.slow} answers took over 1 s).",
+            title=(f"DNS lookups are slow ({fmt_ms(med0)} via {ip0})" if med0 >= 0.3
+                   else f"Some DNS lookups are very slow ({s0.slow} took over 1 s via {ip0})"),
+            summary=(f"Your DNS server {ip0} needs {fmt_ms(med0)} on average to answer ({s0.slow} answers took over 1 s)."
+                     if med0 >= 0.3 else
+                     f"Most answers from {ip0} are quick ({fmt_ms(med0)} typical), but {s0.slow} took longer than 1 second."),
             explanation=("Every new website first needs a DNS lookup. When the DNS server is slow, every page feels "
                          "sluggish to start loading even though downloads themselves are fast."),
             cause=f"The DNS server {ip0} is overloaded, far away, or its upstream connection is congested.",

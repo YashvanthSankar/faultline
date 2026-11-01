@@ -770,7 +770,7 @@ def generate_malformed(outdir: str, seed: int) -> dict:
         "A well-formed pcap whose frames have broken headers: bad IHL, TCP data offset past the end, a DNS compression pointer loop, a DHCP option running off the end, a truncated ARP and random garbage.")
 
     gz_path = os.path.join(mdir, "compressed_padding.pcap.gz")
-    with gzip.open(gz_path, "wb", compresslevel=9) as gz:
+    with open(gz_path, "wb") as raw_gz, gzip.GzipFile(fileobj=raw_gz, mode="wb", compresslevel=9, mtime=0, filename="") as gz:  # deterministic bytes
         gz.write(_pcap_header() + _rec(o.t0, frames[0][1]))
         chunk = b"\x00" * (1024 * 1024)
         for _ in range(50):
